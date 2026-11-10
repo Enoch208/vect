@@ -4,8 +4,10 @@ import { observatory, observatoryKeyBehindDoor } from "../../fixtures/observator
 import { Frame } from "./primitives/Frame.js";
 import { Grain } from "./primitives/Grain.js";
 import { fluidUnit } from "./primitives/type.js";
+import { Cta } from "./sections/Cta.js";
 import { EveryRoom } from "./sections/EveryRoom.js";
 import { FaultPlan } from "./sections/FaultPlan.js";
+import { Footer } from "./sections/Footer.js";
 import { Header } from "./sections/Header.js";
 import { Hero } from "./sections/Hero.js";
 import { Loader, shouldPlayLoader } from "./sections/Loader.js";
@@ -13,6 +15,7 @@ import { Problems } from "./sections/Problems.js";
 import { Product } from "./sections/Product.js";
 import { Statement } from "./sections/Statement.js";
 import { Steps } from "./sections/Steps.js";
+import { UseCases } from "./sections/UseCases.js";
 import { Walkthrough } from "./sections/Walkthrough.js";
 import { useIntro } from "./use-intro.js";
 import { useReveal } from "./use-reveal.js";
@@ -67,7 +70,14 @@ export function Landing(props: LandingProps) {
             onOpenExample={props.onOpenExample}
           />
           <Steps world={observatory} twin={observatoryKeyBehindDoor} />
+          <UseCases world={observatory} twin={observatoryKeyBehindDoor} />
+          <Cta world={observatory} onOpenStudio={props.onOpenStudio} onPrompt={props.onPrompt} />
         </main>
+        <Footer
+          world={observatory}
+          onOpenStudio={props.onOpenStudio}
+          onOpenExample={props.onOpenExample}
+        />
       </div>
     </div>
   );

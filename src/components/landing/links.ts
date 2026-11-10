@@ -1,4 +1,6 @@
 export const repositoryUrl = "https://github.com/Enoch208/vect";
+export const creditsUrl = `${repositoryUrl}/blob/main/THIRD_PARTY.md`;
+export const readmeUrl = `${repositoryUrl}#readme`;
 
 export const sectionIds = {
   product: "product",

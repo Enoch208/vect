@@ -89,6 +89,13 @@ describe("landing shell", () => {
     expect(text).toContain("Proof view");
     expect(text).toContain("Built like a QA team");
     for (const step of ["Generate", "Play", "Test", "Repair"]) expect(text).toContain(step);
+    expect(text).toContain("Made for people who build worlds");
+    for (const audience of ["Indie developers", "QA leads", "Game jams"])
+      expect(text).toContain(audience);
+    expect(text).toContain("See what Vect builds from your idea");
+    expect(text).toContain("Describe a world");
+    expect(text).toContain("Get the code");
+    expect(text).toContain("©2026 Vect");
     expect(html).not.toMatch(/opacity:\s*0|visibility:\s*hidden|translate\(0(px)?,\s*100%\)/);
   });
 
