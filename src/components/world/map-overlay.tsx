@@ -19,7 +19,10 @@ const tickReach = 0.22;
 const actorDot = 0.45;
 const actorRing = 0.8;
 
-function CorridorHalo({ model, corridor }: LayerProps & { corridor: CorridorLayout }) {
+type HaloProps = LayerProps & { corridor: CorridorLayout };
+type TrailProps = LayerProps & Pick<WorldMapProps, "path">;
+
+function CorridorHalo({ model, corridor }: HaloProps): ReactElement {
   const fill = token("accentSoft");
   if (corridor.kind === "portal") {
     return (
@@ -52,27 +55,27 @@ export function Halos({ model }: LayerProps): ReactElement {
   const spots = new Map(model.layout.entities.map((item) => [item.id, item]));
   return (
     <g data-layer="halos">
-      {model.layout.rooms.map((room) =>
+      {model.layout.rooms.map((room, index) =>
         model.highlights.has(room.id) ? (
           <path
-            key={room.id}
+            key={index}
             d={boxPath([squareAt(room.center, room.size / 2 + roomGlow)])}
             fill={fill}
           />
         ) : null,
       )}
-      {model.layout.corridors.map((corridor) =>
+      {model.layout.corridors.map((corridor, index) =>
         isLit(model.highlights, corridor) ? (
-          <CorridorHalo key={corridor.connectionId} model={model} corridor={corridor} />
+          <CorridorHalo key={index} model={model} corridor={corridor} />
         ) : null,
       )}
-      {model.world.entities.map((entity) => {
+      {model.world.entities.map((entity, index) => {
         const spot = spots.get(entity.id);
         const shown = model.highlights.has(entity.id) && isDrawn(model, entity, gateIds);
         if (spot === undefined || !shown) return null;
         return (
           <circle
-            key={entity.id}
+            key={index}
             cx={round(spot.position[0])}
             cy={round(spot.position[2])}
             r={round(spot.footprint + entityGlow)}
@@ -84,7 +87,7 @@ export function Halos({ model }: LayerProps): ReactElement {
   );
 }
 
-export function Trail({ model, path }: LayerProps & Pick<WorldMapProps, "path">) {
+export function Trail({ model, path }: TrailProps): ReactElement | null {
   const points = pathAnchors(model.world, model.layout, path);
   if (points.length < 2) return null;
   const ticks = points

@@ -68,9 +68,9 @@ function Corridor({ model, corridor }: LayerProps & { corridor: CorridorLayout }
 export function Corridors({ model }: LayerProps): ReactElement {
   return (
     <g data-layer="corridors">
-      {model.layout.corridors.map((corridor) =>
+      {model.layout.corridors.map((corridor, index) =>
         corridor.kind === "corridor" ? (
-          <Corridor key={corridor.connectionId} model={model} corridor={corridor} />
+          <Corridor key={index} model={model} corridor={corridor} />
         ) : null,
       )}
     </g>
@@ -80,11 +80,11 @@ export function Corridors({ model }: LayerProps): ReactElement {
 export function Rooms({ model }: LayerProps): ReactElement {
   return (
     <g data-layer="rooms">
-      {model.layout.rooms.map((room) => {
+      {model.layout.rooms.map((room, index) => {
         const lit = model.highlights.has(room.id);
         const title = model.notes.titles.get(room.id);
         return (
-          <g key={room.id} data-room-id={room.id} data-highlight={lit ? "true" : undefined}>
+          <g key={index} data-room-id={room.id} data-highlight={lit ? "true" : undefined}>
             <title>{room.label}</title>
             <path d={boxPath(wallBoxes(room))} fill={token("ink")} />
             {lit ? (
@@ -96,11 +96,11 @@ export function Rooms({ model }: LayerProps): ReactElement {
                 strokeLinecap="square"
               />
             ) : null}
-            {title?.lines.map((line, index) => (
+            {title?.lines.map((line, row) => (
               <MapText
-                key={index}
+                key={row}
                 x={title.box.x}
-                z={title.box.z + roomTextSize / 2 + index * titleStep}
+                z={title.box.z + roomTextSize / 2 + row * titleStep}
                 size={roomTextSize}
                 tone={lit ? "accent" : "muted"}
               >

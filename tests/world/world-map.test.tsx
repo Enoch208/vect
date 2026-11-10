@@ -6,10 +6,15 @@ import type { GameAction, GameState } from "../../src/contract/game.schema.js";
 import type { WorldSpec } from "../../src/contract/world.schema.js";
 import { WorldMap, canUseWebGL, layoutWorld } from "../../src/components/world/map.js";
 import { wallBoxes } from "../../src/components/world/map-geometry.js";
-import { createInitialState, stepGame } from "../../src/domain/step-game.js";
+import { gateStates } from "../../src/components/world/truth.js";
+import { candidateActions, createInitialState, stepGame } from "../../src/domain/step-game.js";
 import { connection, derive, entity, flag } from "../../src/fixtures/build.js";
 import { observatory, observatoryKeyBehindDoor } from "../../src/fixtures/observatory.js";
+import * as agentSuite from "../../src/fixtures/suite-agent.js";
+import * as gameplaySuite from "../../src/fixtures/suite-gameplay.js";
 import { tenRoomTemple } from "../../src/fixtures/suite-large.js";
+import { repairFixtures } from "../../src/fixtures/suite-repair.js";
+import * as structuralSuite from "../../src/fixtures/suite-structural.js";
 
 type Attributes = Record<string, string>;
 
@@ -87,7 +92,18 @@ describe("blueprint map", () => {
         );
       const half = room.size / 2;
       for (const opening of room.openings) {
-        expect(covers(opening.point[0], opening.point[1]), opening.connectionId).toBe(false);
+        const upright = opening.side === "n" || opening.side === "s";
+        const along = (offset: number) =>
+          covers(
+            opening.point[0] + (upright ? offset : 0),
+            opening.point[1] + (upright ? 0 : offset),
+          );
+        expect([along(-0.85), along(0), along(0.85)], opening.connectionId).toEqual([
+          false,
+          false,
+          false,
+        ]);
+        expect([along(-0.95), along(0.95)], opening.connectionId).toEqual([true, true]);
       }
       for (const [dx, dz] of [
         [-half, -half],
@@ -224,6 +240,51 @@ describe("blueprint map", () => {
     expect(groups(html).filter((group) => group["data-room-id"] !== undefined)).toHaveLength(10);
     expect(gate(html, "c2")?.["data-gate"]).toBe("open");
     expect(gate(html, "c6")?.["data-gate"]).toBe("closed");
+  });
+});
+
+describe("blueprint map on every fixture world", () => {
+  const everyWorld: WorldSpec[] = [
+    ...Object.values(agentSuite),
+    ...Object.values(gameplaySuite),
+    ...Object.values(structuralSuite),
+    ...repairFixtures.map((fixture) => fixture.world),
+    tenRoomTemple,
+  ];
+
+  function wander(world: WorldSpec, state: GameState, visits: Map<string, number>): GameState {
+    const accepted = candidateActions(world, state)
+      .map((action) => ({ action, result: stepGame(world, state, action) }))
+      .filter((option) => option.result.ok);
+    const use = accepted.find((option) => option.action.type === "INTERACT");
+    const calmest = [...accepted].sort(
+      (a, b) =>
+        (visits.get(a.result.state.currentRoomId) ?? 0) -
+        (visits.get(b.result.state.currentRoomId) ?? 0),
+    )[0];
+    return (use ?? calmest)?.result.state ?? state;
+  }
+
+  it("agrees with the engine about every gate and the actor's room at every step", () => {
+    expect(everyWorld.length).toBeGreaterThan(20);
+    for (const world of everyWorld) {
+      const visits = new Map<string, number>();
+      let state = createInitialState(world, world.seed);
+      for (let step = 0; step < 14; step += 1) {
+        visits.set(state.currentRoomId, (visits.get(state.currentRoomId) ?? 0) + 1);
+        const html = renderToString(
+          <WorldMap world={world} state={state} path={[]} highlightIds={[world.goal.id]} />,
+        );
+        const truth = gateStates(world, state);
+        const gates = groups(html).filter((group) => group["data-gate"] !== undefined);
+        for (const group of gates) {
+          expect(group["data-gate"], world.id).toBe(truth.get(group["data-connection-id"] ?? ""));
+        }
+        expect(html, world.id).toContain(`data-actor-room="${state.currentRoomId}"`);
+        expect(html, world.id).not.toMatch(/NaN|Infinity|undefined/);
+        state = wander(world, state, visits);
+      }
+    }
   });
 });
 

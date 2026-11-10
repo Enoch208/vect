@@ -57,7 +57,7 @@ export function Entities({ model }: { model: MapModel }): ReactElement {
       {model.world.entities.map((entity, index) => {
         const spot = spots.get(entity.id);
         if (spot === undefined || !isDrawn(model, entity, gateIds)) return null;
-        return <Entity key={entity.id} model={model} entity={entity} spot={spot} index={index} />;
+        return <Entity key={index} model={model} entity={entity} spot={spot} index={index} />;
       })}
     </g>
   );

@@ -62,9 +62,9 @@ function PortalPair({ model, corridor }: PairProps): ReactElement {
 export function Portals({ model }: { model: MapModel }): ReactElement {
   return (
     <g data-layer="portals">
-      {model.layout.corridors.map((corridor) =>
+      {model.layout.corridors.map((corridor, index) =>
         corridor.kind === "portal" ? (
-          <PortalPair key={corridor.connectionId} model={model} corridor={corridor} />
+          <PortalPair key={index} model={model} corridor={corridor} />
         ) : null,
       )}
     </g>

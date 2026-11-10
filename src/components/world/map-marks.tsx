@@ -128,7 +128,7 @@ export function NoteRow({ note, mark, tone, textTone, lit }: RowProps): ReactEle
       {mark === "lock" ? <LockMark at={markAt} tone={tone} /> : null}
       {mark === "tick" ? <TickMark at={markAt} /> : null}
       {note.tags.map((tag, index) => (
-        <TagPill key={tag} x={starts[index] ?? first} z={middle} tag={tag} tone={tone} />
+        <TagPill key={index} x={starts[index] ?? first} z={middle} tag={tag} tone={tone} />
       ))}
       {note.lines.map((line, index) => {
         const z = top + index * lineStep;

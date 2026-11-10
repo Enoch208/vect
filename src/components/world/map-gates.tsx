@@ -117,7 +117,7 @@ function Gate({ model, corridor }: { model: MapModel; corridor: CorridorLayout }
         const centre = shift(base, frame.aside, tagReach + index * tagStep);
         return (
           <TagPill
-            key={tag}
+            key={index}
             x={centre[0] - pillWidth(tag) / 2}
             z={centre[1]}
             tag={tag}
@@ -133,9 +133,9 @@ function Gate({ model, corridor }: { model: MapModel; corridor: CorridorLayout }
 export function Gates({ model }: { model: MapModel }): ReactElement {
   return (
     <g data-layer="gates">
-      {model.layout.corridors.map((corridor) =>
+      {model.layout.corridors.map((corridor, index) =>
         corridor.kind === "corridor" && hasGate(corridor) ? (
-          <Gate key={corridor.connectionId} model={model} corridor={corridor} />
+          <Gate key={index} model={model} corridor={corridor} />
         ) : null,
       )}
     </g>
