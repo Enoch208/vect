@@ -1,0 +1,240 @@
+{
+  "theme": "observatory",
+  "title": "The Last Observatory",
+  "rooms": [
+    {
+      "id": "entrance",
+      "label": "Entrance",
+      "grid": {
+        "x": 0,
+        "z": 0
+      },
+      "prefab": "medium"
+    },
+    {
+      "id": "library",
+      "label": "Library",
+      "grid": {
+        "x": 1,
+        "z": 0
+      },
+      "prefab": "small"
+    },
+    {
+      "id": "control",
+      "label": "Control Room",
+      "grid": {
+        "x": 2,
+        "z": 0
+      },
+      "prefab": "medium"
+    },
+    {
+      "id": "portal",
+      "label": "Portal Chamber",
+      "grid": {
+        "x": 3,
+        "z": 0
+      },
+      "prefab": "large"
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "fromRoomId": "entrance",
+      "toRoomId": "library",
+      "doorId": null,
+      "traversableWhen": {
+        "op": "true"
+      }
+    },
+    {
+      "id": "c2",
+      "fromRoomId": "library",
+      "toRoomId": "control",
+      "doorId": "door1",
+      "traversableWhen": {
+        "op": "hasItem",
+        "itemId": "key1"
+      }
+    },
+    {
+      "id": "c3",
+      "fromRoomId": "control",
+      "toRoomId": "portal",
+      "doorId": "gate1",
+      "traversableWhen": {
+        "op": "flag",
+        "flagId": "portal-enabled",
+        "value": true
+      }
+    }
+  ],
+  "entities": [
+    {
+      "id": "key1",
+      "kind": "key",
+      "label": "Access Key",
+      "roomId": "library",
+      "localPosition": {
+        "x": 0.4,
+        "y": 0.3,
+        "z": -0.3
+      },
+      "requires": {
+        "op": "true"
+      },
+      "grantsItemId": "key1",
+      "setsFlag": null,
+      "consumesItemId": null,
+      "blocksConnectionId": null,
+      "presentation": {
+        "variant": null,
+        "glow": true
+      }
+    },
+    {
+      "id": "door1",
+      "kind": "door",
+      "label": "Control Room Door",
+      "roomId": "control",
+      "localPosition": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "requires": {
+        "op": "true"
+      },
+      "grantsItemId": null,
+      "setsFlag": null,
+      "consumesItemId": null,
+      "blocksConnectionId": null,
+      "presentation": {
+        "variant": null,
+        "glow": false
+      }
+    },
+    {
+      "id": "switch1",
+      "kind": "switch",
+      "label": "Portal Switch",
+      "roomId": "control",
+      "localPosition": {
+        "x": -0.5,
+        "y": 0.4,
+        "z": 0.2
+      },
+      "requires": {
+        "op": "true"
+      },
+      "grantsItemId": null,
+      "setsFlag": "portal-enabled",
+      "consumesItemId": null,
+      "blocksConnectionId": null,
+      "presentation": {
+        "variant": null,
+        "glow": true
+      }
+    },
+    {
+      "id": "gate1",
+      "kind": "portal",
+      "label": "Portal Gate",
+      "roomId": "portal",
+      "localPosition": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "requires": {
+        "op": "true"
+      },
+      "grantsItemId": null,
+      "setsFlag": null,
+      "consumesItemId": null,
+      "blocksConnectionId": null,
+      "presentation": {
+        "variant": null,
+        "glow": false
+      }
+    },
+    {
+      "id": "goal1",
+      "kind": "goal",
+      "label": "Reach the Portal",
+      "roomId": "portal",
+      "localPosition": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "requires": {
+        "op": "true"
+      },
+      "grantsItemId": null,
+      "setsFlag": null,
+      "consumesItemId": null,
+      "blocksConnectionId": null,
+      "presentation": {
+        "variant": null,
+        "glow": false
+      }
+    },
+    {
+      "id": "charts",
+      "kind": "prop",
+      "label": "Star Charts",
+      "roomId": "library",
+      "localPosition": {
+        "x": -0.6,
+        "y": 0,
+        "z": 0.5
+      },
+      "requires": {
+        "op": "true"
+      },
+      "grantsItemId": null,
+      "setsFlag": null,
+      "consumesItemId": null,
+      "blocksConnectionId": null,
+      "presentation": {
+        "variant": null,
+        "glow": false
+      }
+    },
+    {
+      "id": "telescope",
+      "kind": "prop",
+      "label": "Brass Telescope",
+      "roomId": "entrance",
+      "localPosition": {
+        "x": 0.5,
+        "y": 0,
+        "z": 0.5
+      },
+      "requires": {
+        "op": "true"
+      },
+      "grantsItemId": null,
+      "setsFlag": null,
+      "consumesItemId": null,
+      "blocksConnectionId": null,
+      "presentation": {
+        "variant": null,
+        "glow": false
+      }
+    }
+  ],
+  "startRoomId": "entrance",
+  "goal": {
+    "id": "goal1",
+    "roomId": "portal",
+    "requires": {
+      "op": "flag",
+      "flagId": "portal-enabled",
+      "value": true
+    }
+  }
+}
