@@ -26,6 +26,25 @@ done
 printf '== %s: typecheck\n' "$lane"
 pnpm exec tsc -p "tsconfig.$lane.json"
 
+printf '== %s: commit safety\n' "$lane"
+root="$(pwd)/"
+pending="$( (git ls-files --others --exclude-standard; git diff --name-only HEAD) | sort -u)"
+borrowed=""
+for file in $(pnpm exec tsc -p "tsconfig.$lane.json" --listFilesOnly | grep -v '/node_modules/' | sed "s|^$root||"); do
+  printf '%s\n' "$pending" | grep -Fxq "$file" || continue
+  own=no
+  for path in $paths; do
+    case "$file" in "$path" | "$path"/*) own=yes ;; esac
+  done
+  [ "$own" = no ] && borrowed="$borrowed $file"
+done
+if [ -n "$borrowed" ]; then
+  printf 'This lane depends on files another lane has not committed yet:\n' >&2
+  for file in $borrowed; do printf '  %s\n' "$file" >&2; done
+  printf 'Committing now would break main. Wait until they are committed, or remove the import.\n' >&2
+  exit 1
+fi
+
 if [ -n "$lintable" ]; then
   printf '== %s: lint\n' "$lane"
   pnpm exec eslint --no-warn-ignored --no-error-on-unmatched-pattern $lintable
