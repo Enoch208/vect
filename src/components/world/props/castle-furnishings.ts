@@ -1,0 +1,117 @@
+import type { Part } from "../parts.js";
+
+const flat = Math.PI / 2;
+const diamond = Math.PI / 4;
+const splay = 0.33;
+
+export const castleFurnishings: Record<string, readonly Part[]> = {
+  anvil: [
+    {
+      shape: "cylinder",
+      size: [0.3, 0.32, 0.36],
+      at: [0, 0.18, 0],
+      turn: [0, diamond / 2, 0],
+      tone: "tint",
+      sides: 8,
+    },
+    { shape: "box", size: [0.48, 0.08, 0.32], at: [-0.03, 0.4, 0] },
+    { shape: "box", size: [0.26, 0.12, 0.2], at: [-0.03, 0.5, 0] },
+    { shape: "box", size: [0.6, 0.2, 0.3], at: [-0.08, 0.66, 0] },
+    { shape: "cone", size: [0.1, 0.38, 0], at: [0.41, 0.673, 0], turn: [0, 0, -flat], sides: 6 },
+    {
+      shape: "box",
+      size: [0.1, 0.1, 0.22],
+      at: [-0.2, 0.81, -0.02],
+      turn: [0, -0.5, 0],
+      tone: "fixture",
+    },
+    {
+      shape: "box",
+      size: [0.42, 0.05, 0.05],
+      at: [-0.024, 0.795, 0.076],
+      turn: [0, -0.5, 0],
+      tone: "tint",
+    },
+  ],
+  throne: [
+    { shape: "box", size: [0.96, 0.1, 0.96], at: [0, 0.05, 0], tone: "tint" },
+    { shape: "box", size: [0.5, 0.42, 0.52], at: [0, 0.31, 0.02] },
+    { shape: "box", size: [0.1, 0.72, 0.54], at: [-0.3, 0.46, 0.03] },
+    { shape: "box", size: [0.1, 0.72, 0.54], at: [0.3, 0.46, 0.03] },
+    { shape: "box", size: [0.5, 0.06, 0.5], at: [0, 0.55, 0.01], tone: "tint" },
+    { shape: "box", size: [0.6, 1.5, 0.08], at: [0, 0.85, -0.28] },
+    { shape: "box", size: [0.12, 1.72, 0.12], at: [-0.36, 0.96, -0.3] },
+    { shape: "box", size: [0.12, 1.72, 0.12], at: [0.36, 0.96, -0.3] },
+    {
+      shape: "cone",
+      size: [0.085, 0.18, 0],
+      at: [-0.36, 1.91, -0.3],
+      turn: [0, diamond, 0],
+      sides: 4,
+    },
+    {
+      shape: "cone",
+      size: [0.085, 0.18, 0],
+      at: [0.36, 1.91, -0.3],
+      turn: [0, diamond, 0],
+      sides: 4,
+    },
+    {
+      shape: "box",
+      size: [0.16, 0.16, 0.12],
+      at: [0, 1.3, -0.28],
+      turn: [0, 0, diamond],
+      tone: "ink",
+    },
+  ],
+  table: [
+    { shape: "box", size: [1.2, 0.08, 0.58], at: [0, 0.75, 0] },
+    { shape: "box", size: [0.07, 0.76, 0.07], at: [-0.42, 0.375, 0.12], turn: [-splay, 0, 0] },
+    { shape: "box", size: [0.07, 0.76, 0.07], at: [-0.42, 0.375, -0.12], turn: [splay, 0, 0] },
+    { shape: "box", size: [0.07, 0.76, 0.07], at: [0.42, 0.375, 0.12], turn: [-splay, 0, 0] },
+    { shape: "box", size: [0.07, 0.76, 0.07], at: [0.42, 0.375, -0.12], turn: [splay, 0, 0] },
+    { shape: "box", size: [0.05, 0.05, 0.3], at: [-0.42, 0.3, 0], tone: "tint" },
+    { shape: "box", size: [0.05, 0.05, 0.3], at: [0.42, 0.3, 0], tone: "tint" },
+    { shape: "box", size: [0.84, 0.05, 0.05], at: [0, 0.3, 0], tone: "tint" },
+    { shape: "cylinder", size: [0.06, 0.09, 0.26], at: [-0.32, 0.92, 0.06], tone: "fixture" },
+    { shape: "cylinder", size: [0.18, 0.18, 0.03], at: [0.2, 0.805, -0.02], tone: "tint" },
+    { shape: "dome", size: [0.11, 0, 0], at: [0.2, 0.82, -0.02] },
+  ],
+  armor: [
+    { shape: "cylinder", size: [0.24, 0.28, 0.08], at: [0, 0.04, 0], tone: "tint", sides: 8 },
+    { shape: "box", size: [0.07, 0.86, 0.07], at: [0, 0.51, 0], tone: "tint" },
+    {
+      shape: "cylinder",
+      size: [0.21, 0.27, 0.18],
+      at: [0, 0.99, 0],
+      turn: [0, flat / 3, 0],
+      sides: 6,
+    },
+    {
+      shape: "cylinder",
+      size: [0.33, 0.21, 0.5],
+      at: [0, 1.33, 0],
+      turn: [0, flat / 3, 0],
+      sides: 6,
+    },
+    {
+      shape: "box",
+      size: [0.24, 0.14, 0.34],
+      at: [-0.33, 1.56, 0],
+      turn: [0, 0, 0.3],
+      tone: "fixture",
+    },
+    {
+      shape: "box",
+      size: [0.24, 0.14, 0.34],
+      at: [0.33, 1.56, 0],
+      turn: [0, 0, -0.3],
+      tone: "fixture",
+    },
+    { shape: "cylinder", size: [0.1, 0.15, 0.08], at: [0, 1.62, 0], tone: "fixture" },
+    { shape: "cylinder", size: [0.17, 0.17, 0.2], at: [0, 1.76, 0] },
+    { shape: "dome", size: [0.17, 0, 0], at: [0, 1.86, 0] },
+    { shape: "box", size: [0.05, 0.22, 0.34], at: [0, 1.97, 0] },
+    { shape: "box", size: [0.24, 0.05, 0.1], at: [0, 1.78, 0.13], tone: "ink" },
+  ],
+};

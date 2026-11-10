@@ -1,6 +1,148 @@
-import type { PropSet } from "../parts.js";
+import type { Part, PropSet } from "../parts.js";
+
+type Turn = NonNullable<Part["turn"]>;
+
+const squared: Turn = [0, Math.PI / 4, 0];
+const lyingFlat: Turn = [Math.PI / 2, 0, 0];
+const acrossShoulders: Turn = [0, 0, Math.PI / 2];
+const splay = 0.172;
 
 export const templeProps: PropSet = {
-  variants: {},
-  keywords: {},
+  variants: {
+    column: [
+      { shape: "box", size: [0.92, 0.08, 0.92], at: [0, 0.04, 0], tone: "tint" },
+      { shape: "box", size: [0.72, 0.12, 0.72], at: [0, 0.14, 0] },
+      { shape: "cylinder", size: [0.31, 0.34, 0.09], at: [0, 0.245, 0], tone: "tint" },
+      { shape: "cylinder", size: [0.21, 0.27, 1.6], at: [0, 1.09, 0], sides: 12 },
+      { shape: "cylinder", size: [0.33, 0.22, 0.12], at: [0, 1.95, 0] },
+      { shape: "box", size: [0.72, 0.13, 0.72], at: [0, 2.075, 0], tone: "tint" },
+    ],
+    urn: [
+      { shape: "cylinder", size: [0.2, 0.28, 0.08], at: [0, 0.04, 0], tone: "tint" },
+      { shape: "cylinder", size: [0.1, 0.16, 0.12], at: [0, 0.14, 0] },
+      { shape: "cylinder", size: [0.42, 0.13, 0.42], at: [0, 0.41, 0] },
+      { shape: "cylinder", size: [0.2, 0.42, 0.26], at: [0, 0.75, 0] },
+      { shape: "cylinder", size: [0.17, 0.2, 0.14], at: [0, 0.95, 0] },
+      { shape: "cylinder", size: [0.26, 0.19, 0.07], at: [0, 1.055, 0], tone: "tint" },
+      { shape: "cone", size: [0.2, 0.14, 0], at: [0, 1.16, 0] },
+      { shape: "sphere", size: [0.07, 0, 0], at: [0, 1.25, 0] },
+    ],
+    brazier: [
+      {
+        shape: "cylinder",
+        size: [0.04, 0.04, 0.934],
+        at: [0, 0.468, 0.48],
+        turn: [-splay, 0, 0],
+        sides: 4,
+      },
+      {
+        shape: "cylinder",
+        size: [0.04, 0.04, 0.934],
+        at: [-0.416, 0.468, -0.24],
+        turn: [0, 2.618, splay],
+        sides: 4,
+      },
+      {
+        shape: "cylinder",
+        size: [0.04, 0.04, 0.934],
+        at: [0.416, 0.468, -0.24],
+        turn: [0, 0.524, splay],
+        sides: 4,
+      },
+      { shape: "cylinder", size: [0.46, 0.16, 0.28], at: [0, 0.76, 0] },
+      { shape: "cylinder", size: [0.5, 0.5, 0.07], at: [0, 0.925, 0] },
+      { shape: "cylinder", size: [0.41, 0.41, 0.03], at: [0, 0.957, 0], tone: "fixture" },
+      { shape: "dome", size: [0.3, 0, 0], at: [0, 0.792, 0], tone: "fixture" },
+    ],
+    stele: [
+      { shape: "box", size: [1.04, 0.1, 0.52], at: [0, 0.05, 0], tone: "tint" },
+      { shape: "box", size: [0.88, 0.1, 0.38], at: [0, 0.15, 0] },
+      { shape: "box", size: [0.7, 1.16, 0.22], at: [0, 0.78, 0] },
+      { shape: "cylinder", size: [0.35, 0.35, 0.2], at: [0, 1.36, 0], turn: lyingFlat },
+      {
+        shape: "cylinder",
+        size: [0.1, 0.1, 0.25],
+        at: [0, 1.44, 0],
+        turn: lyingFlat,
+        tone: "tint",
+      },
+      { shape: "box", size: [0.46, 0.06, 0.25], at: [0, 1.12, 0], tone: "fixture" },
+      { shape: "box", size: [0.46, 0.06, 0.25], at: [0, 0.96, 0], tone: "fixture" },
+      { shape: "box", size: [0.3, 0.06, 0.25], at: [0, 0.8, 0], tone: "fixture" },
+    ],
+    altar: [
+      { shape: "box", size: [1, 0.1, 0.84], at: [0, 0.05, 0], tone: "tint" },
+      { shape: "box", size: [0.86, 0.1, 0.7], at: [0, 0.15, 0] },
+      { shape: "box", size: [0.72, 0.46, 0.56], at: [0, 0.43, 0] },
+      { shape: "box", size: [0.92, 0.1, 0.76], at: [0, 0.71, 0], tone: "tint" },
+      { shape: "cone", size: [0.09, 0.14, 0], at: [0.38, 0.83, 0.3], turn: squared, sides: 4 },
+      { shape: "cone", size: [0.09, 0.14, 0], at: [-0.38, 0.83, 0.3], turn: squared, sides: 4 },
+      { shape: "cone", size: [0.09, 0.14, 0], at: [0.38, 0.83, -0.3], turn: squared, sides: 4 },
+      { shape: "cone", size: [0.09, 0.14, 0], at: [-0.38, 0.83, -0.3], turn: squared, sides: 4 },
+      { shape: "cylinder", size: [0.2, 0.11, 0.09], at: [0, 0.805, 0] },
+    ],
+    statue: [
+      { shape: "box", size: [0.8, 0.1, 0.8], at: [0, 0.05, 0], tone: "tint" },
+      { shape: "box", size: [0.58, 0.42, 0.58], at: [0, 0.31, 0] },
+      { shape: "box", size: [0.66, 0.06, 0.66], at: [0, 0.55, 0], tone: "tint" },
+      { shape: "cylinder", size: [0.17, 0.11, 0.8], at: [0, 0.98, 0], turn: squared, sides: 4 },
+      { shape: "cylinder", size: [0.12, 0.12, 0.5], at: [0, 1.38, 0], turn: acrossShoulders },
+      { shape: "cylinder", size: [0.06, 0.07, 0.16], at: [0, 1.56, 0] },
+      { shape: "sphere", size: [0.14, 0, 0], at: [0, 1.75, 0] },
+    ],
+    obelisk: [
+      { shape: "box", size: [0.94, 0.1, 0.94], at: [0, 0.05, 0], tone: "tint" },
+      { shape: "box", size: [0.72, 0.1, 0.72], at: [0, 0.15, 0] },
+      { shape: "box", size: [0.54, 0.3, 0.54], at: [0, 0.35, 0] },
+      { shape: "box", size: [0.62, 0.06, 0.62], at: [0, 0.53, 0], tone: "tint" },
+      { shape: "cylinder", size: [0.19, 0.3, 1.44], at: [0, 1.28, 0], turn: squared, sides: 4 },
+      {
+        shape: "cone",
+        size: [0.19, 0.3, 0],
+        at: [0, 2.15, 0],
+        turn: squared,
+        sides: 4,
+        tone: "tint",
+      },
+    ],
+    basin: [
+      { shape: "cylinder", size: [0.42, 0.48, 0.08], at: [0, 0.04, 0], tone: "tint" },
+      { shape: "cylinder", size: [0.6, 0.4, 0.16], at: [0, 0.16, 0] },
+      { shape: "cylinder", size: [0.64, 0.64, 0.2], at: [0, 0.32, 0] },
+      { shape: "torus", size: [0.51, 0.12, 0], at: [0, 0.35, 0], turn: lyingFlat },
+      { shape: "cylinder", size: [0.5, 0.5, 0.03], at: [0, 0.42, 0], tone: "fixture" },
+      { shape: "cylinder", size: [0.06, 0.09, 0.3], at: [0, 0.585, 0] },
+      { shape: "cylinder", size: [0.16, 0.07, 0.07], at: [0, 0.77, 0] },
+      { shape: "sphere", size: [0.055, 0, 0], at: [0, 0.835, 0] },
+    ],
+  },
+  keywords: {
+    column: ["column", "pillar", "colonnade", "pilaster"],
+    brazier: [
+      "brazier",
+      "fire",
+      "torch",
+      "flame",
+      "incense",
+      "censer",
+      "burn",
+      "lantern",
+      "furnace",
+    ],
+    stele: [
+      "stele",
+      "stela",
+      "tablet",
+      "inscription",
+      "plaque",
+      "tombstone",
+      "gravestone",
+      "marker",
+    ],
+    altar: ["altar", "shrine", "offering", "sacrific", "slab", "table"],
+    statue: ["statue", "idol", "figure", "figurine", "guardian", "sculpture", "effigy"],
+    obelisk: ["obelisk", "monolith", "spire", "needle", "monument", "menhir"],
+    urn: ["urn", "vase", "amphora", "jar", "pot", "vessel"],
+    basin: ["basin", "fountain", "font", "pool", "water", "cistern", "well"],
+  },
 };
