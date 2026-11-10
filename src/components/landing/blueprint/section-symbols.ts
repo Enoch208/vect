@@ -1,5 +1,5 @@
 import type { WorldEntity } from "../../../contract/world.schema.js";
-import { circlePath, linePath, rectPath, type Stroke } from "./paths.js";
+import { circlePath, linePath, rectPath, type Stroke, type StrokeTone } from "./paths.js";
 
 export type Anchor = { center: number; halfWidth: number; floor: number; height: number };
 
@@ -36,16 +36,43 @@ const glyphs: Partial<Record<WorldEntity["kind"], Glyph>> = {
   ],
 };
 
+const toneFor: Partial<Record<WorldEntity["kind"], StrokeTone>> = {
+  key: "key",
+  door: "door",
+  portal: "portal",
+  switch: "switch",
+  goal: "goal",
+};
+
 export function entityStrokes(entity: WorldEntity, anchor: Anchor, width: number): Stroke[] {
   const glyph = glyphs[entity.kind];
   if (glyph === undefined) return [];
   const x = anchor.center + entity.localPosition.x * anchor.halfWidth * 0.7;
   const y = anchor.floor - 26 - entity.localPosition.y * anchor.height * 0.55;
-  return glyph(x, y, anchor.floor).map((d, index) => ({
-    id: `${entity.id}-${String(index)}`,
+  const tone = toneFor[entity.kind];
+  return glyph(x, y, anchor.floor).map((d, index) =>
+    tone === undefined
+      ? { id: `${entity.id}-${String(index)}`, d, weight: "light", start: x / width }
+      : { id: `${entity.id}-${String(index)}`, d, weight: "light", start: x / width, tone },
+  );
+}
+
+export function playerStrokes(x: number, floorY: number, width: number): Stroke[] {
+  const head = floorY - 78;
+  const paths = [
+    circlePath(x, head, 8),
+    linePath(x, head + 8, x, floorY - 30),
+    linePath(x, floorY - 58, x - 14, floorY - 44),
+    linePath(x, floorY - 58, x + 16, floorY - 40),
+    linePath(x, floorY - 30, x - 11, floorY),
+    linePath(x, floorY - 30, x + 12, floorY),
+  ];
+  return paths.map((d, index) => ({
+    id: `player-${String(index)}`,
     d,
     weight: "light",
     start: x / width,
+    tone: "player",
   }));
 }
 

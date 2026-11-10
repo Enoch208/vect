@@ -10,11 +10,11 @@ type GlyphProps = { entity: WorldEntity; at: Point; used: boolean };
 
 export function EntityGlyph({ entity, at, used }: GlyphProps) {
   const [x, z] = at;
-  const tone = used ? "stroke-ink/30" : "stroke-ink";
+  const quiet = used ? "stroke-ink/30" : "stroke-ink";
   switch (entity.kind) {
     case "key":
       return (
-        <g className={tone} {...line}>
+        <g className={used ? "stroke-ink/30" : "stroke-caution"} {...line}>
           <circle cx={x - 0.45} cy={z} r={0.3} />
           <path
             d={`M${String(x - 0.15)} ${String(z)}H${String(x + 0.7)}M${String(x + 0.45)} ${String(z)}v0.3M${String(x + 0.7)} ${String(z)}v0.35`}
@@ -23,7 +23,7 @@ export function EntityGlyph({ entity, at, used }: GlyphProps) {
       );
     case "switch":
       return (
-        <g className={tone} {...line}>
+        <g className={used ? "stroke-ink/30" : "stroke-positive"} {...line}>
           <rect x={x - 0.4} y={z - 0.4} width={0.8} height={0.8} />
           <path
             d={`M${String(x - 0.4)} ${String(z + 0.4)}L${String(x + 0.4)} ${String(z - 0.4)}`}
@@ -32,7 +32,7 @@ export function EntityGlyph({ entity, at, used }: GlyphProps) {
       );
     case "goal":
       return (
-        <g className={tone} {...line}>
+        <g className={used ? "stroke-ink/30" : "stroke-positive"} {...line}>
           <circle cx={x} cy={z} r={1} />
           <circle cx={x} cy={z} r={0.45} />
           <path
@@ -46,7 +46,7 @@ export function EntityGlyph({ entity, at, used }: GlyphProps) {
     case "trap":
     case "checkpoint":
       return (
-        <g className={tone} {...line}>
+        <g className={quiet} {...line}>
           <rect x={x - 0.5} y={z - 0.35} width={1} height={0.7} />
           <path d={`M${String(x - 0.5)} ${String(z)}H${String(x + 0.5)}`} />
         </g>

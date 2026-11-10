@@ -1,6 +1,14 @@
 export type Weight = "heavy" | "light" | "hair";
 
-export type Stroke = { id: string; d: string; weight: Weight; start: number };
+export type StrokeTone = "ink" | "key" | "door" | "portal" | "switch" | "goal" | "player";
+
+export type Stroke = {
+  id: string;
+  d: string;
+  weight: Weight;
+  start: number;
+  tone?: StrokeTone;
+};
 
 export type DrawingLabel = {
   id: string;

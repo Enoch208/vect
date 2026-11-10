@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Book02Icon } from "@hugeicons/core-free-icons";
 import type { WorldSpec } from "../../../contract/world.schema.js";
-import { worldRevisionHash } from "../../../domain/canonical.js";
 import { drawingAspect, Elevation } from "../blueprint/Elevation.js";
 import { Button, TextButton } from "../primitives/Buttons.js";
 import { BracketLabel, MonoLabel } from "../primitives/Label.js";
@@ -23,7 +22,6 @@ const corner = "absolute z-10 flex flex-col gap-1";
 
 export function Hero({ world, drawingVisible, onOpenStudio, onOpenExample }: HeroProps) {
   const aspect = useMemo(() => drawingAspect(world), [world]);
-  const revision = useMemo(() => worldRevisionHash(world).slice(0, 6), [world]);
   const drawingTarget = { [heroDrawingAttribute]: "" };
   return (
     <section
@@ -36,7 +34,7 @@ export function Hero({ world, drawingVisible, onOpenStudio, onOpenExample }: Her
           data-intro="fade"
           className={`${corner} top-[calc(var(--spacing)*3.6)] left-[calc(var(--spacing)*3.6)]`}
         >
-          <BracketLabel>Fig. 01 · Section A–A</BracketLabel>
+          <BracketLabel>Level 01</BracketLabel>
           <MonoLabel className="text-ink">{world.title}</MonoLabel>
         </div>
         <div
@@ -56,11 +54,11 @@ export function Hero({ world, drawingVisible, onOpenStudio, onOpenExample }: Her
         >
           <Elevation world={world} />
         </div>
-        <BracketLabel
-          className={`absolute bottom-[calc(var(--spacing)*3.6)] left-[calc(var(--spacing)*3.6)] normal-case`}
+        <p
+          className={`${body.s} absolute bottom-[calc(var(--spacing)*3.6)] left-[calc(var(--spacing)*3.6)] max-w-[28ch] text-ink`}
         >
-          {`${world.id} · rev ${revision} · seed ${String(world.seed)}`}
-        </BracketLabel>
+          Find the key. Open the locked door. Reach the goal.
+        </p>
       </div>
       <div className="grid grid-cols-1 gap-px bg-rule lg:grid-cols-4">
         <div className="bg-paper p-[12px] lg:p-3 lg:col-span-2">

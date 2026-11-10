@@ -95,7 +95,7 @@ function Body({ world, live }: { world: WorldSpec; live: Live | null }) {
       <div
         className={`${corner} top-[calc(var(--spacing)*3.6)] left-[calc(var(--spacing)*3.6)] max-w-[calc(100%-var(--spacing)*7.2)]`}
       >
-        <BracketLabel>Fig. 02 · One edit later</BracketLabel>
+        <BracketLabel>The broken level</BracketLabel>
         <h2 id="fault-title" className={`${display.m} max-w-[16ch]`}>
           Put the key behind its own door
         </h2>
@@ -141,6 +141,7 @@ function Body({ world, live }: { world: WorldSpec; live: Live | null }) {
           agent={traced?.at ?? null}
           path={traced?.path ?? []}
           callouts={live?.callouts ?? null}
+          dimensions={false}
           onTargetClick={() => {
             setExplained(true);
           }}

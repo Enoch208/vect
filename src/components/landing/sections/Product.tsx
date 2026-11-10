@@ -22,7 +22,7 @@ type CardProps = {
 
 function ProductCard({ index, title, text, action, figure }: CardProps) {
   return (
-    <article className="grid border-b border-rule lg:min-h-[calc(var(--spacing)*87)] lg:grid-cols-[25%_42.5%_32.5%]">
+    <article className="grid grid-cols-1 border-b border-rule lg:min-h-[calc(var(--spacing)*87)] lg:grid-cols-[25%_42.5%_32.5%]">
       <div className="flex flex-col border-rule lg:border-r">
         <div className="hidden flex-1 lg:block" />
         <div className="flex flex-col gap-[calc(var(--spacing)*5)] border-y border-rule p-[12px] lg:min-h-[calc(var(--spacing)*17.3)] lg:justify-between lg:p-3">
@@ -67,7 +67,7 @@ type ProductProps = {
 
 function TwinPlan({ twin }: { twin: WorldSpec }) {
   const callouts = useMemo(() => findingCallouts(twin, checkWorld(twin)), [twin]);
-  return <Plan world={twin} callouts={callouts} />;
+  return <Plan world={twin} callouts={callouts} dimensions={false} />;
 }
 
 export function Product({ world, twin, onOpenStudio, onOpenExample }: ProductProps) {
@@ -78,7 +78,7 @@ export function Product({ world, twin, onOpenStudio, onOpenExample }: ProductPro
         title="Studio"
         text="Describe a world and play it in 3D, then change it in plain words. Every revision is kept and labelled for what made it: live AI, the parser or an example."
         action={<TextButton onClick={onOpenStudio}>Open the studio</TextButton>}
-        figure={<Plan world={world} />}
+        figure={<Plan world={world} dimensions={false} />}
       />
       <ProductCard
         index={2}
@@ -86,7 +86,7 @@ export function Product({ world, twin, onOpenStudio, onOpenExample }: ProductPro
         text="Each report names its world revision, seed, trace and digest, and replays to the same result. Edit the world and the report is marked stale."
         action={<TextButton onClick={onOpenExample}>Open example world</TextButton>}
         figure={
-          <LiveBoundary fallback={<Plan world={twin} />}>
+          <LiveBoundary fallback={<Plan world={twin} dimensions={false} />}>
             <TwinPlan twin={twin} />
           </LiveBoundary>
         }

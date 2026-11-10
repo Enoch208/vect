@@ -6,9 +6,9 @@ import { BracketLabel } from "../primitives/Label.js";
 import { body, mono } from "../primitives/type.js";
 import type { RoomEvent } from "./room-events.js";
 
-type RoomFragmentProps = { world: WorldSpec; event: RoomEvent; figure: number };
+type RoomFragmentProps = { world: WorldSpec; event: RoomEvent };
 
-export function RoomFragment({ world, event, figure }: RoomFragmentProps) {
+export function RoomFragment({ world, event }: RoomFragmentProps) {
   const geometry = useMemo(() => planGeometry(world), [world]);
   const target =
     [...event.targetIds].reverse().find((id) => world.entities.some((item) => item.id === id)) ??
@@ -19,7 +19,7 @@ export function RoomFragment({ world, event, figure }: RoomFragmentProps) {
   return (
     <figure className="flex flex-col border border-rule bg-paper">
       <figcaption className="flex items-center justify-between gap-2 border-b border-rule px-[calc(var(--spacing)*1.2)] py-[calc(var(--spacing)*0.8)]">
-        <BracketLabel>{`Fig. 0${String(figure)}`}</BracketLabel>
+        <BracketLabel>{event.code.replaceAll("_", " ")}</BracketLabel>
         <span className={`${mono.xs} text-ink`}>{room?.label ?? event.roomId}</span>
       </figcaption>
       <Plan

@@ -1,5 +1,13 @@
 import type { Room } from "../../../contract/world.schema.js";
-import { arcPath, circlePath, linePath, rectPath, type Stroke, type Weight } from "./paths.js";
+import {
+  arcPath,
+  circlePath,
+  linePath,
+  rectPath,
+  type Stroke,
+  type StrokeTone,
+  type Weight,
+} from "./paths.js";
 
 export const wall = 14;
 export const slab = 12;
@@ -11,8 +19,17 @@ export type Placed = { room: Room; left: number; right: number; top: number };
 
 export type Opening = { kind: "open" | "door" | "portal"; doorId: string | null };
 
-function stroke(id: string, d: string, weight: Weight, x: number, width: number): Stroke {
-  return { id, d, weight, start: x / width };
+function stroke(
+  id: string,
+  d: string,
+  weight: Weight,
+  x: number,
+  width: number,
+  tone?: StrokeTone,
+): Stroke {
+  return tone === undefined
+    ? { id, d, weight, start: x / width }
+    : { id, d, weight, start: x / width, tone };
 }
 
 function glazing(id: string, left: number, top: number, w: number, h: number, width: number) {
@@ -61,6 +78,7 @@ export function wallStrokes(
         "light",
         x,
         width,
+        "door",
       ),
       stroke(
         `panel-${String(x)}`,
@@ -68,6 +86,7 @@ export function wallStrokes(
         "hair",
         x,
         width,
+        "door",
       ),
       stroke(
         `lock-${String(x)}`,
@@ -75,14 +94,29 @@ export function wallStrokes(
         "light",
         x,
         width,
+        "door",
       ),
     );
   }
   if (opening.kind === "portal") {
     const cy = floor - doorHeight / 2 - 2;
     strokes.push(
-      stroke(`ring-${String(x)}`, circlePath(center, cy, doorHeight * 0.42), "light", x, width),
-      stroke(`core-${String(x)}`, circlePath(center, cy, doorHeight * 0.28), "hair", x, width),
+      stroke(
+        `ring-${String(x)}`,
+        circlePath(center, cy, doorHeight * 0.42),
+        "light",
+        x,
+        width,
+        "portal",
+      ),
+      stroke(
+        `core-${String(x)}`,
+        circlePath(center, cy, doorHeight * 0.28),
+        "hair",
+        x,
+        width,
+        "portal",
+      ),
     );
   }
   return strokes;

@@ -71,13 +71,13 @@ function Scene({ world, twin }: Props) {
     >
       <Ruler />
       <BracketLabel className="absolute top-[calc(var(--spacing)*3.6)] left-[calc(var(--spacing)*3.6)]">
-        {faultOn ? "Fig. 07 · The same world, key moved" : `Fig. 07 · ${world.title}`}
+        {faultOn ? "Same level, key behind the door" : `Play · ${world.title}`}
       </BracketLabel>
       <div
         className={`w-full max-w-[calc(var(--spacing)*124)] transition-[translate,scale] duration-700 ease-[cubic-bezier(.4,0,0,1)] motion-reduce:transition-none ${frame.final ? "lg:-translate-x-[22%] lg:scale-[0.8]" : ""} [&_[data-layer]]:transition-opacity [&_[data-layer]]:duration-500 [&_[data-agent]]:transition-transform [&_[data-agent]]:duration-700 [&_[data-agent]]:ease-[cubic-bezier(.4,0,0,1)] ${faultOn ? "" : hiddenLayers(frame)}`}
       >
         {faultOn ? (
-          <Plan world={twin} callouts={fault.callouts} />
+          <Plan world={twin} callouts={fault.callouts} dimensions={false} />
         ) : (
           <Plan world={world} state={frame.state} agent={frame.agent} path={frame.path} />
         )}

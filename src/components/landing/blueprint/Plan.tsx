@@ -51,8 +51,9 @@ export function Plan({
   const pinned = (callouts ?? []).flatMap((callout) => {
     const at = pointOf(layout, callout.targetId);
     if (at === null) return [];
-    const tip: Point = [at[0] - leader * 0.3, at[1] - leader];
-    return [{ ...callout, at, tip }];
+    const flip = (at[0] - box.x) / box.w > 0.62;
+    const tip: Point = [at[0] + (flip ? leader * 0.3 : -leader * 0.3), at[1] - leader];
+    return [{ ...callout, at, tip, flip }];
   });
   return (
     <div className={`relative ${className}`}>
@@ -122,7 +123,7 @@ export function Plan({
                   `${index === 0 ? "M" : "L"}${String(point[0])} ${String(point[1])}`,
               )
               .join("")}
-            className="stroke-ink"
+            className="stroke-accent"
             strokeDasharray="3 3"
             {...hair}
           />
@@ -133,8 +134,8 @@ export function Plan({
             data-agent=""
             style={{ transform: `translate(${String(agent[0])}px, ${String(agent[1])}px)` }}
           >
-            <circle r={0.95} className="stroke-ink/40" {...hair} />
-            <circle r={0.5} className="fill-ink" />
+            <circle r={0.95} className="stroke-accent" {...hair} />
+            <circle r={0.55} className="fill-accent" />
           </g>
         )}
         {pinned.map((callout) => (
@@ -149,7 +150,7 @@ export function Plan({
         {children}
       </svg>
       {pinned.map((callout) => {
-        const chip = `${mono.xs} absolute -translate-y-full bg-accent px-[0.7em] py-[0.4em] whitespace-nowrap text-paper-raised`;
+        const chip = `${mono.xs} absolute -translate-y-full ${callout.flip ? "-translate-x-full" : ""} bg-accent px-[0.7em] py-[0.4em] whitespace-nowrap text-paper-raised`;
         const position = percent(callout.tip);
         return onTargetClick === undefined ? (
           <span

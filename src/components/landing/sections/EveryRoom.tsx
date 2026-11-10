@@ -62,7 +62,7 @@ function Fragments({ world }: { world: WorldSpec }) {
           data-scene-card=""
           className={`lg:absolute lg:z-10 lg:w-[calc(var(--spacing)*30)] ${slots[index % slots.length] ?? ""}`}
         >
-          <RoomFragment world={world} event={event} figure={index + 3} />
+          <RoomFragment world={world} event={event} />
         </li>
       ))}
     </ul>

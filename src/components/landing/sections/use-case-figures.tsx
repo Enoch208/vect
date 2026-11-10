@@ -58,8 +58,14 @@ export function caseFigures(world: WorldSpec, twin: WorldSpec): ReactNode[] {
   const [locked, collected] = events;
   return [
     <Elevation world={world} />,
-    <Plan world={world} agent={done.at} path={done.path} />,
-    <Plan world={twin} agent={stuck.at} path={stuck.path} callouts={twinCallouts} />,
+    <Plan world={world} agent={done.at} path={done.path} dimensions={false} />,
+    <Plan
+      world={twin}
+      agent={stuck.at}
+      path={stuck.path}
+      callouts={twinCallouts}
+      dimensions={false}
+    />,
     <SpecSheet
       title="Verification report"
       rows={[
@@ -74,16 +80,16 @@ export function caseFigures(world: WorldSpec, twin: WorldSpec): ReactNode[] {
       className="mx-auto origin-center scale-150"
     />,
     locked === undefined ? (
-      <Plan world={world} />
+      <Plan world={world} dimensions={false} />
     ) : (
-      <RoomFragment world={world} event={locked} figure={3} />
+      <RoomFragment world={world} event={locked} />
     ),
     <Plan world={twin} callouts={twinCallouts} dimensions={false} />,
     collected === undefined ? (
-      <Plan world={world} />
+      <Plan world={world} dimensions={false} />
     ) : (
-      <RoomFragment world={world} event={collected} figure={4} />
+      <RoomFragment world={world} event={collected} />
     ),
-    <Plan world={world} />,
+    <Plan world={world} dimensions={false} />,
   ];
 }

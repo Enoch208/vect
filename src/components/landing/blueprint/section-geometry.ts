@@ -10,7 +10,7 @@ import {
   type Opening,
   type Placed,
 } from "./section-parts.js";
-import { entityStrokes, stairStrokes } from "./section-symbols.js";
+import { entityStrokes, playerStrokes, stairStrokes } from "./section-symbols.js";
 
 export type RoomFrame = { id: string; left: number; right: number; top: number; floor: number };
 
@@ -53,15 +53,24 @@ function openingBetween(world: WorldSpec, a: Room, b: Room): Opening | null {
   return { kind: gate?.kind === "portal" ? "portal" : "door", doorId: link.doorId };
 }
 
-function doorTag(x: number, doorId: string, width: number): [Stroke, DrawingLabel] {
+function doorTag(x: number, kind: "door" | "portal", width: number): [Stroke, DrawingLabel] {
+  const name = kind === "portal" ? "portal" : "locked";
   return [
     {
-      id: `leader-${doorId}`,
+      id: `leader-${name}-${String(Math.round(x))}`,
       d: linePath(x, floor + 6, x, floor + 40),
       weight: "hair",
       start: x / width,
+      tone: kind,
     },
-    { id: `tag-${doorId}`, x, y: floor + 54, text: doorId, anchor: "middle", start: x / width },
+    {
+      id: `tag-${name}-${String(Math.round(x))}`,
+      x,
+      y: floor + 54,
+      text: kind === "portal" ? "Portal" : "Locked",
+      anchor: "middle",
+      start: x / width,
+    },
   ];
 }
 
@@ -85,8 +94,8 @@ export function sectionDrawing(world: WorldSpec): SectionDrawing {
     const wallTop = previous === undefined ? placed.top : Math.min(placed.top, previous.top);
     const wallX = placed.left - wall;
     strokes.push(...wallStrokes(wallX, wallTop, opening, width), ...roomStrokes(placed, width));
-    if (opening?.doorId != null) {
-      const [leader, tag] = doorTag(wallX + wall / 2, opening.doorId, width);
+    if (opening?.kind === "door" || opening?.kind === "portal") {
+      const [leader, tag] = doorTag(wallX + wall / 2, opening.kind, width);
       strokes.push(leader);
       labels.push(tag);
     }
@@ -107,6 +116,9 @@ export function sectionDrawing(world: WorldSpec): SectionDrawing {
     };
     for (const entity of world.entities.filter((item) => item.roomId === placed.room.id)) {
       strokes.push(...entityStrokes(entity, anchor, width));
+    }
+    if (placed.room.id === world.startRoomId) {
+      strokes.push(...playerStrokes(center - anchor.halfWidth * 0.45, floor, width));
     }
   });
   strokes.push(...wallStrokes(last.right, last.top, null, width));

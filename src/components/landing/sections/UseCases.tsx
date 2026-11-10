@@ -28,9 +28,9 @@ function Rows({ world, twin }: UseCasesProps) {
   const shown = open ?? 0;
   return (
     <>
-      <div className="relative flex min-h-[90vw] items-center justify-center overflow-hidden border-rule p-[calc(var(--spacing)*6)] max-lg:order-last max-lg:border-t lg:min-h-0 lg:border-r">
+      <div className="relative flex min-h-[75vw] items-center justify-center overflow-hidden border-rule p-[calc(var(--spacing)*6)] max-lg:order-last max-lg:border-t lg:min-h-0 lg:border-r">
         <BracketLabel className="absolute top-[calc(var(--spacing)*2.4)] left-[calc(var(--spacing)*2.4)]">
-          {`Fig. ${String(shown + 10)} · ${useCaseCopy[shown]?.title ?? ""}`}
+          {`Play · ${useCaseCopy[shown]?.title ?? ""}`}
         </BracketLabel>
         <LiveBoundary
           fallback={
@@ -43,7 +43,7 @@ function Rows({ world, twin }: UseCasesProps) {
         </LiveBoundary>
       </div>
       <div className="flex flex-col">
-        <div className="flex min-h-[calc(var(--spacing)*38)] items-start border-b border-rule p-[12px] lg:pt-[calc(var(--spacing)*1)] lg:pl-[calc(var(--spacing)*15.4)]">
+        <div className="flex items-start border-b border-rule p-[12px] pt-[calc(var(--spacing)*4)] pb-[calc(var(--spacing)*6)] lg:min-h-[calc(var(--spacing)*38)] lg:pt-[calc(var(--spacing)*1)] lg:pl-[calc(var(--spacing)*15.4)]">
           <h2 id="use-cases-title" data-reveal="" className={`${display.l} max-w-[14ch]`}>
             Made for people who build worlds
           </h2>
@@ -59,7 +59,7 @@ export function UseCases(props: UseCasesProps) {
     <section
       id={sectionIds.useCases}
       aria-labelledby="use-cases-title"
-      className="grid border-b border-rule lg:grid-cols-2"
+      className="grid grid-cols-1 border-b border-rule lg:grid-cols-2"
     >
       <Rows {...props} />
     </section>

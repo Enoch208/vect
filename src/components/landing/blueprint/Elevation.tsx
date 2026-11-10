@@ -1,9 +1,21 @@
 import { useMemo, type ReactNode } from "react";
 import type { WorldSpec } from "../../../contract/world.schema.js";
-import type { Weight } from "./paths.js";
+import type { Stroke, StrokeTone, Weight } from "./paths.js";
 import { sectionDrawing } from "./section-geometry.js";
 
-const strokeWidth: Record<Weight, number> = { heavy: 1.5, light: 1, hair: 0.6 };
+const strokeWidth: Record<Weight, number> = { heavy: 1.5, light: 1.25, hair: 0.7 };
+
+const toneClass: Record<StrokeTone, string> = {
+  ink: "text-ink/70",
+  key: "text-caution",
+  door: "text-accent",
+  portal: "text-accent",
+  switch: "text-positive",
+  goal: "text-positive",
+  player: "text-ink",
+};
+
+const tones: readonly StrokeTone[] = ["ink", "key", "switch", "door", "portal", "goal", "player"];
 
 export function drawingAspect(world: WorldSpec): number {
   const drawing = sectionDrawing(world);
@@ -32,24 +44,15 @@ export function Elevation({
   return (
     <svg
       role="img"
-      aria-label={`Section drawing of ${world.title}: ${world.rooms.map((room) => room.label).join(", ")}`}
+      aria-label={`Level drawing of ${world.title}: ${world.rooms.map((room) => room.label).join(", ")}`}
       viewBox={`${String(box.x)} ${String(box.y)} ${String(box.width)} ${String(box.height)}`}
       fill="none"
-      className={`block h-auto w-full text-ink/70 ${className}`}
+      className={`block h-auto w-full ${className}`}
     >
       {underlay}
-      <g stroke="currentColor" strokeLinejoin="miter">
-        {drawing.strokes.map((stroke) => (
-          <path
-            key={stroke.id}
-            d={stroke.d}
-            data-draw=""
-            data-start={stroke.start.toFixed(3)}
-            strokeWidth={strokeWidth[stroke.weight]}
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </g>
+      {tones.map((tone) => (
+        <StrokeGroup key={tone} tone={tone} strokes={drawing.strokes} />
+      ))}
       {showLabels && (
         <g className="fill-muted font-mono text-[11px] tracking-[0.04em] uppercase">
           {drawing.labels.map((label) => (
@@ -67,5 +70,30 @@ export function Elevation({
         </g>
       )}
     </svg>
+  );
+}
+
+function StrokeGroup({ tone, strokes }: { tone: StrokeTone; strokes: readonly Stroke[] }) {
+  const drawn = strokes.filter((stroke) => (stroke.tone ?? "ink") === tone);
+  if (drawn.length === 0) return null;
+  return (
+    <g
+      className={toneClass[tone]}
+      stroke="currentColor"
+      fill={tone === "player" ? "currentColor" : "none"}
+      strokeLinejoin="miter"
+      strokeLinecap="round"
+    >
+      {drawn.map((stroke) => (
+        <path
+          key={stroke.id}
+          d={stroke.d}
+          data-draw=""
+          data-start={stroke.start.toFixed(3)}
+          strokeWidth={tone === "player" ? 2.4 : strokeWidth[stroke.weight]}
+          vectorEffect="non-scaling-stroke"
+        />
+      ))}
+    </g>
   );
 }
