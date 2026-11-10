@@ -1,6 +1,6 @@
 import type { WorldPatch } from "../../contract/patch.schema.js";
 import type { WorldSpec } from "../../contract/world.schema.js";
-import { describePatch } from "../studio/describe-patch.js";
+import { patchLines } from "./patch-lines.js";
 
 export function PatchLines({ patch, before }: { patch: WorldPatch; before: WorldSpec }) {
   return (
@@ -10,7 +10,7 @@ export function PatchLines({ patch, before }: { patch: WorldPatch; before: World
         {patch.operations.length === 1 ? "operation" : "operations"}
       </p>
       <ol className="space-y-1 p-3">
-        {describePatch(patch, before).map((line, index) => (
+        {patchLines(patch, before).map((line, index) => (
           <li key={`${String(index)}-${line}`} className="grid grid-cols-[3.5ch_1fr] gap-x-3">
             <span className="font-mono text-micro text-muted tabular-nums">
               {String(index + 1).padStart(3, "0")}

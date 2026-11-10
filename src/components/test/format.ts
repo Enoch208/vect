@@ -4,7 +4,7 @@ import { entityById, roomById } from "../../domain/world-lookup.js";
 import type { TestRun } from "../../store/test-store.js";
 import type { WorldVersion } from "../../store/types.js";
 import { reportStatusFor } from "../../verification/report.js";
-import type { BadgeStatus } from "../studio/status.js";
+import type { ChipStatus } from "./StatusChip.js";
 
 export function describeAction(world: WorldSpec, action: GameAction): string {
   switch (action.type) {
@@ -27,7 +27,7 @@ export function stepNumber(index: number): string {
   return String(index + 1).padStart(3, "0");
 }
 
-export function runStatus(version: WorldVersion, run: TestRun | null): BadgeStatus {
+export function runStatus(version: WorldVersion, run: TestRun | null): ChipStatus {
   if (run === null) return "UNVERIFIED";
   if (run.report !== null) return reportStatusFor(version.world, run.report);
   if (run.revisionHash !== version.revisionHash) return "UNVERIFIED";

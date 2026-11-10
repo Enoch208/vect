@@ -2,7 +2,7 @@ import type { VerificationReport } from "../../contract/report.schema.js";
 import type { WorldVersion } from "../../store/types.js";
 import { reportStatusFor, verifyReportIntegrity } from "../../verification/report.js";
 import { describeAction, shortHash, stepNumber } from "../test/format.js";
-import { StatusBadge } from "../studio/StatusBadge.js";
+import { StatusChip } from "../test/StatusChip.js";
 
 const excerptLength = 6;
 
@@ -39,7 +39,7 @@ export function ReportCard({
     <article aria-label={title} className="flex flex-col gap-3">
       <header className="flex items-center justify-between gap-3">
         <h3 className="studio-label">{title}</h3>
-        <StatusBadge status={status} />
+        <StatusChip status={status} />
       </header>
       <dl className="space-y-1 font-mono text-micro tabular-nums">
         <Row name="Revision" value={shortHash(version.revisionHash)} />

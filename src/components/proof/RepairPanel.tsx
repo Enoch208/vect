@@ -14,7 +14,7 @@ import {
 import type { TestRunner } from "../../store/test-store.js";
 import type { WorldVersion } from "../../store/types.js";
 import { reportStatusFor } from "../../verification/report.js";
-import { StatusBadge } from "../studio/StatusBadge.js";
+import { StatusChip } from "../test/StatusChip.js";
 
 const phases: Array<{ id: RepairPhase; label: string }> = [
   { id: "proposing", label: "Propose a bounded patch" },
@@ -43,7 +43,7 @@ function Attempt({ attempt }: { attempt: RepairAttempt }) {
     <li className="space-y-1 border-t border-dashed border-rule-soft py-2">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-mono text-micro text-muted">#{String(attempt.attempt)}</span>
-        <StatusBadge status={attempt.mode === "live_ai" ? "AI_REPAIR" : "RULE_REPAIR"} />
+        <StatusChip status={attempt.mode === "live_ai" ? "AI_REPAIR" : "RULE_REPAIR"} />
         <span className="font-mono text-micro uppercase text-ink">
           {outcomeWords[attempt.outcome]}
         </span>
@@ -63,7 +63,7 @@ function Outcome({
   if (result.outcome === "VERIFIED_REPAIR" && candidate !== null && candidateReport !== null) {
     return (
       <div className="space-y-3 border border-rule bg-paper-raised p-3">
-        <StatusBadge status={reportStatusFor(candidate.world, candidateReport)} />
+        <StatusChip status={reportStatusFor(candidate.world, candidateReport)} />
         <p className="text-body text-ink">{candidate.instruction}</p>
         <button
           type="button"
@@ -88,7 +88,7 @@ function Outcome({
       {candidateReport !== null && (
         <p className="flex items-center gap-2 text-body-s text-ink-72">
           Candidate run:{" "}
-          <StatusBadge
+          <StatusChip
             status={candidateReport.status === "VERIFIED" ? "ERROR" : candidateReport.status}
           />
         </p>

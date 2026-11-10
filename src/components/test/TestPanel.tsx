@@ -2,7 +2,7 @@ import type { WorldSpec } from "../../contract/world.schema.js";
 import { useTestStore, type PacedStep, type TestRun } from "../../store/test-store.js";
 import type { WorldVersion } from "../../store/types.js";
 import { verifyReportIntegrity } from "../../verification/report.js";
-import { StatusBadge } from "../studio/StatusBadge.js";
+import { StatusChip } from "./StatusChip.js";
 import { Assertions } from "./Assertions.js";
 import { EvidenceSheet } from "./EvidenceSheet.js";
 import { Findings } from "./Findings.js";
@@ -55,7 +55,7 @@ export function TestPanelView({
     <section aria-label="Agent test" className="flex flex-col gap-4">
       <header className="flex items-center justify-between gap-3">
         <h2 className="studio-label">Agent test</h2>
-        <StatusBadge status={status} />
+        <StatusChip status={status} />
       </header>
       <div className="flex flex-wrap gap-2">
         <button

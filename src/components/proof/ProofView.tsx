@@ -5,7 +5,7 @@ import { useProjectStore } from "../../store/project-store.js";
 import { useTestStore } from "../../store/test-store.js";
 import type { WorldVersion } from "../../store/types.js";
 import { reportStatusFor, verifyReportIntegrity } from "../../verification/report.js";
-import { StatusBadge } from "../studio/StatusBadge.js";
+import { StatusChip } from "../test/StatusChip.js";
 import { reportBundle } from "./bundle.js";
 import { PatchLines } from "./PatchLines.js";
 import { ReportCard } from "./ReportCard.js";
@@ -39,7 +39,7 @@ export function ProofViewLayout({
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="studio-label">Proof</h2>
         <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge status={after.origin === "live_ai" ? "AI_REPAIR" : "RULE_REPAIR"} />
+          <StatusChip status={after.origin === "live_ai" ? "AI_REPAIR" : "RULE_REPAIR"} />
           {fixed && (
             <span className="font-mono text-micro uppercase text-ink">Fixed with patch</span>
           )}
