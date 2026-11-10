@@ -1,6 +1,7 @@
 import type { Theme } from "../../contract/codes.js";
 import { palette } from "./palette.js";
 import { propVariants } from "./props/index.js";
+import type { ThemeDetail } from "./theme-detail.js";
 
 export type MaterialSpec = { color: string; roughness: number; metalness: number };
 
@@ -29,6 +30,7 @@ export type ThemeKit = {
   ink: string;
   edge: string;
   hairline: string;
+  detail: ThemeDetail;
   paper: string;
   fog: { color: string; near: number; far: number };
   lights: LightRigSpec;
@@ -73,6 +75,7 @@ const kits: Record<Theme, Omit<ThemeKit, "propVariants">> = {
     trim: matte("#D5DBE1", 0.8),
     fixture: matte("#C9D1D9", 0.7),
     hairline: "#CBD1D7",
+    detail: "railing",
     lights: { ...sharedLights, fillColor: "#E6EEF8" },
   },
   temple: {
@@ -83,6 +86,7 @@ const kits: Record<Theme, Omit<ThemeKit, "propVariants">> = {
     trim: matte("#DDD0B6", 0.85),
     fixture: matte("#D3C4A4", 0.8),
     hairline: "#D9CDB4",
+    detail: "cornice",
     lights: { ...sharedLights, keyColor: "#FFF6E6", fillColor: "#F5EEDF" },
   },
   castle: {
@@ -93,6 +97,7 @@ const kits: Record<Theme, Omit<ThemeKit, "propVariants">> = {
     trim: matte("#C9C7C0", 0.9),
     fixture: matte("#BDBBB4", 0.85),
     hairline: "#C6C5BF",
+    detail: "merlons",
     lights: { ...sharedLights, keyIntensity: 1, fillColor: "#ECECEC" },
   },
 };

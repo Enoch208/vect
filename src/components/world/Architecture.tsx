@@ -6,6 +6,7 @@ import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { architectureBlocks, blockEdges, type Block, type BlockPart } from "./blocks.js";
 import { hairlines } from "./hairlines.js";
 import { useScene } from "./scene-context.js";
+import { themeBlocks } from "./theme-detail.js";
 import type { MaterialSpec } from "./themes.js";
 
 function mergeBlocks(blocks: readonly Block[]): BufferGeometry | null {
@@ -41,7 +42,10 @@ function Shell({ geometry, spec }: { geometry: BufferGeometry | null; spec: Mate
 
 export function Architecture(): ReactElement {
   const { layout, kit } = useScene();
-  const blocks = useMemo(() => architectureBlocks(layout), [layout]);
+  const blocks = useMemo(() => {
+    const structure = architectureBlocks(layout);
+    return [...structure, ...themeBlocks(layout, structure, kit.detail)];
+  }, [layout, kit.detail]);
   const parts = useMemo(() => {
     const of = (wanted: readonly BlockPart[]) =>
       mergeBlocks(blocks.filter((block) => wanted.includes(block.part)));
