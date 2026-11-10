@@ -13,7 +13,9 @@ esac
 
 present=""
 for path in $paths; do
-  [ -e "$path" ] && present="$present $path"
+  if [ -n "$(find "$path" -type f 2>/dev/null | head -n 1)" ]; then
+    present="$present $path"
+  fi
 done
 
 printf '== %s: typecheck\n' "$lane"
