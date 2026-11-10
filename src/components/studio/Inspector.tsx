@@ -1,6 +1,6 @@
 import type { GameState } from "../../contract/game.schema.js";
 import type { WorldSpec } from "../../contract/world.schema.js";
-import { adjacentRoomIds, entitiesIn, isInteractive } from "../../domain/world-lookup.js";
+import { RoomActions } from "../game/RoomActions.js";
 import { describeEntity } from "./describe.js";
 
 export function Inspector({
@@ -21,7 +21,6 @@ export function Inspector({
   onInteract: (id: string) => void;
 }) {
   const selected = world.entities.find((entity) => entity.id === selectedId);
-  const room = world.rooms.find((item) => item.id === state.currentRoomId);
   return (
     <aside className="space-y-6 overflow-y-auto border-l border-rule p-4 text-body">
       <div className="space-y-3">
@@ -57,44 +56,8 @@ export function Inspector({
         )}
       </div>
       <div className="space-y-3 border-t border-rule pt-4">
-        <p className="studio-label text-muted">You are in</p>
-        <h2 className="font-display text-lg font-semibold uppercase">
-          {room?.label ?? state.currentRoomId}
-        </h2>
         {interactive && (
-          <>
-            <p className="studio-label text-muted">Move to</p>
-            {adjacentRoomIds(world, state.currentRoomId).map((id) => (
-              <button
-                key={id}
-                type="button"
-                className="studio-button w-full text-left"
-                disabled={state.won}
-                onClick={() => {
-                  onMove(id);
-                }}
-              >
-                {world.rooms.find((item) => item.id === id)?.label ?? id} →
-              </button>
-            ))}
-            <p className="studio-label pt-3 text-muted">Objects here</p>
-            {entitiesIn(world, state.currentRoomId)
-              .filter(isInteractive)
-              .map((entity) => (
-                <button
-                  key={entity.id}
-                  type="button"
-                  className="studio-button w-full text-left"
-                  disabled={state.won || state.collectedEntities.includes(entity.id)}
-                  onClick={() => {
-                    onInteract(entity.id);
-                  }}
-                >
-                  {entity.label}
-                  {state.collectedEntities.includes(entity.id) ? " · Used" : ""}
-                </button>
-              ))}
-          </>
+          <RoomActions world={world} state={state} onMove={onMove} onInteract={onInteract} />
         )}
       </div>
     </aside>

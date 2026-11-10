@@ -152,11 +152,15 @@ button:disabled {
     }
 
     .studio-workspace-play {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) 260px;
     }
 
     .studio-workspace-test {
       grid-template-columns: minmax(0, 1fr) 340px;
+    }
+
+    .studio-workspace-edit {
+      grid-template-columns: 340px minmax(0, 1fr);
     }
   }
 }

@@ -26,9 +26,18 @@ export function badgeFor(version: WorldVersion): BadgeStatus {
 export function versionStatus(
   version: WorldVersion,
   reports: Record<string, VerificationReport>,
+  versions: WorldVersion[] = [],
 ): BadgeStatus {
-  const report =
-    reports[version.revisionHash] ?? (version.parentHash ? reports[version.parentHash] : undefined);
-  if (report) return reportStatusFor(version.world, report);
+  let hash: string | null = version.revisionHash;
+  const visited = new Set<string>();
+  while (hash !== null && !visited.has(hash)) {
+    visited.add(hash);
+    const report = reports[hash];
+    if (report) return reportStatusFor(version.world, report);
+    hash =
+      hash === version.revisionHash
+        ? version.parentHash
+        : (versions.find((item) => item.revisionHash === hash)?.parentHash ?? null);
+  }
   return version.source === "edited" ? "DRAFT" : "UNVERIFIED";
 }

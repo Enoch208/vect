@@ -5,7 +5,7 @@ import { useProjectStore } from "../store/project-store.js";
 import { observatory } from "../fixtures/observatory.js";
 import { makeVersion } from "./versions.js";
 
-export function useProjectPersistence(openExample: boolean) {
+export function useProjectPersistence(openExample: boolean, onRestored: () => void) {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,7 +43,10 @@ export function useProjectPersistence(openExample: boolean) {
         window.history.replaceState(null, "", "/studio");
       }
       unsubscribe = useProjectStore.subscribe(scheduleSave);
-      if (useProjectStore.getState().versions.length > 0) scheduleSave();
+      if (useProjectStore.getState().versions.length > 0) {
+        scheduleSave();
+        onRestored();
+      }
     });
 
     return () => {
@@ -51,7 +54,7 @@ export function useProjectPersistence(openExample: boolean) {
       unsubscribe?.();
       if (timer !== null) clearTimeout(timer);
     };
-  }, [openExample]);
+  }, [openExample, onRestored]);
 
   return {
     notice,

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useReducer, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useReducer, useState } from "react";
 import type { GenerateRequest } from "../contract/api.schema.js";
 import { GenerationPanel } from "../components/studio/GenerationPanel.js";
 import { StudioLayout } from "../components/studio/StudioLayout.js";
@@ -26,7 +26,10 @@ export function App() {
   const active = useProjectStore(
     (project) => project.versions.find((version) => version.id === project.activeId) ?? null,
   );
-  const persistence = useProjectPersistence(initialExample);
+  const onRestored = useCallback(() => {
+    dispatch({ type: "RESTORE" });
+  }, []);
+  const persistence = useProjectPersistence(initialExample, onRestored);
 
   function commit(version: WorldVersion) {
     useProjectStore.getState().addVersion(version);
@@ -80,6 +83,7 @@ export function App() {
   }
 
   function openStudio() {
+    generation.clear();
     if (!active) {
       newWorld();
       return;
@@ -117,6 +121,11 @@ export function App() {
         <span className="studio-label text-muted">
           Studio / {entry ? "New world" : "World revision"}
         </span>
+        {entry && active && (
+          <button type="button" className="studio-label text-accent" onClick={openStudio}>
+            Back to current world →
+          </button>
+        )}
         {!entry && (
           <button
             type="button"
@@ -157,7 +166,13 @@ export function App() {
           failure={generation.failure}
         />
       ) : (
-        <StudioLayout key={active.id} version={active} screen={screen} onScreen={dispatch} />
+        <StudioLayout
+          key={active.id}
+          api={api}
+          version={active}
+          screen={screen}
+          onScreen={dispatch}
+        />
       )}
     </div>
   );

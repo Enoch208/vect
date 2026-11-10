@@ -10,7 +10,7 @@ import { StatusBadge } from "./StatusBadge.js";
 
 const examples = [
   "Build an abandoned observatory with a locked control room, a key in the library, and a portal that opens when the control switch is activated.",
-  "Create a ruined jungle temple with three connected chambers, a pressure switch, a locked stone door and a treasure objective.",
+  "Create a ruined jungle temple with four connected chambers, a pressure switch, a locked stone door and a treasure objective.",
   "Make a futuristic laboratory where the player must find an access card, disable a barrier and activate the exit.",
 ];
 

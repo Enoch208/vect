@@ -1,136 +1,107 @@
-import { useEffect, useMemo, useState } from "react";
+import { useStudioSession } from "../../app/use-studio-session.js";
 import type { Screen, ScreenEvent } from "../../app/screen.js";
-import { useMotionPreference } from "../../app/use-motion-preference.js";
-import { createInitialState } from "../../domain/step-game.js";
+import type { ApiClient } from "../../store/api-client.js";
 import { usePlayStore } from "../../store/play-store.js";
 import { useProjectStore } from "../../store/project-store.js";
-import { useTestStore } from "../../store/test-store.js";
 import type { WorldVersion } from "../../store/types.js";
-import { reportStatusFor } from "../../verification/report.js";
 import { ControlsHelp } from "../game/ControlsHelp.js";
 import { Hud } from "../game/Hud.js";
 import { WonCard } from "../game/WonCard.js";
 import { TestPanel } from "../test/TestPanel.js";
+import { RepairPanel } from "../proof/RepairPanel.js";
+import { ProofView } from "../proof/ProofView.js";
+import { reportStatusFor } from "../../verification/report.js";
 import { PromptHistory } from "./PromptHistory.js";
 import { LastReport } from "./LastReport.js";
 import { Inspector } from "./Inspector.js";
-import { SceneSurface } from "./SceneSurface.js";
+import { ScenePanel } from "./ScenePanel.js";
+import { RoomActions } from "../game/RoomActions.js";
 import { StatusBadge } from "./StatusBadge.js";
 import { Toolbar } from "./Toolbar.js";
+import { EditRoute } from "../../app/EditRoute.js";
 
 export function StudioLayout({
   version,
   screen,
   onScreen,
+  api,
 }: {
   version: WorldVersion;
   screen: Screen;
   onScreen: (event: ScreenEvent) => void;
+  api: ApiClient;
 }) {
-  const play = usePlayStore();
-  const test = useTestStore();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [helpOpen, setHelpOpen] = useState(false);
-  const motion = useMotionPreference();
-  const initial = useMemo(() => createInitialState(version.world, version.world.seed), [version]);
-  const testing =
-    screen === "testing" ||
-    screen === "verified" ||
-    screen === "failed" ||
-    screen === "inconclusive" ||
-    screen === "repairing" ||
-    screen === "retesting" ||
-    screen === "proof_view";
-  const repairing = screen === "repairing" || screen === "retesting" || screen === "proof_view";
-  const boundRun = test.run?.revisionHash === version.revisionHash ? test.run : null;
-  const current = boundRun ? test.current() : null;
-  const state = testing
-    ? (current?.state ?? initial)
-    : play.state?.worldRevisionHash === version.revisionHash
-      ? play.state
-      : initial;
-
-  useEffect(() => {
-    useTestStore.getState().bindTo(version);
-    return () => {
-      useTestStore.getState().cancel();
-    };
-  }, [version]);
-
-  useEffect(() => {
-    if (screen === "testing" && boundRun?.report)
-      onScreen({ type: "TEST_FINISHED", status: reportStatusFor(version.world, boundRun.report) });
-  }, [screen, boundRun, version, onScreen]);
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      const target = event.target;
-      if (
-        target instanceof HTMLElement &&
-        (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
-      )
-        return;
-      if (event.key === "?") {
-        event.preventDefault();
-        setHelpOpen((open) => !open);
-      }
-      if (event.key === "Escape" && screen === "playing") onScreen({ type: "RETURN" });
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [screen, onScreen]);
-
-  function syncSelection(change: () => void) {
-    useTestStore.getState().cancel();
-    change();
-    const active = useProjectStore.getState().active();
-    if (active) usePlayStore.getState().start(active.world);
-    setSelectedId(null);
-    onScreen({ type: "RETURN" });
-  }
-
-  function runTest() {
-    useTestStore.getState().start(version);
-    onScreen({ type: "TEST" });
-  }
-
-  const path =
-    testing && boundRun
-      ? [
-          initial.position,
-          ...boundRun.steps.slice(0, boundRun.shown).map((step) => step.state.position),
-        ]
-      : [];
+  const {
+    play,
+    test,
+    selectedId,
+    setSelectedId,
+    helpOpen,
+    setHelpOpen,
+    motion,
+    testing,
+    repairing,
+    editing,
+    state,
+    path,
+    syncSelection,
+    runTest,
+    changeMode,
+  } = useStudioSession(version, screen, onScreen);
+  const versions = useProjectStore((project) => project.versions);
+  const reports = useProjectStore((project) => project.reports);
+  const before = versions.find((item) => item.revisionHash === version.parentHash);
+  const repairReport = reports[version.revisionHash];
+  const toolbar = (
+    <Toolbar
+      version={version}
+      screen={screen}
+      onScreen={changeMode}
+      onSelect={(id) => {
+        syncSelection(() => {
+          useProjectStore.getState().select(id);
+        });
+      }}
+      onUndo={() => {
+        syncSelection(() => {
+          useProjectStore.getState().undo();
+        });
+      }}
+      onRedo={() => {
+        syncSelection(() => {
+          useProjectStore.getState().redo();
+        });
+      }}
+      onTest={runTest}
+      onEdit={() => {
+        test.cancel();
+        onScreen({ type: "EDIT" });
+      }}
+      onHelp={() => {
+        setHelpOpen(true);
+      }}
+      reducedMotion={motion.reducedMotion}
+      onMotion={motion.toggle}
+    />
+  );
+  if (screen === "proof_view" && before)
+    return (
+      <main>
+        {toolbar}
+        <div className="p-[26px]">
+          <ProofView
+            before={before}
+            after={version}
+            onPlay={() => {
+              onScreen({ type: "PLAY" });
+            }}
+          />
+        </div>
+      </main>
+    );
   return (
     <main>
-      <Toolbar
-        version={version}
-        screen={screen}
-        onScreen={onScreen}
-        onSelect={(id) => {
-          syncSelection(() => {
-            useProjectStore.getState().select(id);
-          });
-        }}
-        onUndo={() => {
-          syncSelection(() => {
-            useProjectStore.getState().undo();
-          });
-        }}
-        onRedo={() => {
-          syncSelection(() => {
-            useProjectStore.getState().redo();
-          });
-        }}
-        onTest={runTest}
-        onHelp={() => {
-          setHelpOpen(true);
-        }}
-        reducedMotion={motion.reducedMotion}
-        onMotion={motion.toggle}
-      />
+      {toolbar}
       {motion.notice && (
         <p
           role="status"
@@ -146,37 +117,82 @@ export function StudioLayout({
             ? "studio-workspace studio-workspace-play"
             : testing
               ? "studio-workspace studio-workspace-test"
-              : "studio-workspace"
+              : editing
+                ? "studio-workspace studio-workspace-edit"
+                : "studio-workspace"
         }
       >
-        {screen !== "playing" && !testing && <PromptHistory />}
-        <section className="relative min-w-0 overflow-hidden" aria-label="Playable world">
-          <SceneSurface
-            key={version.revisionHash}
-            world={version.world}
-            state={state}
-            actor={testing ? "agent" : "player"}
-            path={path}
-            highlightIds={testing ? test.highlightIds() : (play.lastRefused?.affectedIds ?? [])}
-            selectedEntityId={selectedId}
-            interactive={!testing && !helpOpen}
-            reducedMotion={motion.reducedMotion}
-            onMoveTo={(roomId) => {
-              play.act({ type: "MOVE_TO", roomId });
-            }}
-            onInteract={(entityId) => {
-              play.act({ type: "INTERACT", entityId });
-            }}
-            onSelect={setSelectedId}
+        {editing ? (
+          <EditRoute
+            api={api}
+            version={version}
+            selectedEntityIds={selectedId ? [selectedId] : []}
+            onScreen={onScreen}
           />
-          {!testing && state.won && <WonCard onReset={play.reset} onTest={runTest} />}
-          <p className="pointer-events-none absolute top-3 left-3 border border-rule bg-paper px-2 py-1 font-mono text-micro uppercase">
-            {testing ? "Agent run" : "WASD / arrows · E interact · ? controls"}
-          </p>
-        </section>
+        ) : (
+          screen !== "playing" && !testing && <PromptHistory />
+        )}
+        <ScenePanel
+          editing={editing}
+          scene={{
+            world: version.world,
+            state,
+            actor: testing ? "agent" : "player",
+            path,
+            highlightIds: testing ? test.highlightIds() : (play.lastRefused?.affectedIds ?? []),
+            selectedEntityId: selectedId,
+            interactive: !testing && !editing && !helpOpen,
+            reducedMotion: motion.reducedMotion,
+            onMoveTo: (roomId) => {
+              play.act({ type: "MOVE_TO", roomId });
+            },
+            onInteract: (entityId) => {
+              play.act({ type: "INTERACT", entityId });
+            },
+            onSelect: setSelectedId,
+          }}
+        >
+          {!testing && !editing && state.won && <WonCard onReset={play.reset} onTest={runTest} />}
+        </ScenePanel>
+        {screen === "playing" && !helpOpen && (
+          <aside className="space-y-5 overflow-y-auto border-l border-rule p-4 text-body">
+            <p className="text-body-s text-muted">
+              Use these buttons, or WASD / arrows to move and E to interact.
+            </p>
+            <RoomActions
+              world={version.world}
+              state={state}
+              onMove={(roomId) => {
+                play.act({ type: "MOVE_TO", roomId });
+              }}
+              onInteract={(entityId) => {
+                play.act({ type: "INTERACT", entityId });
+              }}
+            />
+            <button type="button" className="studio-button w-full" onClick={play.reset}>
+              Restart puzzle
+            </button>
+          </aside>
+        )}
         {screen !== "playing" &&
+          !editing &&
           (repairing ? (
-            <LastReport version={version} />
+            repairReport && reportStatusFor(version.world, repairReport) === "FAILED" ? (
+              <aside className="overflow-y-auto border-l border-rule p-4">
+                <RepairPanel
+                  version={version}
+                  report={repairReport}
+                  api={api}
+                  onCommitted={(candidate) => {
+                    useProjectStore.getState().addVersion(candidate);
+                    usePlayStore.getState().start(candidate.world);
+                    onScreen({ type: "SHOW_PROOF" });
+                  }}
+                />
+              </aside>
+            ) : (
+              <LastReport version={version} />
+            )
           ) : testing ? (
             <aside className="overflow-y-auto border-l border-rule p-4">
               <TestPanel

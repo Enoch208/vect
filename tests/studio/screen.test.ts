@@ -6,6 +6,14 @@ import { observatory, observatoryKeyBehindDoor } from "../../src/fixtures/observ
 import { verifyWorld } from "../../src/verification/verify.js";
 
 describe("the screen machine", () => {
+  it("restores a loaded world into a playable screen without interrupting a new prompt", () => {
+    const restored = screenReducer("empty", { type: "RESTORE" });
+    expect(restored).toBe("preview_ready");
+    expect(screenReducer(restored, { type: "PLAY" })).toBe("playing");
+    expect(screenReducer(restored, { type: "TEST" })).toBe("testing");
+    expect(screenReducer("entering_prompt", { type: "RESTORE" })).toBe("entering_prompt");
+    expect(screenReducer("generating", { type: "RETURN" })).toBe("preview_ready");
+  });
   it("generating cannot jump to verified", () => {
     expect(screenReducer("generating", { type: "TEST_FINISHED", status: "VERIFIED" })).toBe(
       "generating",
@@ -14,6 +22,7 @@ describe("the screen machine", () => {
 
   it("an edit from verified goes to editing", () => {
     expect(screenReducer("verified", { type: "EDIT" })).toBe("editing");
+    expect(screenReducer("testing", { type: "EDIT" })).toBe("editing");
   });
 
   it("only a completed test can enter verified", () => {
@@ -58,6 +67,11 @@ describe("origin and proof status", () => {
     const reports = { [report.worldRevisionHash]: report };
     expect(versionStatus(example, reports)).toBe("VERIFIED");
     expect(versionStatus(edited, reports)).toBe("STALE");
+    const later = {
+      ...makeVersion({ ...observatoryKeyBehindDoor, revision: 3 }, "edited", "live_ai", null),
+      parentHash: edited.revisionHash,
+    };
+    expect(versionStatus(later, reports, [example, edited, later])).toBe("STALE");
     expect(versionStatus(example, reports)).toBe("VERIFIED");
     expect(versionStatus(example, { [example.revisionHash]: { ...report, initialSeed: 1 } })).toBe(
       "ERROR",

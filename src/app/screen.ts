@@ -34,7 +34,8 @@ export type ScreenEvent =
         | "RETEST"
         | "SHOW_PROOF"
         | "RETURN"
-        | "NEW_WORLD";
+        | "NEW_WORLD"
+        | "RESTORE";
     }
   | { type: "TEST_FINISHED"; status: TestStatus };
 
@@ -49,6 +50,8 @@ const readyScreens: readonly Screen[] = [
 
 export function screenReducer(screen: Screen, event: ScreenEvent): Screen {
   switch (event.type) {
+    case "RESTORE":
+      return screen === "empty" ? "preview_ready" : screen;
     case "NEW_WORLD":
       return "entering_prompt";
     case "OPEN_EXAMPLE":
@@ -62,9 +65,9 @@ export function screenReducer(screen: Screen, event: ScreenEvent): Screen {
     case "GENERATION_FAILED":
       return screen === "generating" ? "entering_prompt" : screen;
     case "PLAY":
-      return readyScreens.includes(screen) ? "playing" : screen;
+      return readyScreens.includes(screen) || screen === "testing" ? "playing" : screen;
     case "EDIT":
-      return readyScreens.includes(screen) ? "editing" : screen;
+      return readyScreens.includes(screen) || screen === "testing" ? "editing" : screen;
     case "PREVIEW_PATCH":
       return screen === "editing" ? "pending_validation" : screen;
     case "APPLY_PATCH":
@@ -78,9 +81,11 @@ export function screenReducer(screen: Screen, event: ScreenEvent): Screen {
     case "RETEST":
       return screen === "repairing" ? "retesting" : screen;
     case "SHOW_PROOF":
-      return screen === "repairing" || screen === "retesting" ? "proof_view" : screen;
+      return screen === "repairing" || screen === "retesting" || readyScreens.includes(screen)
+        ? "proof_view"
+        : screen;
     case "RETURN":
-      return screen === "generating" ? screen : "preview_ready";
+      return "preview_ready";
     case "TEST_FINISHED": {
       if (screen !== "testing" && screen !== "retesting") return screen;
       if (event.status === "VERIFIED") return "verified";
