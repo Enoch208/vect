@@ -94,7 +94,7 @@ function Outcome({
         </p>
       )}
       <p className="text-body-s text-ink-72">
-        The original draft is unchanged. You can also edit it by hand.
+        The original draft is unchanged. You can also use Edit to describe a different change.
       </p>
       <button type="button" className="studio-button" onClick={onRetry}>
         Try the repair again
