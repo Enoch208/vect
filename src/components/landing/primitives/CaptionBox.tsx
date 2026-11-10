@@ -5,7 +5,7 @@ import { body, mono } from "./type.js";
 type CaptionBoxProps = {
   label: string;
   children?: ReactNode;
-  hint?: string;
+  hint?: string | undefined;
   className?: string;
 };
 
@@ -20,7 +20,7 @@ export function CaptionBox({ label, children, hint, className = "" }: CaptionBox
         </p>
         {children !== undefined && (
           <div
-            className={`${body.m} px-[calc(var(--spacing)*1.3)] pt-[calc(var(--spacing)*1.4)] text-ink-72`}
+            className={`${body.m} px-[calc(var(--spacing)*1.3)] pt-[calc(var(--spacing)*1.4)] text-ink-72 ${hint === undefined ? "pb-[calc(var(--spacing)*1.6)]" : ""}`}
           >
             {children}
           </div>

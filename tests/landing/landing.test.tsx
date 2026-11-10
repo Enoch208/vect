@@ -64,6 +64,13 @@ describe("landing shell", () => {
     expect(text).toContain("A scene that renders is not a level that works.");
     expect(text).toContain("Three.js");
     expect(text).toContain("Runs in any modern browser. No install, no account.");
+    expect(text).toContain("Put the key behind its own door");
+    expect(text).toContain("Click and drag to trace the agent");
+    expect(text).toContain("PROVEN_UNREACHABLE");
+    expect(text).toContain("In every room");
+    expect(text).toContain("The way to Control Room is locked");
+    expect(text).toContain("Entered Portal Chamber. The goal is complete");
+    expect(text).toContain("Picked up Access Key");
     expect(html).not.toMatch(/opacity:\s*0|visibility:\s*hidden|translate\(0(px)?,\s*100%\)/);
   });
 

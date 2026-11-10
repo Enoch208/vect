@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
-import { display, mono } from "./type.js";
+import { body, display, mono } from "./type.js";
 
 type CalloutProps = {
   code: string;
   children?: ReactNode;
+  detail?: string;
   className?: string;
 };
 
-export function Callout({ code, children, className = "" }: CalloutProps) {
+export function Callout({ code, children, detail, className = "" }: CalloutProps) {
   return (
     <div
       role="note"
@@ -20,6 +21,9 @@ export function Callout({ code, children, className = "" }: CalloutProps) {
         >
           {children}
         </div>
+      )}
+      {detail !== undefined && (
+        <p className={`${body.s} max-w-[calc(var(--spacing)*30)] text-paper-raised`}>{detail}</p>
       )}
     </div>
   );

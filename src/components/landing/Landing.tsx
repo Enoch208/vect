@@ -1,13 +1,16 @@
 import { useCallback, useRef, useState } from "react";
 import "lenis/dist/lenis.css";
-import { observatory } from "../../fixtures/observatory.js";
+import { observatory, observatoryKeyBehindDoor } from "../../fixtures/observatory.js";
 import { Frame } from "./primitives/Frame.js";
 import { Grain } from "./primitives/Grain.js";
 import { fluidUnit } from "./primitives/type.js";
+import { EveryRoom } from "./sections/EveryRoom.js";
+import { FaultPlan } from "./sections/FaultPlan.js";
 import { Header } from "./sections/Header.js";
 import { Hero } from "./sections/Hero.js";
 import { Loader, shouldPlayLoader } from "./sections/Loader.js";
 import { Statement } from "./sections/Statement.js";
+import { Walkthrough } from "./sections/Walkthrough.js";
 import { useIntro } from "./use-intro.js";
 import { useReveal } from "./use-reveal.js";
 import { useSmoothScroll } from "./use-smooth-scroll.js";
@@ -49,7 +52,10 @@ export function Landing(props: LandingProps) {
             onOpenStudio={props.onOpenStudio}
             onOpenExample={props.onOpenExample}
           />
+          <FaultPlan world={observatoryKeyBehindDoor} />
           <Statement world={observatory} onOpenExample={props.onOpenExample} />
+          <EveryRoom world={observatory} />
+          <Walkthrough world={observatory} twin={observatoryKeyBehindDoor} />
         </main>
       </div>
     </div>
