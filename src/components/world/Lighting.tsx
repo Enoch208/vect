@@ -1,12 +1,12 @@
 import { Environment, Lightformer } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, type ReactElement } from "react";
+import { memo, useEffect, useRef, type ReactElement } from "react";
 import type { DirectionalLight } from "three";
 import { useScene } from "./scene-context.js";
 
 const lightDistance = 90;
 
-export function Lighting({ shadowMapSize }: { shadowMapSize: number }): ReactElement {
+function LightingRig({ shadowMapSize }: { shadowMapSize: number }): ReactElement {
   const { layout, kit } = useScene();
   const { bounds } = layout;
   const light = useRef<DirectionalLight>(null);
@@ -24,6 +24,11 @@ export function Lighting({ shadowMapSize }: { shadowMapSize: number }): ReactEle
   useEffect(() => {
     const lamp = light.current;
     if (lamp === null) return;
+    const shadowMap = lamp.shadow.map;
+    if (shadowMap !== null && shadowMap.width !== shadowMapSize) {
+      shadowMap.dispose();
+      lamp.shadow.map = null;
+    }
     lamp.target.position.set(cx, 0, cz);
     lamp.target.updateMatrixWorld();
     lamp.shadow.camera.left = -reach;
@@ -36,7 +41,7 @@ export function Lighting({ shadowMapSize }: { shadowMapSize: number }): ReactEle
     lamp.shadow.needsUpdate = true;
     rebake.current = true;
     invalidate();
-  }, [cx, cz, reach, shadowMapSize, kit, invalidate]);
+  }, [cx, cz, reach, shadowMapSize, kit, layout, invalidate]);
 
   useFrame((three) => {
     three.gl.shadowMap.autoUpdate = false;
@@ -101,3 +106,5 @@ export function Lighting({ shadowMapSize }: { shadowMapSize: number }): ReactEle
     </>
   );
 }
+
+export const Lighting = memo(LightingRig);

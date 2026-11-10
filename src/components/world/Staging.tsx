@@ -1,44 +1,101 @@
+import { AdaptiveDpr, PerformanceMonitor, type PerformanceMonitorApi } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { Effects } from "./Effects.js";
+import {
+  createFrameSamples,
+  recordFrame,
+  summarizeFrames,
+  type FrameSummary,
+} from "./frame-stats.js";
 import { Lighting } from "./Lighting.js";
-import { isContinuous, qualityAt, qualityLadder, sampleRun, shouldDecline } from "./quality.js";
+import { qualityAt, qualityLadder } from "./quality.js";
 import { useScene } from "./scene-context.js";
 
-export type FrameStats = { frames: number; calls: number; quality: number };
+export type FrameStats = FrameSummary & {
+  frames: number;
+  calls: number;
+  quality: number;
+  delta: number;
+  continuous: boolean;
+};
+
+const monitorWindowMs = 250;
+const monitorIterations = 3;
+const monitorSeconds = (monitorWindowMs * monitorIterations) / 1000;
 
 export function Staging({ onFrame }: { onFrame: (stats: FrameStats) => void }): ReactElement {
   const { reducedMotion } = useScene();
   const [level, setLevel] = useState(0);
   const quality = qualityAt(level);
-  const setDpr = useThree((three) => three.setDpr);
+  const set = useThree((three) => three.set);
   const maxDpr = useThree((three) => three.viewport.initialDpr);
-  const run = useRef<number[]>([]);
+  const samples = useRef(createFrameSamples());
+  const scheduled = useRef(false);
+  const activeSeconds = useRef(0);
+  const monitor = useRef<PerformanceMonitorApi | null>(null);
 
   useEffect(() => {
-    setDpr(Math.min(maxDpr, quality.pixelRatio));
-  }, [setDpr, maxDpr, quality.pixelRatio]);
+    const factor = Math.min(maxDpr, quality.pixelRatio) / maxDpr;
+    set((three) => ({
+      performance: { ...three.performance, current: factor, min: factor, max: factor },
+    }));
+  }, [set, maxDpr, quality.pixelRatio]);
 
   useFrame((three, delta) => {
-    const info = three.gl.info;
-    onFrame({ frames: info.render.frame, calls: info.render.calls, quality: level });
-    info.autoReset = false;
-    info.reset();
-    if (!isContinuous(delta)) {
-      run.current = [];
+    three.gl.info.autoReset = false;
+    three.gl.info.reset();
+    if (scheduled.current) {
+      activeSeconds.current += delta;
       return;
     }
-    run.current.push(delta);
-    if (run.current.length < sampleRun) return;
-    const slow = shouldDecline(run.current);
-    run.current = [];
-    if (slow && level < qualityLadder.length - 1) setLevel(level + 1);
-  }, -1);
+    activeSeconds.current = 0;
+    const api = monitor.current;
+    if (api === null) return;
+    api.frames = [];
+    api.averages = [];
+    api.index = 0;
+  }, -2);
+
+  useFrame((three, delta) => {
+    const { render } = three.gl.info;
+    recordFrame(samples.current, {
+      delta,
+      continuous: scheduled.current,
+      calls: render.calls,
+    });
+    onFrame({
+      ...summarizeFrames(samples.current),
+      frames: render.frame,
+      calls: render.calls,
+      quality: level,
+      delta,
+      continuous: scheduled.current,
+    });
+    scheduled.current = three.internal.frames > 1;
+  }, 3);
+
+  const observe = (api: PerformanceMonitorApi): void => {
+    monitor.current = api;
+  };
 
   return (
     <>
+      <PerformanceMonitor
+        ms={monitorWindowMs}
+        iterations={monitorIterations}
+        bounds={() => [45, 65]}
+        onChange={observe}
+        onIncline={observe}
+        onDecline={(api) => {
+          observe(api);
+          if (activeSeconds.current < monitorSeconds) return;
+          setLevel((previous) => Math.min(previous + 1, qualityLadder.length - 1));
+        }}
+      />
+      <AdaptiveDpr />
       <Lighting shadowMapSize={quality.shadowMapSize} />
-      <Effects occlusion={quality.occlusion && !reducedMotion} />
+      {!reducedMotion && <Effects occlusion={quality.occlusion} />}
     </>
   );
 }

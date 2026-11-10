@@ -7,10 +7,6 @@ export const qualityLadder: readonly Quality[] = [
   { occlusion: false, shadowMapSize: 1024, pixelRatio: 1 },
 ];
 
-export const sampleRun = 40;
-const slowestFrame = 1 / 45;
-const longestGap = 0.1;
-
 export function qualityAt(level: number): Quality {
   const last = qualityLadder.length - 1;
   return (
@@ -20,15 +16,4 @@ export function qualityAt(level: number): Quality {
       pixelRatio: 1,
     }
   );
-}
-
-export function isContinuous(delta: number): boolean {
-  return delta > 0 && delta < longestGap;
-}
-
-export function shouldDecline(frameTimes: readonly number[]): boolean {
-  if (frameTimes.length < sampleRun) return false;
-  const sorted = [...frameTimes].sort((a, b) => a - b);
-  const median = sorted[Math.floor(sorted.length / 2)] ?? 0;
-  return median > slowestFrame;
 }

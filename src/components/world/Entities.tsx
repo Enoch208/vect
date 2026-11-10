@@ -1,9 +1,12 @@
-import { useMemo, type ReactElement } from "react";
+import { useEffect, useMemo, type ReactElement } from "react";
+import { RingGeometry } from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import type { GameState } from "../../contract/game.schema.js";
 import type { WorldEntity, WorldSpec } from "../../contract/world.schema.js";
 import { EntityMesh } from "./EntityMesh.js";
 import { isScenery } from "./Props.js";
 import type { SceneLayout } from "./layout-types.js";
+import { Flat } from "./paint.js";
 import { useScene } from "./scene-context.js";
 import { isUsed, switchIsOn } from "./truth.js";
 
@@ -22,6 +25,38 @@ function blockerTurn(layout: SceneLayout, entity: WorldEntity): number {
   return opening?.side === "n" || opening?.side === "s" ? Math.PI / 2 : 0;
 }
 
+function PairRings({ world, state }: Pick<EntitiesProps, "world" | "state">): ReactElement | null {
+  const { layout, kit, pairing } = useScene();
+  const geometry = useMemo(() => {
+    const rings = layout.entities.flatMap((placed) => {
+      const kind = world.entities.find((entity) => entity.id === placed.id)?.kind;
+      const gone = kind === "key" && isUsed(state, placed.id);
+      if (!pairing.entityTags.has(placed.id) || gone || placed.footprint === 0) return [];
+      return [
+        new RingGeometry(placed.footprint, placed.footprint + 0.08, 48)
+          .rotateX(-Math.PI / 2)
+          .translate(placed.position[0], 0.07, placed.position[2]),
+      ];
+    });
+    if (rings.length === 0) return null;
+    const merged = mergeGeometries(rings);
+    for (const ring of rings) ring.dispose();
+    return merged;
+  }, [layout, world, state, pairing]);
+  useEffect(
+    () => () => {
+      geometry?.dispose();
+    },
+    [geometry],
+  );
+  if (geometry === null) return null;
+  return (
+    <mesh geometry={geometry}>
+      <Flat color={kit.accent} />
+    </mesh>
+  );
+}
+
 export function Entities(props: EntitiesProps): ReactElement {
   const { world, state, highlightIds, selectedEntityId, onInteract, onSelect } = props;
   const { layout } = useScene();
@@ -32,6 +67,7 @@ export function Entities(props: EntitiesProps): ReactElement {
   const spots = useMemo(() => new Map(layout.entities.map((item) => [item.id, item])), [layout]);
   return (
     <group>
+      <PairRings world={world} state={state} />
       {world.entities.map((entity, index) => {
         const placed = spots.get(entity.id);
         if (placed === undefined || gateIds.has(entity.id) || isScenery(world, entity.id))

@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode, Ref } from "react";
+import type { ToneMappingMode } from "postprocessing";
 import type { WebGLRenderTarget } from "three";
 
 declare module "@react-three/postprocessing" {
@@ -34,4 +35,5 @@ declare module "@react-three/postprocessing" {
   }): ReactElement;
 
   export function SMAA(props: { opacity?: number }): ReactElement;
+  export function ToneMapping(props: { mode?: ToneMappingMode }): ReactElement;
 }

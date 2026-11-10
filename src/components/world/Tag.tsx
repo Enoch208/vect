@@ -3,8 +3,9 @@ import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef, type ReactElement } from "react";
 import { Euler, type Group } from "three";
+import { badgeGeometry } from "./badge-geometry.js";
 import { cameraPitch, cameraYaw } from "./camera-math.js";
-import { labelSize, labelType } from "./label-layout.js";
+import { badgeMarks, labelSize, labelType } from "./label-layout.js";
 import { labelCharacters, plainLabel, useScene } from "./scene-context.js";
 
 export type TagTone = "ink" | "muted" | "accent" | "positive" | "alert" | "actor";
@@ -22,35 +23,7 @@ export type TagProps = {
 const facing = new Euler(-cameraPitch, cameraYaw, 0, "YXZ");
 const clearance = 7;
 const chipPad: [number, number] = [7, 4];
-
-function Glyphs(props: {
-  text: string;
-  color: string;
-  y: number;
-  anchorY: "top" | "bottom" | "middle";
-  halo: string | null;
-}): ReactElement {
-  return (
-    <Text
-      font={monoWoff}
-      characters={labelCharacters}
-      fontSize={labelType.size}
-      lineHeight={labelType.lineHeight}
-      letterSpacing={0.04}
-      color={props.color}
-      anchorX="center"
-      anchorY={props.anchorY}
-      textAlign="center"
-      position={[0, props.y, 0]}
-      outlineWidth={props.halo === null ? 0 : 2.4}
-      outlineColor={props.halo ?? props.color}
-      renderOrder={12}
-    >
-      <meshBasicMaterial toneMapped={false} depthTest={false} depthWrite={false} />
-      {props.text}
-    </Text>
-  );
-}
+const row = labelType.size * labelType.lineHeight;
 
 export function Tag(props: TagProps): ReactElement {
   const { anchor, lines, badge = null, tone = "ink", below = false, lift = 0, shift = 0 } = props;
@@ -72,55 +45,57 @@ export function Tag(props: TagProps): ReactElement {
     alert: kit.paper,
     actor: kit.paper,
   };
-  const text = labelSize(lines);
-  const marks = badge === null ? [] : badge.split("+");
-  const base = (below ? -1 : 1) * (lift + clearance + (filled ? chipPad[1] : 0));
-  const middle = base + (below ? -text.height / 2 : text.height / 2);
-  const badgeY = below ? base - text.height - labelType.badge / 2 : base + text.height + 11;
+  const marks = badgeMarks(badge);
+  const rows = marks.length === 0 ? lines : [marks.join(" "), ...lines];
+  const size = labelSize(lines, badge);
+  const side = below ? -1 : 1;
+  const reach = lift + clearance + (filled ? chipPad[1] : 0);
+  const middle = side * (reach + size.height / 2);
+  const top = middle + size.height / 2;
   return (
     <group position={anchor} rotation={facing}>
       <group ref={scaled} scale={0.05}>
         {lift > 0 ? (
-          <mesh position={[0, ((below ? -1 : 1) * (lift + clearance)) / 2, 0]} renderOrder={11}>
+          <mesh position={[0, (side * (lift + clearance)) / 2, 0]} renderOrder={11}>
             <planeGeometry args={[1, lift + clearance]} />
             <meshBasicMaterial color={kit.edge} toneMapped={false} depthTest={false} />
           </mesh>
         ) : null}
         <group position={[shift, 0, 0]}>
-          {filled && lines.length > 0 ? (
+          {filled ? (
             <mesh position={[0, middle, 0]} renderOrder={11}>
-              <planeGeometry args={[text.width + chipPad[0] * 2, text.height + chipPad[1] * 2]} />
+              <planeGeometry args={[size.width + chipPad[0] * 2, size.height + chipPad[1] * 2]} />
               <meshBasicMaterial color={fill} toneMapped={false} depthTest={false} />
             </mesh>
           ) : null}
-          {lines.length > 0 ? (
-            <Glyphs
-              text={plainLabel(lines.join("\n"))}
-              color={colors[tone]}
-              y={middle}
-              anchorY="middle"
-              halo={filled ? null : kit.paper}
-            />
-          ) : null}
           {marks.map((mark, index) => (
-            <group key={mark} position={[(index - (marks.length - 1) / 2) * 23, badgeY, 0]}>
-              <mesh renderOrder={11}>
-                <circleGeometry args={[10, 32]} />
-                <meshBasicMaterial color={kit.paper} toneMapped={false} depthTest={false} />
-              </mesh>
-              <mesh renderOrder={11}>
-                <ringGeometry args={[8.6, 10, 40]} />
-                <meshBasicMaterial color={kit.accent} toneMapped={false} depthTest={false} />
-              </mesh>
-              <Glyphs
-                text={plainLabel(mark)}
-                color={kit.accent}
-                y={0}
-                anchorY="middle"
-                halo={null}
-              />
-            </group>
+            <mesh
+              key={mark}
+              renderOrder={11}
+              position={[(index - (marks.length - 1) / 2) * labelType.markPitch, top - row / 2, 0]}
+              geometry={badgeGeometry(filled ? fill : kit.paper, filled ? kit.paper : kit.accent)}
+            >
+              <meshBasicMaterial vertexColors toneMapped={false} depthTest={false} />
+            </mesh>
           ))}
+          <Text
+            font={monoWoff}
+            characters={labelCharacters}
+            fontSize={labelType.size}
+            lineHeight={labelType.lineHeight}
+            letterSpacing={0.04}
+            color={colors[tone]}
+            anchorX="center"
+            anchorY="middle"
+            textAlign="center"
+            position={[0, middle, 0]}
+            outlineWidth={filled ? 0 : 2.4}
+            outlineColor={kit.paper}
+            renderOrder={12}
+          >
+            <meshBasicMaterial toneMapped={false} depthTest={false} depthWrite={false} />
+            {plainLabel(rows.join("\n"))}
+          </Text>
         </group>
       </group>
     </group>

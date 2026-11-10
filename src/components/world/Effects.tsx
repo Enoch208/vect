@@ -1,5 +1,12 @@
 import { useFrame } from "@react-three/fiber";
-import { EffectComposer, N8AO, SMAA, type OcclusionPass } from "@react-three/postprocessing";
+import {
+  EffectComposer,
+  N8AO,
+  SMAA,
+  ToneMapping,
+  type OcclusionPass,
+} from "@react-three/postprocessing";
+import { ToneMappingMode } from "postprocessing";
 import { useRef, type ReactElement } from "react";
 import {
   FloatType,
@@ -58,6 +65,7 @@ export function Effects({ occlusion }: { occlusion: boolean }): ReactElement {
       ) : (
         <></>
       )}
+      <ToneMapping mode={ToneMappingMode.NEUTRAL} />
       <SMAA />
     </EffectComposer>
   );

@@ -1,6 +1,13 @@
 import { projectToView } from "./camera-math.js";
 
-export const labelType = { size: 11, advance: 0.64, lineHeight: 1.25, gap: 5, badge: 22 } as const;
+export const labelType = {
+  size: 11,
+  advance: 0.64,
+  lineHeight: 1.25,
+  gap: 5,
+  markPitch: 21.12,
+  markSize: 20,
+} as const;
 export const maxLabelChars = 22;
 
 export type LabelSpec = {
@@ -39,17 +46,24 @@ export function wrapLabel(text: string, maxChars: number = maxLabelChars): strin
   return lines;
 }
 
+export function badgeMarks(badge: string | null): string[] {
+  return badge === null ? [] : badge.split("+");
+}
+
 export function labelSize(
   lines: readonly string[],
   badge: string | null = null,
 ): { width: number; height: number } {
+  const marks = badgeMarks(badge).length;
   const longest = Math.max(0, ...lines.map((line) => line.length));
   const text = longest * labelType.size * labelType.advance;
-  const marks = badge === null ? 0 : badge.split("+").length;
+  const rows = lines.length + (marks > 0 ? 1 : 0);
   return {
-    width: Math.max(text, marks * (labelType.badge + 1)),
-    height:
-      lines.length * labelType.size * labelType.lineHeight + (badge === null ? 0 : labelType.badge),
+    width: Math.max(text, marks * labelType.markPitch),
+    height: Math.max(
+      rows * labelType.size * labelType.lineHeight,
+      marks > 0 ? labelType.markSize : 0,
+    ),
   };
 }
 

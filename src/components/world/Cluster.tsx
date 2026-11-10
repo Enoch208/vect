@@ -11,7 +11,7 @@ type ClusterProps = {
 };
 
 export function Cluster(props: ClusterProps): ReactElement {
-  const { parts, children, position = [0, 0, 0], rotation = [0, 0, 0], shadow = true } = props;
+  const { parts, children, position = [0, 0, 0], rotation = [0, 0, 0], shadow = false } = props;
   return (
     <mesh
       geometry={clusterGeometry(parts)}

@@ -1,10 +1,11 @@
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import { useMemo, type ReactElement } from "react";
+import { useContext, useMemo, type ReactElement } from "react";
 import type { GameState } from "../../contract/game.schema.js";
 import type { WorldSpec } from "../../contract/world.schema.js";
-import { fitMargin, fitView, followZoom } from "./camera-math.js";
+import { fitMargin, fitLayout, followZoom } from "./camera-math.js";
 import { placeLabels } from "./label-layout.js";
 import { actorNoteId, sceneNotes } from "./label-specs.js";
+import { PresentationContext } from "./presentation.js";
 import { useScene } from "./scene-context.js";
 import { Tag } from "./Tag.js";
 
@@ -20,10 +21,11 @@ type LabelsProps = {
 
 export function Labels(props: LabelsProps): ReactElement {
   const { world, state, highlightIds, selectedEntityId, actor } = props;
-  const { layout, pairing, overlay } = useScene();
+  const { layout, pairing, overlay, reducedMotion } = useScene();
+  const presentation = useContext(PresentationContext);
   const size = useThree((three) => three.size);
-  const fit = useMemo(() => fitView(layout.bounds, size, fitMargin).zoom, [layout.bounds, size]);
-  const zoom = Math.max(fit, followZoom);
+  const fit = useMemo(() => fitLayout(layout, size, fitMargin).zoom, [layout, size]);
+  const zoom = presentation.view === "follow" ? Math.max(fit, followZoom) : fit;
   const notes = useMemo(
     () =>
       placeLabels(
@@ -43,6 +45,7 @@ export function Labels(props: LabelsProps): ReactElement {
   );
   useFrame((three) => {
     const cleared = three.gl.autoClear;
+    if (reducedMotion) three.gl.render(three.scene, three.camera);
     three.gl.autoClear = false;
     three.gl.clearDepth();
     three.gl.render(overlay, three.camera);
@@ -51,7 +54,7 @@ export function Labels(props: LabelsProps): ReactElement {
   return createPortal(
     <group>
       {notes
-        .filter((note) => note.id !== actorNoteId)
+        .filter((note) => presentation.labels && note.id !== actorNoteId)
         .map((note) => (
           <Tag
             key={note.id}

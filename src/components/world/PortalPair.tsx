@@ -35,7 +35,7 @@ function Pad({ at, closed, passed, onPass }: PadProps): ReactElement {
         </mesh>
       ))}
       {closed ? (
-        <mesh position={[0, 0.5, 0]} castShadow>
+        <mesh position={[0, 0.5, 0]}>
           <cylinderGeometry args={[0.5, 0.5, 0.74, 6, 1, true]} />
           <meshStandardMaterial color={kit.gateClosed} roughness={0.6} wireframe />
         </mesh>

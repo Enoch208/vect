@@ -1,13 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { qualityAt, qualityLadder } from "../../src/components/world/quality.js";
 import {
-  isContinuous,
-  qualityAt,
-  qualityLadder,
-  sampleRun,
-  shouldDecline,
-} from "../../src/components/world/quality.js";
-
-const run = (frameTime: number) => Array.from({ length: sampleRun }, () => frameTime);
+  createFrameSamples,
+  recordFrame,
+  summarizeFrames,
+} from "../../src/components/world/frame-stats.js";
 
 describe("quality ladder", () => {
   it("drops ambient occlusion first, then shadow resolution, then pixel ratio", () => {
@@ -24,16 +21,48 @@ describe("quality ladder", () => {
     expect(qualityAt(99)).toEqual(qualityLadder.at(-1));
     expect(qualityAt(-3)).toEqual(qualityLadder[0]);
   });
+});
 
-  it("declines only on a full run of frames slower than 45 per second", () => {
-    expect(shouldDecline(run(1 / 60))).toBe(false);
-    expect(shouldDecline(run(1 / 30))).toBe(true);
-    expect(shouldDecline(run(1 / 30).slice(1))).toBe(false);
+describe("frame measurements", () => {
+  it("excludes idle wakeups but retains slow frames during a scheduled animation", () => {
+    const samples = createFrameSamples();
+    recordFrame(samples, { delta: 2.5, continuous: false, calls: 10 });
+    expect(summarizeFrames(samples).fps).toBeNull();
+    recordFrame(samples, { delta: 1 / 60, continuous: true, calls: 20 });
+    recordFrame(samples, { delta: 0.2, continuous: true, calls: 30 });
+    expect(summarizeFrames(samples)).toMatchObject({ activeSamples: 2, fpsMin: 5 });
   });
 
-  it("ignores the long gap after an idle scene wakes up", () => {
-    expect(isContinuous(1 / 60)).toBe(true);
-    expect(isContinuous(2.5)).toBe(false);
-    expect(shouldDecline([...run(1 / 60).slice(3), 0.05, 0.05, 0.05])).toBe(false);
+  it("records every scene frame and draw-call peak without confusing render passes with frames", () => {
+    const samples = createFrameSamples();
+    for (const calls of [50, 175, 60]) {
+      recordFrame(samples, { delta: 1 / 60, continuous: true, calls });
+    }
+    expect(summarizeFrames(samples)).toMatchObject({
+      sceneFrames: 3,
+      maxCalls: 175,
+      activeSamples: 3,
+      fps: 60,
+      fpsMin: 60,
+      fpsP5: 60,
+    });
+  });
+
+  it("keeps actual minimum distinct from the fifth percentile and median", () => {
+    const samples = createFrameSamples();
+    for (let index = 0; index < 100; index += 1) {
+      const fps = index === 0 ? 10 : index < 10 ? 30 : 60;
+      recordFrame(samples, { delta: 1 / fps, continuous: true, calls: 1 });
+    }
+    expect(summarizeFrames(samples)).toMatchObject({ fpsMin: 10, fpsP5: 30, fps: 60 });
+  });
+
+  it("bounds retained frame times during long sessions", () => {
+    const samples = createFrameSamples();
+    for (let index = 0; index < 8000; index += 1) {
+      recordFrame(samples, { delta: 1 / 60, continuous: true, calls: 1 });
+    }
+    expect(samples.times.length).toBeLessThanOrEqual(7200);
+    expect(summarizeFrames(samples)).toMatchObject({ sceneFrames: 8000, activeSamples: 7200 });
   });
 });

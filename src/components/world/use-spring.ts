@@ -26,7 +26,6 @@ export function useSpring(
     if (reducedMotion) snapSpring(current, target);
     const resting = reducedMotion || stepSpring(current, target, delta, config);
     apply(current.value, current.velocity);
-    three.gl.shadowMap.needsUpdate = true;
     if (resting) active.current = false;
     else three.invalidate();
   });

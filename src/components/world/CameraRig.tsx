@@ -1,16 +1,17 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useContext, useEffect, useMemo, useRef } from "react";
 import { OrthographicCamera } from "three";
 import {
   cameraDistance,
   clampToBounds,
   fitMargin,
-  fitView,
+  fitLayout,
   followZoom,
   groundPoint,
   viewDirection,
 } from "./camera-math.js";
 import type { Point } from "./layout-types.js";
+import { PresentationContext } from "./presentation.js";
 import { useScene } from "./scene-context.js";
 import { glide, snapSpring, stepSpring, type Spring } from "./spring.js";
 
@@ -22,10 +23,11 @@ type Rig = { x: Spring; z: Spring; zoom: Spring };
 
 export function CameraRig({ focus }: { focus: Point }): null {
   const { layout, reducedMotion } = useScene();
+  const { view } = useContext(PresentationContext);
   const size = useThree((three) => three.size);
   const invalidate = useThree((three) => three.invalidate);
   const canvas = useThree((three) => three.gl.domElement);
-  const fit = useMemo(() => fitView(layout.bounds, size, fitMargin), [layout.bounds, size]);
+  const fit = useMemo(() => fitLayout(layout, size, fitMargin), [layout, size]);
   const rig = useRef<Rig | null>(null);
   const user = useRef({ zoom: 1, pan: [0, 0] as Point, following: false });
   const active = useRef(true);
@@ -38,6 +40,12 @@ export function CameraRig({ focus }: { focus: Point }): null {
   }, [focus, fit, invalidate]);
 
   useEffect(() => {
+    if (view !== "follow") {
+      user.current.following = false;
+      active.current = true;
+      invalidate();
+      return;
+    }
     user.current.following = reducedMotion;
     const timer = window.setTimeout(() => {
       user.current.following = true;
@@ -47,7 +55,7 @@ export function CameraRig({ focus }: { focus: Point }): null {
     return () => {
       window.clearTimeout(timer);
     };
-  }, [layout, reducedMotion, invalidate]);
+  }, [layout, reducedMotion, view, invalidate]);
 
   useEffect(() => {
     const wake = () => {
@@ -101,6 +109,16 @@ export function CameraRig({ focus }: { focus: Point }): null {
     const settledZ = stepSpring(state.z, tz, delta, glide);
     const settledZoom = stepSpring(state.zoom, zoomTarget, delta, glide);
     const camera = three.camera;
+    if (view === "elevation" && camera instanceof OrthographicCamera) {
+      const x = (layout.bounds.minX + layout.bounds.maxX) / 2;
+      const z = (layout.bounds.minZ + layout.bounds.maxZ) / 2;
+      camera.position.set(x, 1, z + cameraDistance);
+      camera.lookAt(x, 1, z);
+      camera.zoom = (size.width * fitMargin) / (layout.bounds.maxX - layout.bounds.minX);
+      camera.updateProjectionMatrix();
+      active.current = false;
+      return;
+    }
     camera.position.set(
       state.x.value + viewDirection[0] * cameraDistance,
       viewDirection[1] * cameraDistance,

@@ -1,5 +1,5 @@
 import { useRef, type ReactElement } from "react";
-import type { Group } from "three";
+import type { Group, MeshBasicMaterial } from "three";
 import type { EntityKind } from "../../contract/codes.js";
 import { cameraYaw } from "./camera-math.js";
 import { Cluster } from "./Cluster.js";
@@ -19,6 +19,7 @@ const lidSwing = -1.2;
 function KeyShape({ used }: ShapeProps): ReactElement {
   const { kit, reducedMotion } = useScene();
   const token = useRef<Group>(null);
+  const material = useRef<MeshBasicMaterial>(null);
   useSpring(
     used ? 1 : 0,
     reducedMotion,
@@ -29,6 +30,7 @@ function KeyShape({ used }: ShapeProps): ReactElement {
       node.position.y = tokenHeight + taken * 1.1;
       node.rotation.y = cameraYaw + taken * 5;
       node.scale.setScalar(left);
+      if (material.current !== null) material.current.opacity = left;
       node.visible = left > 0.02;
     },
     glide,
@@ -45,8 +47,15 @@ function KeyShape({ used }: ShapeProps): ReactElement {
         scale={used ? 0 : 1}
         visible={!used}
       >
-        <Cluster parts={keyToken}>
-          <Flat color={kit.accent} />
+        <Cluster parts={keyToken} shadow={false}>
+          <meshBasicMaterial
+            ref={material}
+            color={kit.accent}
+            toneMapped={false}
+            transparent
+            opacity={used ? 0 : 1}
+            depthWrite={false}
+          />
         </Cluster>
       </group>
     </group>
@@ -71,10 +80,10 @@ function SwitchShape({ on }: ShapeProps): ReactElement {
         <InkEdges />
       </Cluster>
       <group ref={lever} position={[0, 0.62, 0]} rotation={[0, 0, on ? -leverThrow : leverThrow]}>
-        <Cluster parts={leverArm}>
+        <Cluster parts={leverArm} shadow={false}>
           <Flat color={kit.ink} />
         </Cluster>
-        <mesh position={[0, 0.74, 0]} castShadow>
+        <mesh position={[0, 0.74, 0]}>
           <sphereGeometry args={[0.16, 18, 14]} />
           <Flat color={on ? kit.ink : kit.accent} />
         </mesh>

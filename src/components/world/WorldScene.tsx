@@ -73,7 +73,15 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
     node.dataset["worldScene"] = "ready";
     node.dataset["frames"] = String(stats.frames);
     node.dataset["quality"] = String(stats.quality);
-    if (stats.calls > 0) node.dataset["calls"] = String(stats.calls);
+    node.dataset["sceneFrames"] = String(stats.sceneFrames);
+    node.dataset["calls"] = String(stats.calls);
+    node.dataset["maxCalls"] = String(stats.maxCalls);
+    node.dataset["activeSamples"] = String(stats.activeSamples);
+    node.dataset["frameDelta"] = String(stats.delta);
+    node.dataset["frameContinuous"] = String(stats.continuous);
+    if (stats.fps !== null) node.dataset["fps"] = String(stats.fps);
+    if (stats.fpsMin !== null) node.dataset["fpsMin"] = String(stats.fpsMin);
+    if (stats.fpsP5 !== null) node.dataset["fpsP5"] = String(stats.fpsP5);
   }, []);
   useWorldControls(props, layout);
   return (
@@ -104,7 +112,7 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
           if (interactive) props.onSelect(null);
         }}
       >
-        <color attach="background" args={[scene.kit.paper]} />
+        <fog attach="fog" args={[scene.kit.fog.color, scene.kit.fog.near, scene.kit.fog.far]} />
         <SceneContext value={scene}>
           <Suspense fallback={null}>
             <Staging onFrame={report} />

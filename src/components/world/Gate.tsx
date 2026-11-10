@@ -49,14 +49,10 @@ function DoorLeaf({ gate, highlighted }: GateProps): ReactElement {
     <group position={[-dims.wallThickness / 2, 0, -leafWidth / 2]}>
       <group ref={hinge} rotation={[0, closed ? 0 : openAngle, 0]}>
         <group ref={shake}>
-          <mesh position={[0, leafHeight / 2 + 0.02, leafWidth / 2]} castShadow>
+          <mesh position={[0, leafHeight / 2 + 0.02, leafWidth / 2]}>
             <boxGeometry args={[leafThickness, leafHeight, leafWidth]} />
             {closed ? <Flat color={kit.gateClosed} /> : <Matte />}
             <InkEdges strong={closed} />
-          </mesh>
-          <mesh position={[leafThickness / 2 + 0.035, leafHeight * 0.5, leafWidth - 0.32]}>
-            <boxGeometry args={[0.07, 0.36, 0.12]} />
-            <Flat color={closed ? kit.paper : kit.ink} />
           </mesh>
         </group>
       </group>

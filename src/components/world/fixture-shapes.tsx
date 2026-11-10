@@ -64,11 +64,11 @@ function CheckpointShape({ used }: ShapeProps): ReactElement {
       <Cluster parts={checkpointBase}>
         <Matte />
       </Cluster>
-      <Cluster parts={checkpointPole}>
+      <Cluster parts={checkpointPole} shadow={false}>
         <Flat color={kit.ink} />
       </Cluster>
       <group ref={flag} position={[0.27, used ? flagHigh : flagLow, 0]}>
-        <Cluster parts={checkpointFlag}>
+        <Cluster parts={checkpointFlag} shadow={false}>
           <Flat color={used ? kit.ink : kit.accent} />
         </Cluster>
       </group>

@@ -2,6 +2,19 @@ import type { Part } from "./parts.js";
 
 const half = Math.PI / 2;
 
+export const playerBody: readonly Part[] = [
+  { shape: "cylinder", size: [0.31, 0.31, 0.7], at: [0, 0.78, 0] },
+  { shape: "sphere", size: [0.31, 0, 0], at: [0, 0.43, 0] },
+  { shape: "sphere", size: [0.31, 0, 0], at: [0, 1.13, 0] },
+  { shape: "sphere", size: [0.26, 0, 0], at: [0, 1.76, 0] },
+];
+
+export const agentBody: readonly Part[] = [
+  { shape: "cone", size: [0.4, 1, 0], at: [0, 0.5, 0], turn: [0, Math.PI / 4, 0], sides: 4 },
+  { shape: "cone", size: [0.3, 0.3, 0], at: [0, 1.43, 0], sides: 4 },
+  { shape: "cone", size: [0.3, 0.3, 0], at: [0, 1.13, 0], turn: [Math.PI, 0, 0], sides: 4 },
+];
+
 export const keyToken: readonly Part[] = [
   { shape: "torus", size: [0.2, 0.065, 0], at: [-0.2, 0, 0] },
   { shape: "box", size: [0.56, 0.1, 0.1], at: [0.26, 0, 0] },

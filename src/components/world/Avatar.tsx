@@ -1,9 +1,10 @@
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, type ReactElement } from "react";
+import { useContext, useEffect, useRef, type ReactElement } from "react";
 import type { Group } from "three";
 import type { GameState } from "../../contract/game.schema.js";
 import { Figure } from "./Figure.js";
 import type { Point } from "./layout-types.js";
+import { PresentationContext } from "./presentation.js";
 import { useScene } from "./scene-context.js";
 import { stepSpring, type Spring, type SpringConfig } from "./spring.js";
 import { Tag } from "./Tag.js";
@@ -30,6 +31,7 @@ type Walk = { route: Route; travelled: Spring };
 
 export function Avatar({ anchor, state, openConnectionIds, actor }: AvatarProps): ReactElement {
   const { layout, reducedMotion, overlay } = useScene();
+  const presentation = useContext(PresentationContext);
   const invalidate = useThree((three) => three.invalidate);
   const body = useRef<Group>(null);
   const lean = useRef<Group>(null);
@@ -80,7 +82,6 @@ export function Avatar({ anchor, state, openConnectionIds, actor }: AvatarProps)
       chip.current.position.copy(node.position);
       chip.current.visible = node.visible;
     }
-    three.gl.shadowMap.needsUpdate = true;
     if (resting) {
       active.current = false;
       walk.current = null;
@@ -96,12 +97,13 @@ export function Avatar({ anchor, state, openConnectionIds, actor }: AvatarProps)
           <Figure actor={actor} />
         </group>
       </group>
-      {createPortal(
-        <group ref={chip} position={[anchor[0], floorLift, anchor[1]]}>
-          <Tag anchor={[0, actorHeight[actor], 0]} lines={[actorName[actor]]} tone="actor" />
-        </group>,
-        overlay,
-      )}
+      {presentation.labels &&
+        createPortal(
+          <group ref={chip} position={[anchor[0], floorLift, anchor[1]]}>
+            <Tag anchor={[0, actorHeight[actor], 0]} lines={[actorName[actor]]} tone="actor" />
+          </group>,
+          overlay,
+        )}
     </>
   );
 }
