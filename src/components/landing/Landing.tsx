@@ -43,7 +43,10 @@ export function Landing(props: LandingProps) {
   useReveal(root);
   useIntro(root, phase !== "loading");
   return (
-    <div ref={root} className={`${fluidUnit} relative min-h-dvh bg-paper px-[8px] text-ink`}>
+    <div
+      ref={root}
+      className={`${fluidUnit} relative min-h-dvh overflow-x-clip bg-paper px-[8px] text-ink`}
+    >
       <Frame />
       <Grain />
       {withLoader && phase !== "ready" && (

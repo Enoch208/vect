@@ -20,7 +20,7 @@ export function Sequence({ items, pending = "faint", className = "" }: SequenceP
         <li
           key={item.index}
           data-done={item.done}
-          className={`whitespace-nowrap transition-colors duration-300 ${item.done ? "text-ink" : pendingClass}`}
+          className={`transition-colors lg:whitespace-nowrap duration-300 ${item.done ? "text-ink" : pendingClass}`}
         >
           {sequenceIndex(item.index)} {item.label}
         </li>

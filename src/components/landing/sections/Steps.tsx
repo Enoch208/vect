@@ -10,11 +10,11 @@ import { stepsFor, type Step } from "./step-content.js";
 function StepBar({ step, active }: { step: Step; active: boolean }) {
   return (
     <div
-      className={`flex min-h-[calc(var(--spacing)*5.8)] items-center gap-6 bg-ink px-[12px] text-paper-raised transition-opacity duration-500 lg:px-3 ${active ? "opacity-100" : "opacity-0"}`}
+      className={`flex min-h-[calc(var(--spacing)*5.8)] flex-col items-start gap-2 bg-ink px-[12px] py-[calc(var(--spacing)*1.6)] text-paper-raised lg:flex-row lg:items-center lg:gap-6 lg:py-0 transition-opacity duration-500 lg:px-3 ${active ? "opacity-100" : "opacity-0"}`}
     >
-      <span className={`${display.s} w-[calc(var(--spacing)*18)] shrink-0`}>{step.name}</span>
+      <span className={`${display.s} shrink-0 lg:w-[calc(var(--spacing)*18)]`}>{step.name}</span>
       <span className={`${body.m} flex-1 text-paper-raised/85`}>{step.caption}</span>
-      <span aria-hidden className="size-[7px] shrink-0 bg-accent" />
+      <span aria-hidden className="size-[7px] shrink-0 bg-accent max-lg:hidden" />
     </div>
   );
 }

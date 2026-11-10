@@ -152,19 +152,19 @@ export function Footer({ world, onOpenStudio, onOpenExample }: FooterProps) {
         <Ruler />
         <Wordmark />
       </div>
-      <div className="flex flex-col border-t border-rule sm:flex-row">
+      <div className="flex border-t border-rule">
         <p className={`${mono.xs} flex flex-1 items-center px-[12px] py-3 text-ink lg:px-3`}>
           ©2026 Vect
         </p>
         <a
           href={creditsUrl}
-          className={`${body.m} flex items-center border-rule px-[calc(var(--spacing)*2)] py-3 text-ink transition-colors hover:text-accent max-sm:border-t sm:border-l lg:text-[length:calc(var(--spacing)*1.8)]`}
+          className={`${body.m} flex items-center border-rule border-l px-[calc(var(--spacing)*2)] py-3 text-ink transition-colors hover:text-accent lg:text-[length:calc(var(--spacing)*1.8)]`}
         >
           Credits
         </a>
         <a
           href={repositoryUrl}
-          className={`${body.m} flex items-center border-rule px-[calc(var(--spacing)*2)] py-3 text-ink transition-colors hover:text-accent max-sm:border-t sm:border-l lg:text-[length:calc(var(--spacing)*1.8)]`}
+          className={`${body.m} flex items-center border-rule border-l px-[calc(var(--spacing)*2)] py-3 text-ink transition-colors hover:text-accent lg:text-[length:calc(var(--spacing)*1.8)]`}
         >
           GitHub
         </a>

@@ -24,6 +24,10 @@ const modeLabel = {
   sample_fixture: "Example world",
 } as const;
 
+function spaced(operation: string): string {
+  return operation.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+}
+
 export function stepsFor(world: WorldSpec, twin: WorldSpec): Step[] {
   const check = checkWorld(twin);
   const twinPoints = tracePoints(twin);
@@ -94,7 +98,7 @@ export function stepsFor(world: WorldSpec, twin: WorldSpec): Step[] {
         <SpecSheet
           title="Repair rules"
           rows={[
-            { key: "May use", value: repairAllowedOperations.join(", ") },
+            { key: "May use", value: repairAllowedOperations.map(spaced).join(", ") },
             { key: "Attempts", value: `at most ${String(worldLimits.repairAttempts)}` },
             { key: "Verified by", value: "fresh agent run + replay" },
           ]}

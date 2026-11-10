@@ -11,7 +11,7 @@ type CaptionBoxProps = {
 
 export function CaptionBox({ label, children, hint, className = "" }: CaptionBoxProps) {
   return (
-    <figure className={`w-[calc(var(--spacing)*28)] max-lg:w-[calc(100vw-48px)] ${className}`}>
+    <figure className={`w-[calc(var(--spacing)*28)] max-lg:w-[calc(100vw-88px)] ${className}`}>
       <div className="border border-rule bg-paper-raised/60">
         <p
           className={`${mono.xs} flex h-[calc(var(--spacing)*3.2)] items-center bg-ink px-[calc(var(--spacing)*1.3)] text-paper-raised`}
