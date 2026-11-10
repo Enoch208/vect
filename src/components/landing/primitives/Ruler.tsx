@@ -1,7 +1,7 @@
 const horizontalTicks =
-  "bg-[repeating-linear-gradient(to_right,var(--color-faint)_0_1px,transparent_1px_calc(var(--spacing)*0.9))]";
+  "bg-[repeating-linear-gradient(to_right,var(--color-faint)_0_1px,transparent_1px_7px)]";
 const verticalTicks =
-  "bg-[repeating-linear-gradient(to_bottom,var(--color-faint)_0_1px,transparent_1px_calc(var(--spacing)*0.9))]";
+  "bg-[repeating-linear-gradient(to_bottom,var(--color-faint)_0_1px,transparent_1px_7px)]";
 
 export function Crosshair({ className = "" }: { className?: string }) {
   return (

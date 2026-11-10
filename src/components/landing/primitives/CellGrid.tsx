@@ -27,7 +27,7 @@ type CellProps = {
 
 export function Cell({ children, className = "" }: CellProps) {
   return (
-    <div className={`flex flex-col justify-between gap-4 bg-paper p-3 ${className}`}>
+    <div className={`flex flex-col justify-between gap-4 bg-paper p-[12px] lg:p-3 ${className}`}>
       {children}
     </div>
   );

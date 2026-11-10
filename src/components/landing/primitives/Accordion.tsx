@@ -52,7 +52,7 @@ export function Accordion({ items, defaultOpen, onOpenChange, className = "" }: 
               onClick={() => {
                 toggle(index);
               }}
-              className="group flex w-full items-center justify-between gap-3 pt-[calc(var(--spacing)*2.4)] pr-3 pl-3 text-left text-ink focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-accent lg:pl-[calc(var(--spacing)*15.4)]"
+              className="group flex w-full items-center justify-between gap-3 pt-[calc(var(--spacing)*2.4)] pr-[12px] lg:pr-3 pl-[12px] text-left text-ink focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-accent lg:pl-[calc(var(--spacing)*15.4)]"
             >
               <span className={`${display.list} transition-colors group-hover:text-accent`}>
                 {item.title}
@@ -67,7 +67,7 @@ export function Accordion({ items, defaultOpen, onOpenChange, className = "" }: 
             >
               <div className="overflow-hidden">
                 <p
-                  className={`${body.s} pt-[calc(var(--spacing)*0.6)] pr-3 pl-3 text-ink-72 lg:pl-[calc(var(--spacing)*15.4)]`}
+                  className={`${body.s} pt-[calc(var(--spacing)*0.6)] pr-[12px] lg:pr-3 pl-[12px] text-ink-72 lg:pl-[calc(var(--spacing)*15.4)]`}
                 >
                   {item.body}
                 </p>
