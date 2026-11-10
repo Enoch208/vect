@@ -6,8 +6,9 @@ case "$lane" in
   engine) paths="src/domain src/verification src/agents src/fixtures tests/engine" ;;
   ai) paths="src/generation src/server api scripts/run-benchmark.ts tests/ai" ;;
   world) paths="src/components/world tests/world" ;;
+  landing) paths="src/components/landing tests/landing" ;;
   studio) paths="src/main.tsx src/app src/components/studio src/components/game src/components/test src/components/proof src/store src/styles tests/studio" ;;
-  *) printf 'usage: lane-gate.sh engine|ai|world|studio\n' >&2; exit 2 ;;
+  *) printf 'usage: lane-gate.sh engine|ai|world|studio|landing\n' >&2; exit 2 ;;
 esac
 
 present=""
