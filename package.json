@@ -21,7 +21,8 @@
     "gate:engine": "sh scripts/lane-gate.sh engine",
     "gate:ai": "sh scripts/lane-gate.sh ai",
     "gate:world": "sh scripts/lane-gate.sh world",
-    "gate:studio": "sh scripts/lane-gate.sh studio"
+    "gate:studio": "sh scripts/lane-gate.sh studio",
+    "shot": "tsx scripts/shot.ts"
   },
   "dependencies": {
     "@fontsource-variable/geist": "5.3.0",
