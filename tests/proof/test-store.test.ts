@@ -188,5 +188,23 @@ describe("the test store", () => {
     const { store } = storeWith();
     expect(store.getState().run).toBeNull();
     expect(store.getState().statusFor(v1)).toBeNull();
+    expect(store.getState().highlightIds()).toEqual([]);
+  });
+
+  it("highlights what the engine named on the last refused step", async () => {
+    const { store } = storeWith({ reducedMotion: true });
+    store.getState().start(v2, realRunner());
+    await settle();
+    expect(store.getState().highlightIds()).toEqual(["c2", "door1"]);
+  });
+
+  it("inspecting a finding highlights its entities until the next run", async () => {
+    const { store } = storeWith({ reducedMotion: true });
+    store.getState().start(v2, realRunner());
+    await settle();
+    store.getState().inspect(["key1", "door1"]);
+    expect(store.getState().highlightIds()).toEqual(["key1", "door1"]);
+    store.getState().start(v1, realRunner());
+    expect(store.getState().highlightIds()).toEqual([]);
   });
 });

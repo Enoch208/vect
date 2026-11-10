@@ -4,6 +4,7 @@ import type { GameState } from "../contract/game.schema.js";
 import type { TraceStep, VerificationReport } from "../contract/report.schema.js";
 import type { WorldSpec } from "../contract/world.schema.js";
 import { startTestRun, type TestRunHandle } from "../agents/test-runner.js";
+import { stepGame } from "../domain/step-game.js";
 import { reportStatusFor } from "../verification/report.js";
 import { useProjectStore } from "./project-store.js";
 import type { WorldVersion } from "./types.js";
@@ -27,6 +28,9 @@ export type TestStore = {
   cancel(): void;
   bindTo(version: WorldVersion | null): void;
   statusFor(version: WorldVersion): TestStatus | null;
+  inspected: string[];
+  inspect(entityIds: string[]): void;
+  highlightIds(): string[];
 };
 
 export type TestStoreDeps = {
@@ -43,6 +47,15 @@ export function createTestStore(deps: TestStoreDeps) {
     let stopTicker: (() => void) | null = null;
     let pending: VerificationReport | null = null;
     let instant = false;
+    let world: WorldSpec | null = null;
+
+    function refusedHighlights(): string[] {
+      const { run } = get();
+      if (run === null || world === null) return [];
+      const refused = run.steps.slice(0, run.shown).findLast((item) => !item.step.accepted);
+      if (refused === undefined) return [];
+      return stepGame(world, refused.state, refused.step.action).event.affectedIds;
+    }
 
     function update(change: Partial<TestRun>) {
       const { run } = get();
@@ -83,7 +96,9 @@ export function createTestStore(deps: TestStoreDeps) {
     function start(version: WorldVersion, runner: TestRunner = startTestRun) {
       cancel();
       instant = deps.reducedMotion();
+      world = version.world;
       set({
+        inspected: [],
         run: {
           revisionHash: version.revisionHash,
           steps: [],
@@ -124,6 +139,14 @@ export function createTestStore(deps: TestStoreDeps) {
       statusFor: (version) => {
         const report = get().run?.report ?? null;
         return report === null ? null : reportStatusFor(version.world, report);
+      },
+      inspected: [],
+      inspect: (entityIds) => {
+        set({ inspected: [...entityIds] });
+      },
+      highlightIds: () => {
+        const { inspected } = get();
+        return inspected.length > 0 ? inspected : refusedHighlights();
       },
     };
   });
