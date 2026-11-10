@@ -31,7 +31,7 @@ function BarrierShape({ used }: ShapeProps): ReactElement {
   return (
     <group ref={posts} scale={[1, used ? sunk : 1, 1]}>
       <Cluster parts={barrierPosts}>
-        {used ? <Matte tone="tint" /> : <Flat color={kit.accent} />}
+        <Flat color={used ? kit.trim.color : kit.accent} />
         <InkEdges />
       </Cluster>
     </group>

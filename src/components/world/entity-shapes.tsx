@@ -106,7 +106,7 @@ function ChestShape({ used }: ShapeProps): ReactElement {
       </Cluster>
       <group ref={lid} position={[0, 0.52, -0.33]} rotation={[used ? lidSwing : 0, 0, 0]}>
         <Cluster parts={chestLid}>
-          {used ? <Matte tone="tint" /> : <Flat color={kit.accent} />}
+          <Flat color={used ? kit.trim.color : kit.accent} />
           <InkEdges strong={!used} />
         </Cluster>
       </group>

@@ -5,7 +5,7 @@ import { Cluster } from "./Cluster.js";
 import { corridorBars, grilleBars } from "./entity-parts.js";
 import { setCursor } from "./Floors.js";
 import type { CorridorLayout } from "./layout-types.js";
-import { Flat, InkEdges, Matte } from "./paint.js";
+import { Flat, InkEdges } from "./paint.js";
 import { useScene } from "./scene-context.js";
 import type { GateState } from "./truth.js";
 import { usePulse, useSpring } from "./use-spring.js";
@@ -51,7 +51,7 @@ function DoorLeaf({ gate, highlighted }: GateProps): ReactElement {
         <group ref={shake}>
           <mesh position={[0, leafHeight / 2 + 0.02, leafWidth / 2]}>
             <boxGeometry args={[leafThickness, leafHeight, leafWidth]} />
-            {closed ? <Flat color={kit.gateClosed} /> : <Matte />}
+            <Flat color={closed ? kit.gateClosed : kit.trim.color} />
             <InkEdges strong={closed} />
           </mesh>
         </group>
@@ -75,7 +75,7 @@ function Bars({ gate, style }: GateProps): ReactElement {
       scale={[1, closed ? 1 : retracted, 1]}
     >
       <Cluster parts={hung ? grilleBars : corridorBars}>
-        {closed ? <Flat color={kit.gateClosed} /> : <Matte tone="tint" />}
+        <Flat color={closed ? kit.gateClosed : kit.trim.color} />
         <InkEdges strong={closed} />
       </Cluster>
     </group>
