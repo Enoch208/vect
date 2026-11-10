@@ -27,9 +27,9 @@ pnpm exec tsc -p "tsconfig.$lane.json"
 
 if [ -n "$lintable" ]; then
   printf '== %s: lint\n' "$lane"
-  pnpm exec eslint --no-warn-ignored $lintable
+  pnpm exec eslint --no-warn-ignored --no-error-on-unmatched-pattern $lintable
   if [ -f eslint.local.config.js ]; then
-    pnpm exec eslint -c eslint.local.config.js --no-warn-ignored $lintable
+    pnpm exec eslint -c eslint.local.config.js --no-warn-ignored --no-error-on-unmatched-pattern $lintable
   fi
 fi
 
