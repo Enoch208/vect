@@ -8,7 +8,7 @@ import { chooseAction } from "../../src/agents/heuristic-agent.js";
 import { observeWorld } from "../../src/agents/observe.js";
 import { runPlaytest } from "../../src/agents/playtest.js";
 import { seededRandom } from "../../src/domain/random.js";
-import { backtrackingWorld } from "../../src/fixtures/suite-agent.js";
+import { backtrackingWorld, goalSeenTooEarly } from "../../src/fixtures/suite-agent.js";
 import {
   keyBeforeDoor,
   routeAroundTrap,
@@ -49,6 +49,13 @@ describe("runPlaytest", () => {
       const run = play(backtrackingWorld, seed);
       expect(run.outcome, `seed ${String(seed)}`).toBe("GOAL_REACHED");
       expect(run.trace.length).toBeLessThanOrEqual(150);
+    }
+  });
+
+  it("returns to a goal room it saw before the goal could hold", () => {
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const run = play(goalSeenTooEarly, seed);
+      expect(run.outcome, `seed ${String(seed)}`).toBe("GOAL_REACHED");
     }
   });
 

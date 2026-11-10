@@ -7,6 +7,7 @@ export type RememberedRoom = {
   label: string;
   exits: string[];
   entities: ObservedEntity[];
+  seenWith: string;
 };
 
 export type Refusal = { key: string; snapshot: string };
@@ -37,6 +38,7 @@ export function remember(memory: AgentMemory, observation: Observation): AgentMe
     label: observation.roomLabel,
     exits: observation.exits.map((exit) => exit.roomId),
     entities: observation.entities,
+    seenWith: snapshotOf(observation, memory),
   };
   const known = memory.rooms.some((item) => item.roomId === room.roomId);
   return {

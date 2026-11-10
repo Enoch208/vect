@@ -52,8 +52,13 @@ function retryable(mind: Mind, from: string, exits: string[]): string[] {
   });
 }
 
+function goalWorthRevisiting(mind: Mind, room: RememberedRoom): boolean {
+  return room.entities.some((item) => item.kind === "goal") && room.seenWith !== mind.now;
+}
+
 function hasWork(mind: Mind, room: RememberedRoom): boolean {
   return (
+    goalWorthRevisiting(mind, room) ||
     usable(mind, room.entities).length > 0 ||
     unexplored(mind, room.roomId, room.exits).length > 0 ||
     retryable(mind, room.roomId, room.exits).length > 0

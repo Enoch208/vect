@@ -1,6 +1,30 @@
 import type { WorldSpec } from "../contract/world.schema.js";
 import { connection, entity, flag, hasItem, room, sampleWorld } from "./build.js";
 
+export const goalSeenTooEarly: WorldSpec = sampleWorld({
+  id: "goal-seen-too-early",
+  title: "Light Before Entry",
+  theme: "temple",
+  prompt: "The shrine is open from the start, but only counts once the lamp is lit.",
+  rooms: [
+    room("porch", "Porch", 0, 0),
+    room("shrine", "Shrine", 1, 0),
+    room("shed", "Lamp Shed", 0, 1),
+    room("yard", "Yard", -1, 0),
+  ],
+  connections: [
+    connection("c1", "porch", "shrine"),
+    connection("c2", "porch", "shed"),
+    connection("c3", "porch", "yard"),
+  ],
+  entities: [
+    entity({ id: "lamp", kind: "switch", label: "Lamp", roomId: "shed", setsFlag: "lamp-lit" }),
+    entity({ id: "offering", kind: "goal", label: "Make the Offering", roomId: "shrine" }),
+  ],
+  startRoomId: "porch",
+  goal: { id: "offering", roomId: "shrine", requires: flag("lamp-lit") },
+});
+
 export const backtrackingWorld: WorldSpec = sampleWorld({
   id: "backtracking-wings",
   title: "The Far Key",
