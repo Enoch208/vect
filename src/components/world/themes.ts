@@ -1,5 +1,6 @@
 import type { Theme } from "../../contract/codes.js";
 import { palette } from "./palette.js";
+import { propVariants } from "./props/index.js";
 
 export type MaterialSpec = { color: string; roughness: number; metalness: number };
 
@@ -62,7 +63,7 @@ const shared = {
   fog: { color: palette.paper, near: 150, far: 420 },
 } as const;
 
-const kits: Record<Theme, ThemeKit> = {
+const kits: Record<Theme, Omit<ThemeKit, "propVariants">> = {
   observatory: {
     ...shared,
     plinth: matte("#F3F3F0"),
@@ -71,7 +72,6 @@ const kits: Record<Theme, ThemeKit> = {
     trim: matte("#D5DBE1", 0.8),
     fixture: matte("#C9D1D9", 0.7),
     lights: { ...sharedLights, fillColor: "#E6EEF8" },
-    propVariants: ["telescope", "orrery", "console", "shelf"],
   },
   temple: {
     ...shared,
@@ -81,7 +81,6 @@ const kits: Record<Theme, ThemeKit> = {
     trim: matte("#DDD0B6", 0.85),
     fixture: matte("#D3C4A4", 0.8),
     lights: { ...sharedLights, keyColor: "#FFF6E6", fillColor: "#F5EEDF" },
-    propVariants: ["column", "urn", "brazier", "stele"],
   },
   castle: {
     ...shared,
@@ -91,10 +90,9 @@ const kits: Record<Theme, ThemeKit> = {
     trim: matte("#C9C7C0", 0.9),
     fixture: matte("#BDBBB4", 0.85),
     lights: { ...sharedLights, keyIntensity: 1, fillColor: "#ECECEC" },
-    propVariants: ["banner", "barrel", "rack", "brazier"],
   },
 };
 
 export function themeKit(theme: Theme): ThemeKit {
-  return kits[theme];
+  return { ...kits[theme], propVariants: propVariants(theme) };
 }

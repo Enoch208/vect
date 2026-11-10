@@ -2,6 +2,7 @@ import { useMemo, type ReactElement } from "react";
 import type { GameState } from "../../contract/game.schema.js";
 import type { WorldEntity, WorldSpec } from "../../contract/world.schema.js";
 import { EntityMesh } from "./EntityMesh.js";
+import { isScenery } from "./Props.js";
 import type { SceneLayout } from "./layout-types.js";
 import { useScene } from "./scene-context.js";
 import { isUsed, switchIsOn } from "./truth.js";
@@ -33,7 +34,8 @@ export function Entities(props: EntitiesProps): ReactElement {
     <group>
       {world.entities.map((entity, index) => {
         const placed = spots.get(entity.id);
-        if (placed === undefined || gateIds.has(entity.id)) return null;
+        if (placed === undefined || gateIds.has(entity.id) || isScenery(world, entity.id))
+          return null;
         return (
           <EntityMesh
             key={entity.id}

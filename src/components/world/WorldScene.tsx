@@ -15,6 +15,7 @@ import { Labels } from "./Labels.js";
 import { layoutWorld } from "./layout.js";
 import { Lighting } from "./Lighting.js";
 import { pairTags } from "./pairing.js";
+import { Props } from "./Props.js";
 import { SceneContext, useScene, type SceneContextValue } from "./scene-context.js";
 import { themeKit } from "./themes.js";
 import type { WorldSceneProps } from "./types.js";
@@ -88,7 +89,7 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
         frameloop="demand"
         orthographic
         flat
-        shadows
+        shadows="percentage"
         dpr={[1, 1.75]}
         gl={{ antialias: false, powerPreference: "high-performance" }}
         camera={{
@@ -118,6 +119,7 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
               highlightIds={highlightIds}
               onMoveTo={props.onMoveTo}
             />
+            <Props world={world} onSelect={props.onSelect} />
             <Entities
               world={world}
               state={state}

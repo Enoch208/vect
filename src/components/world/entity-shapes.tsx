@@ -121,7 +121,7 @@ function ChestShape({ used }: ShapeProps): ReactElement {
   );
 }
 
-export const shapes: Record<EntityKind, (props: ShapeProps) => ReactElement> = {
+export const shapes: Record<EntityKind, (props: ShapeProps) => ReactElement | null> = {
   key: KeyShape,
   switch: SwitchShape,
   chest: ChestShape,

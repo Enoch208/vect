@@ -9,6 +9,7 @@ import { tenRoomTemple } from "../../../fixtures/suite-large.js";
 import { solve } from "../../../verification/solve.js";
 import { WorldScene } from "../index.js";
 import { palette } from "../palette.js";
+import { propGallery } from "./gallery.js";
 
 const worlds: Record<string, { world: WorldSpec; script: WorldSpec }> = {
   observatory: { world: observatory, script: observatory },
@@ -24,6 +25,8 @@ type Setup = {
   highlightIds: string[];
   reducedMotion: boolean;
   interactive: boolean;
+  labelProps: boolean;
+  zoom: number;
 };
 
 function isTheme(value: string | null): value is Theme {
@@ -35,8 +38,10 @@ function readSetup(search: string): Setup {
   const chosen = worlds[params.get("world") ?? "observatory"] ?? worlds["observatory"];
   if (chosen === undefined) throw new Error("The observatory fixture is missing");
   const theme = params.get("theme");
-  const world = isTheme(theme) ? { ...chosen.world, theme } : chosen.world;
-  const script: GameAction[] = solve(chosen.script).path ?? [];
+  const gallery = params.get("view") === "props" && isTheme(theme) ? propGallery(theme) : null;
+  const themed = isTheme(theme) ? { ...chosen.world, theme } : chosen.world;
+  const world = gallery ?? themed;
+  const script: GameAction[] = gallery === null ? (solve(chosen.script).path ?? []) : [];
   const steps = Number(params.get("step") ?? 0);
   let state = createInitialState(world, world.seed);
   const path = [state.position];
@@ -52,10 +57,12 @@ function readSetup(search: string): Setup {
     highlightIds: (params.get("highlight") ?? "").split(",").filter((id) => id !== ""),
     reducedMotion: params.get("reduced") === "1",
     interactive: params.get("static") !== "1",
+    labelProps: gallery !== null,
+    zoom: Number(params.get("zoom") ?? 1),
   };
 }
 
-function useReadyMarker(): void {
+function useReadyMarker(zoom: number): void {
   useEffect(() => {
     let frame = 0;
     let timer = 0;
@@ -63,6 +70,11 @@ function useReadyMarker(): void {
       if (document.querySelector('[data-world-scene="ready"]') === null) {
         frame = window.requestAnimationFrame(poll);
         return;
+      }
+      if (zoom !== 1) {
+        document
+          .querySelector("[data-world-scene] canvas")
+          ?.dispatchEvent(new WheelEvent("wheel", { deltaY: -Math.log(zoom) / 0.0016 }));
       }
       timer = window.setTimeout(() => {
         document.body.dataset["sceneReady"] = "true";
@@ -73,7 +85,7 @@ function useReadyMarker(): void {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(timer);
     };
-  }, []);
+  }, [zoom]);
 }
 
 function Harness({ setup }: { setup: Setup }): ReactElement {
@@ -82,7 +94,7 @@ function Harness({ setup }: { setup: Setup }): ReactElement {
   const [flash, setFlash] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [status, setStatus] = useState("READY");
-  useReadyMarker();
+  useReadyMarker(setup.zoom);
   const act = (action: GameAction) => {
     const result = stepGame(setup.world, state, action);
     setStatus(`${result.event.code} · ${result.event.message}`);
@@ -92,8 +104,14 @@ function Harness({ setup }: { setup: Setup }): ReactElement {
     setPath((points) => [...points, result.state.position]);
   };
   const highlightIds = useMemo(
-    () => [...setup.highlightIds, ...flash],
-    [setup.highlightIds, flash],
+    () => [
+      ...setup.highlightIds,
+      ...flash,
+      ...(setup.labelProps
+        ? setup.world.entities.filter((item) => item.kind === "prop").map((item) => item.id)
+        : []),
+    ],
+    [setup, flash],
   );
   return (
     <div style={{ position: "fixed", inset: 0, background: palette.paper }}>

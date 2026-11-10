@@ -100,19 +100,8 @@ function GoalShape(): ReactElement {
   );
 }
 
-function PropShape({ variant }: ShapeProps): ReactElement {
-  const tall = variant % 2 === 0;
-  return (
-    <mesh position={[0, tall ? 0.55 : 0.3, 0]} castShadow receiveShadow>
-      {tall ? (
-        <cylinderGeometry args={[0.32, 0.4, 1.1, 20]} />
-      ) : (
-        <boxGeometry args={[1, 0.6, 0.7]} />
-      )}
-      <Matte tone="fixture" />
-      <InkEdges />
-    </mesh>
-  );
+function Nothing(): null {
+  return null;
 }
 
 export const fixtureShapes = {
@@ -120,7 +109,7 @@ export const fixtureShapes = {
   trap: TrapShape,
   checkpoint: CheckpointShape,
   goal: GoalShape,
-  prop: PropShape,
-  door: PropShape,
-  portal: PropShape,
+  prop: Nothing,
+  door: Nothing,
+  portal: Nothing,
 };
