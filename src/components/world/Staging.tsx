@@ -95,7 +95,7 @@ export function Staging({ onFrame }: { onFrame: (stats: FrameStats) => void }): 
       />
       <AdaptiveDpr />
       <Lighting shadowMapSize={quality.shadowMapSize} />
-      {!reducedMotion && <Effects occlusion={quality.occlusion} />}
+      <Effects occlusion={quality.occlusion && !reducedMotion} />
     </>
   );
 }

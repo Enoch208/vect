@@ -21,7 +21,7 @@ type LabelsProps = {
 
 export function Labels(props: LabelsProps): ReactElement {
   const { world, state, highlightIds, selectedEntityId, actor } = props;
-  const { layout, pairing, overlay, reducedMotion } = useScene();
+  const { layout, pairing, overlay } = useScene();
   const presentation = useContext(PresentationContext);
   const size = useThree((three) => three.size);
   const fit = useMemo(() => fitLayout(layout, size, fitMargin).zoom, [layout, size]);
@@ -45,7 +45,6 @@ export function Labels(props: LabelsProps): ReactElement {
   );
   useFrame((three) => {
     const cleared = three.gl.autoClear;
-    if (reducedMotion) three.gl.render(three.scene, three.camera);
     three.gl.autoClear = false;
     three.gl.clearDepth();
     three.gl.render(overlay, three.camera);
