@@ -12,6 +12,7 @@ import { LiveBoundary } from "../primitives/LiveBoundary.js";
 import { Ruler } from "../primitives/Ruler.js";
 import { mono } from "../primitives/type.js";
 import { useReducedMotion, useScene } from "../use-scene.js";
+import { ProductPanel } from "./ProductPanel.js";
 import { walkthroughFrames, type Layer, type WalkFrame } from "./walkthrough-frames.js";
 
 const hidden: Record<Layer, string> = {
@@ -73,7 +74,7 @@ function Scene({ world, twin }: Props) {
         {faultOn ? "Fig. 07 · The same world, key moved" : `Fig. 07 · ${world.title}`}
       </BracketLabel>
       <div
-        className={`w-full max-w-[calc(var(--spacing)*124)] [&_[data-layer]]:transition-opacity [&_[data-layer]]:duration-500 [&_[data-agent]]:transition-transform [&_[data-agent]]:duration-700 [&_[data-agent]]:ease-[cubic-bezier(.4,0,0,1)] ${faultOn ? "" : hiddenLayers(frame)}`}
+        className={`w-full max-w-[calc(var(--spacing)*124)] transition-[translate,scale] duration-700 ease-[cubic-bezier(.4,0,0,1)] motion-reduce:transition-none ${frame.final ? "lg:-translate-x-[22%] lg:scale-[0.8]" : ""} [&_[data-layer]]:transition-opacity [&_[data-layer]]:duration-500 [&_[data-agent]]:transition-transform [&_[data-agent]]:duration-700 [&_[data-agent]]:ease-[cubic-bezier(.4,0,0,1)] ${faultOn ? "" : hiddenLayers(frame)}`}
       >
         {faultOn ? (
           <Plan world={twin} callouts={fault.callouts} />
@@ -98,6 +99,11 @@ function Scene({ world, twin }: Props) {
           </TextButton>
         )}
       </div>
+      <div
+        className={`absolute inset-y-0 right-0 z-20 hidden w-[32.5%] border-l border-rule transition-transform duration-700 ease-[cubic-bezier(.4,0,0,1)] motion-reduce:transition-none lg:flex ${frame.final ? "translate-x-0" : "translate-x-[101%]"}`}
+      >
+        <ProductPanel titleId="product-panel-title" className="w-full" />
+      </div>
       <ol
         className={
           reduced
@@ -121,6 +127,10 @@ export function Walkthrough(props: Props) {
       <LiveBoundary fallback={<Plan world={props.world} />}>
         <Scene {...props} />
       </LiveBoundary>
+      <ProductPanel
+        titleId="product-panel-title-stacked"
+        className="border-t border-rule lg:hidden"
+      />
     </section>
   );
 }
