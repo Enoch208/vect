@@ -3,13 +3,28 @@ import { createRoot } from "react-dom/client";
 import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
 import "../../../styles/index.css";
+import { Landing } from "../index.js";
 import { PrimitivesGallery } from "./PrimitivesGallery.js";
 
 const root = document.getElementById("root");
 if (root === null) throw new Error("The #root element is missing from the landing harness");
 
+const report = (event: string) => () => {
+  document.body.dataset["lastLandingEvent"] = event;
+};
+
 createRoot(root).render(
   <StrictMode>
-    <PrimitivesGallery />
+    {window.location.hash === "#primitives" ? (
+      <PrimitivesGallery />
+    ) : (
+      <Landing
+        onOpenStudio={report("open-studio")}
+        onOpenExample={report("open-example")}
+        onPrompt={(prompt) => {
+          document.body.dataset["lastLandingEvent"] = `prompt:${prompt}`;
+        }}
+      />
+    )}
   </StrictMode>,
 );
