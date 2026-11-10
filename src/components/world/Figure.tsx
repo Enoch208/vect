@@ -1,7 +1,7 @@
-import { Outlines } from "@react-three/drei";
 import type { ReactElement } from "react";
+import { BackSide } from "three";
 import { Cluster } from "./Cluster.js";
-import { agentBody, playerBody } from "./entity-parts.js";
+import { agentBody, playerBody, playerShell } from "./entity-parts.js";
 import { Flat } from "./paint.js";
 import { useScene } from "./scene-context.js";
 
@@ -21,7 +21,9 @@ function PlayerFigure(): ReactElement {
       <FloorRing color={kit.ink} />
       <Cluster parts={playerBody}>
         <meshStandardMaterial color={kit.paper} roughness={0.8} />
-        <Outlines thickness={0.055} color={kit.ink} />
+      </Cluster>
+      <Cluster parts={playerShell} shadow={false}>
+        <meshBasicMaterial color={kit.ink} side={BackSide} toneMapped={false} />
       </Cluster>
       <mesh position={[0, 1.78, 0.2]}>
         <boxGeometry args={[0.3, 0.08, 0.14]} />

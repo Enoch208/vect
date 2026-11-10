@@ -9,6 +9,16 @@ export const playerBody: readonly Part[] = [
   { shape: "sphere", size: [0.26, 0, 0], at: [0, 1.76, 0] },
 ];
 
+const outline = 0.055;
+
+export const playerShell: readonly Part[] = playerBody.map((part) => ({
+  ...part,
+  size:
+    part.shape === "cylinder"
+      ? [part.size[0] + outline, part.size[1] + outline, part.size[2]]
+      : [part.size[0] + outline, 0, 0],
+}));
+
 export const agentBody: readonly Part[] = [
   { shape: "cone", size: [0.4, 1, 0], at: [0, 0.5, 0], turn: [0, Math.PI / 4, 0], sides: 4 },
   { shape: "cone", size: [0.3, 0.3, 0], at: [0, 1.43, 0], sides: 4 },
