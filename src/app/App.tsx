@@ -1,7 +1,153 @@
+import { lazy, Suspense, useEffect, useReducer, useState } from "react";
+import type { GenerateRequest } from "../contract/api.schema.js";
+import { GenerationPanel } from "../components/studio/GenerationPanel.js";
+import { RevisionPreview } from "../components/studio/RevisionPreview.js";
+import { observatory } from "../fixtures/observatory.js";
+import { createApiClient } from "../store/api-client.js";
+import { usePlayStore } from "../store/play-store.js";
+import { useProjectStore } from "../store/project-store.js";
+import type { WorldVersion } from "../store/types.js";
+import { screenReducer } from "./screen.js";
+import { useGeneration } from "./use-generation.js";
+import { makeVersion } from "./versions.js";
+
+const Landing = lazy(() =>
+  import("../components/landing/index.js").then((module) => ({ default: module.Landing })),
+);
+const api = createApiClient(fetch);
+
 export function App() {
+  const [inStudio, setInStudio] = useState(() => window.location.pathname.startsWith("/studio"));
+  const [prompt, setPrompt] = useState("");
+  const [screen, dispatch] = useReducer(screenReducer, "empty");
+  const active = useProjectStore(
+    (project) => project.versions.find((version) => version.id === project.activeId) ?? null,
+  );
+  const reports = useProjectStore((project) => project.reports);
+
+  function commit(version: WorldVersion) {
+    useProjectStore.getState().addVersion(version);
+    usePlayStore.getState().start(version.world);
+  }
+
+  const generation = useGeneration(
+    api,
+    (version) => {
+      commit(version);
+      dispatch({ type: "GENERATION_READY" });
+    },
+    () => {
+      dispatch({ type: "GENERATION_FAILED" });
+    },
+  );
+
+  useEffect(() => {
+    const onPopState = () => {
+      setInStudio(window.location.pathname.startsWith("/studio"));
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
+
+  function navigate(studio: boolean) {
+    window.history.pushState(null, "", studio ? "/studio" : "/");
+    setInStudio(studio);
+    window.scrollTo(0, 0);
+  }
+
+  function openExample() {
+    generation.clear();
+    commit(makeVersion(observatory, "example", "sample_fixture", null));
+    dispatch({ type: "OPEN_EXAMPLE" });
+    navigate(true);
+  }
+
+  function newWorld(value = "") {
+    generation.clear();
+    setPrompt(value);
+    dispatch({ type: "NEW_WORLD" });
+    navigate(true);
+  }
+
+  function generate(request: GenerateRequest) {
+    dispatch({ type: "GENERATE" });
+    void generation.submit(request);
+  }
+
+  const entry =
+    !active || screen === "empty" || screen === "entering_prompt" || screen === "generating";
+  if (!inStudio)
+    return (
+      <Suspense
+        fallback={
+          <p role="status" className="studio-label p-[26px]">
+            Opening Vect
+          </p>
+        }
+      >
+        <Landing
+          onOpenStudio={() => {
+            newWorld();
+          }}
+          onOpenExample={openExample}
+          onPrompt={newWorld}
+        />
+      </Suspense>
+    );
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-paper text-ink">
-      <h1 className="text-2xl font-medium tracking-tight">Vect</h1>
-    </main>
+    <div className="studio-frame">
+      <header className="flex min-h-14 items-center justify-between gap-4 border-b border-rule px-[26px]">
+        <a
+          href="/"
+          className="font-display text-xl font-semibold tracking-[-0.04em]"
+          onClick={(event) => {
+            event.preventDefault();
+            navigate(false);
+          }}
+        >
+          VECT
+        </a>
+        <span className="studio-label text-muted">
+          Studio / {entry ? "New world" : "World revision"}
+        </span>
+        {!entry && (
+          <button
+            type="button"
+            className="studio-label text-accent"
+            onClick={() => {
+              newWorld();
+            }}
+          >
+            New world →
+          </button>
+        )}
+      </header>
+      {entry ? (
+        <GenerationPanel
+          prompt={prompt}
+          onPrompt={setPrompt}
+          onGenerate={generate}
+          onOpenExample={openExample}
+          onRetry={() => {
+            dispatch({ type: "GENERATE" });
+            generation.retry();
+          }}
+          phase={generation.phase}
+          elapsed={generation.elapsed}
+          modelId={generation.modelId}
+          failure={generation.failure}
+        />
+      ) : (
+        <RevisionPreview
+          version={active}
+          reports={reports}
+          onNewWorld={() => {
+            newWorld();
+          }}
+        />
+      )}
+    </div>
   );
 }
