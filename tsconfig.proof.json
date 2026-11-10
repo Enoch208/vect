@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/contract",
+    "src/components/test",
+    "src/components/proof",
+    "src/store/test-store.ts",
+    "src/store/repair-flow.ts",
+    "tests/proof"
+  ]
+}

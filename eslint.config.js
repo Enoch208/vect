@@ -108,6 +108,13 @@ export default tseslint.config(
     },
   },
   {
+    files: ["src/agents/test-worker.ts", "src/agents/test-runner.ts"],
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-syntax": "off",
+    },
+  },
+  {
     files: ["src/generation/**", "src/server/**", "api/**"],
     rules: {
       "no-restricted-imports": [

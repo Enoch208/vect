@@ -23,7 +23,8 @@
     "gate:world": "sh scripts/lane-gate.sh world",
     "gate:studio": "sh scripts/lane-gate.sh studio",
     "shot": "tsx scripts/shot.ts",
-    "gate:landing": "sh scripts/lane-gate.sh landing"
+    "gate:landing": "sh scripts/lane-gate.sh landing",
+    "gate:proof": "sh scripts/lane-gate.sh proof"
   },
   "dependencies": {
     "@fontsource-variable/geist": "5.3.0",

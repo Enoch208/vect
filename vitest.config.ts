@@ -10,6 +10,13 @@ const lane = (name: string) => ({
 
 export default defineConfig({
   test: {
-    projects: [lane("engine"), lane("ai"), lane("world"), lane("studio"), lane("landing")],
+    projects: [
+      lane("engine"),
+      lane("ai"),
+      lane("world"),
+      lane("studio"),
+      lane("landing"),
+      lane("proof"),
+    ],
   },
 });

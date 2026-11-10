@@ -7,8 +7,9 @@ case "$lane" in
   ai) paths="src/generation src/server api scripts/run-benchmark.ts tests/ai" ;;
   world) paths="src/components/world tests/world" ;;
   landing) paths="src/components/landing tests/landing" ;;
-  studio) paths="src/main.tsx src/app src/components/studio src/components/game src/components/test src/components/proof src/store src/styles tests/studio" ;;
-  *) printf 'usage: lane-gate.sh engine|ai|world|studio|landing\n' >&2; exit 2 ;;
+  studio) paths="src/main.tsx src/app src/components/studio src/components/game src/store/project-store.ts src/store/play-store.ts src/store/api-client.ts src/store/types.ts src/store/persistence.ts src/styles tests/studio" ;;
+  proof) paths="src/components/test src/components/proof src/store/test-store.ts src/store/repair-flow.ts tests/proof" ;;
+  *) printf 'usage: lane-gate.sh engine|ai|world|studio|landing|proof\n' >&2; exit 2 ;;
 esac
 
 present=""
