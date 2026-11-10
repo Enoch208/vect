@@ -1,5 +1,6 @@
 import type { VerificationReport } from "../../contract/report.schema.js";
 import type { WorldVersion } from "../../store/types.js";
+import { exportBundle } from "../../store/persistence.js";
 import { StatusBadge } from "./StatusBadge.js";
 import { badgeFor, versionStatus } from "./status.js";
 
@@ -12,6 +13,21 @@ export function RevisionPreview({
   reports: Record<string, VerificationReport>;
   onNewWorld: () => void;
 }) {
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  function download() {
+    try {
+      downloadBlob(
+        `vect-${version.world.id}-${version.revisionHash.slice(0, 12)}.json`,
+        exportBundle(version, reports[version.revisionHash] ?? null),
+      );
+      setExportError(null);
+    } catch {
+      setExportError(
+        "This revision could not be exported because its world or report failed validation.",
+      );
+    }
+  }
   return (
     <main className="p-[26px]">
       <div className="flex flex-wrap items-center justify-between gap-6 border-b border-rule pb-6">
@@ -28,10 +44,21 @@ export function RevisionPreview({
             <StatusBadge status={versionStatus(version, reports)} />
           </div>
         </div>
-        <button type="button" className="studio-button" onClick={onNewWorld}>
-          Create another world
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button type="button" className="studio-button" onClick={download}>
+            Export world
+          </button>
+          <button type="button" className="studio-button" onClick={onNewWorld}>
+            Create another world
+          </button>
+        </div>
       </div>
+      {exportError && (
+        <p role="alert" className="mt-4 flex items-center gap-3">
+          <StatusBadge status="ERROR" />
+          {exportError}
+        </p>
+      )}
       <dl className="my-6 grid gap-4 font-mono text-label md:grid-cols-3">
         <div>
           <dt className="text-muted">REVISION</dt>
@@ -77,3 +104,5 @@ export function RevisionPreview({
     </main>
   );
 }
+import { useState } from "react";
+import { downloadBlob } from "../../app/download.js";

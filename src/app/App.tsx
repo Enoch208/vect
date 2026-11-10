@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useReducer, useState } from "react";
 import type { GenerateRequest } from "../contract/api.schema.js";
 import { GenerationPanel } from "../components/studio/GenerationPanel.js";
 import { RevisionPreview } from "../components/studio/RevisionPreview.js";
+import { StatusBadge } from "../components/studio/StatusBadge.js";
 import { observatory } from "../fixtures/observatory.js";
 import { createApiClient } from "../store/api-client.js";
 import { usePlayStore } from "../store/play-store.js";
@@ -9,6 +10,7 @@ import { useProjectStore } from "../store/project-store.js";
 import type { WorldVersion } from "../store/types.js";
 import { screenReducer } from "./screen.js";
 import { useGeneration } from "./use-generation.js";
+import { useProjectPersistence } from "./use-project-persistence.js";
 import { makeVersion } from "./versions.js";
 
 const Landing = lazy(() =>
@@ -24,6 +26,7 @@ export function App() {
     (project) => project.versions.find((version) => version.id === project.activeId) ?? null,
   );
   const reports = useProjectStore((project) => project.reports);
+  const persistence = useProjectPersistence();
 
   function commit(version: WorldVersion) {
     useProjectStore.getState().addVersion(version);
@@ -76,8 +79,16 @@ export function App() {
     void generation.submit(request);
   }
 
-  const entry =
-    !active || screen === "empty" || screen === "entering_prompt" || screen === "generating";
+  function openStudio() {
+    if (!active) {
+      newWorld();
+      return;
+    }
+    dispatch({ type: "RETURN" });
+    navigate(true);
+  }
+
+  const entry = !active || screen === "entering_prompt" || screen === "generating";
   if (!inStudio)
     return (
       <Suspense
@@ -87,13 +98,7 @@ export function App() {
           </p>
         }
       >
-        <Landing
-          onOpenStudio={() => {
-            newWorld();
-          }}
-          onOpenExample={openExample}
-          onPrompt={newWorld}
-        />
+        <Landing onOpenStudio={openStudio} onOpenExample={openExample} onPrompt={newWorld} />
       </Suspense>
     );
   return (
@@ -124,6 +129,18 @@ export function App() {
           </button>
         )}
       </header>
+      {persistence.notice && (
+        <aside
+          role="status"
+          className="flex flex-wrap items-center gap-3 border-b border-accent bg-accent-soft px-[26px] py-3"
+        >
+          <StatusBadge status="ERROR" />
+          <p className="flex-1">{persistence.notice}</p>
+          <button type="button" className="studio-label" onClick={persistence.dismiss}>
+            Dismiss
+          </button>
+        </aside>
+      )}
       {entry ? (
         <GenerationPanel
           prompt={prompt}
