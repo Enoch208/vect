@@ -1,22 +1,70 @@
 @import "tailwindcss";
 
 @theme {
-  --color-shell: #090f1c;
-  --color-panel: #111a2b;
-  --color-elevated: #182337;
-  --color-ink: #f4f7fc;
-  --color-ink-muted: #a6b4c7;
-  --color-positive: #26d7a1;
-  --color-negative: #f47176;
-  --color-caution: #f7bc69;
-  --color-accent: #7a9bff;
+  --color-paper: #f2f2f1;
+  --color-paper-raised: #ffffff;
+  --color-ink: #282828;
+  --color-ink-72: rgba(40, 40, 40, 0.72);
+  --color-muted: #626260;
+  --color-faint: #b4b4b0;
+  --color-rule: #b3b3af;
+  --color-rule-soft: #e0e0da;
+  --color-accent: #fa3600;
+  --color-accent-soft: #ffdede;
+  --color-positive: #1f8a5b;
+  --color-caution: #b7791f;
+  --font-display: "BT Grotesk", "Geist Variable", ui-sans-serif, sans-serif;
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+  --ease-draw: cubic-bezier(0.4, 0, 0, 1);
+  --text-body: 13.3px;
+  --text-body--line-height: 17.3px;
+  --text-body-s: 11.7px;
+  --text-body-s--line-height: 16.3px;
+  --text-label: 11.7px;
+  --text-label--line-height: 16.3px;
+  --text-micro: 10px;
+  --text-micro--line-height: 13px;
 }
 
 html,
 body,
 #root {
   height: 100%;
-  background: var(--color-shell);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+button:not(:disabled),
+summary,
+select {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
