@@ -2,6 +2,7 @@ import { alwaysTrue, type Expr } from "../contract/expr.schema.js";
 import {
   worldSpecSchema,
   type Connection,
+  type Room,
   type WorldEntity,
   type WorldSpec,
 } from "../contract/world.schema.js";
@@ -43,5 +44,34 @@ export function editConnection(world: WorldSpec, id: string, change: Partial<Con
   return world.connections.map((item) => (item.id === id ? { ...item, ...change } : item));
 }
 
+export function room(id: string, label: string, x: number, z: number): Room {
+  return { id, label, grid: { x, z }, prefab: "medium" };
+}
+
+type SampleInput = Pick<
+  WorldSpec,
+  | "id"
+  | "title"
+  | "theme"
+  | "prompt"
+  | "rooms"
+  | "connections"
+  | "entities"
+  | "startRoomId"
+  | "goal"
+>;
+
+export function sampleWorld(input: SampleInput): WorldSpec {
+  return worldSpecSchema.parse({
+    schemaVersion: 1,
+    revision: 1,
+    seed: 7,
+    generationMode: "sample_fixture",
+    metadata: { createdAt: "2026-11-10T00:00:00.000Z", modelId: null, adaptations: [] },
+    ...input,
+  });
+}
+
 export const hasItem = (itemId: string): Expr => ({ op: "hasItem", itemId });
 export const flag = (flagId: string, value = true): Expr => ({ op: "flag", flagId, value });
+export const allOf = (...of: Expr[]): Expr => ({ op: "all", of });
