@@ -1,33 +1,26 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { Suspense, useCallback, useMemo, useRef, type ReactElement } from "react";
 import { Scene } from "three";
+import { AgentPath } from "./AgentPath.js";
 import { actorAnchor } from "./anchors.js";
 import { Architecture } from "./Architecture.js";
-import { Avatar } from "./Avatar.js";
+import { actorHeight, actorName, Avatar } from "./Avatar.js";
 import { dims } from "./blocks.js";
 import { CameraRig } from "./CameraRig.js";
 import { cameraDistance, viewDirection } from "./camera-math.js";
-import { Effects } from "./Effects.js";
 import { Entities } from "./Entities.js";
 import { Floors } from "./Floors.js";
 import { Gates } from "./Gates.js";
 import { Labels } from "./Labels.js";
 import { layoutWorld } from "./layout.js";
-import { Lighting } from "./Lighting.js";
 import { pairTags } from "./pairing.js";
 import { Props } from "./Props.js";
 import { SceneContext, useScene, type SceneContextValue } from "./scene-context.js";
+import { Staging, type FrameStats } from "./Staging.js";
 import { themeKit } from "./themes.js";
 import type { WorldSceneProps } from "./types.js";
 import { gateStates } from "./truth.js";
 import { useWorldControls } from "./use-world-controls.js";
-
-function FrameReport({ onFrame }: { onFrame: (frames: number, calls: number) => void }): null {
-  useFrame((three) => {
-    onFrame(three.gl.info.render.frame, three.gl.info.render.calls);
-  });
-  return null;
-}
 
 function Ground(): ReactElement {
   const { layout, kit } = useScene();
@@ -65,17 +58,22 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
     [layout, world, reducedMotion, interactive, overlay],
   );
   const anchor = useMemo(() => actorAnchor(world, layout, state), [world, layout, state]);
+  const chip = useMemo(() => {
+    const at: [number, number, number] = [anchor[0], actorHeight[actor], anchor[1]];
+    return { anchor: at, text: actorName[actor] };
+  }, [anchor, actor]);
   const gates = useMemo(() => gateStates(world, state), [world, state]);
   const openConnectionIds = useMemo(
     () => new Set([...gates].filter(([, gate]) => gate !== "closed").map(([id]) => id)),
     [gates],
   );
-  const report = useCallback((frames: number, calls: number) => {
+  const report = useCallback((stats: FrameStats) => {
     const node = container.current;
     if (node === null) return;
     node.dataset["worldScene"] = "ready";
-    node.dataset["frames"] = String(frames);
-    node.dataset["calls"] = String(calls);
+    node.dataset["frames"] = String(stats.frames);
+    node.dataset["quality"] = String(stats.quality);
+    if (stats.calls > 0) node.dataset["calls"] = String(stats.calls);
   }, []);
   useWorldControls(props, layout);
   return (
@@ -109,17 +107,19 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
         <color attach="background" args={[scene.kit.paper]} />
         <SceneContext value={scene}>
           <Suspense fallback={null}>
-            <Lighting shadowMapSize={2048} />
+            <Staging onFrame={report} />
             <Ground />
             <Architecture />
             <Floors currentRoomId={state.currentRoomId} onMoveTo={props.onMoveTo} />
             <Gates
+              world={world}
               gates={gates}
               currentRoomId={state.currentRoomId}
               highlightIds={highlightIds}
               onMoveTo={props.onMoveTo}
             />
             <Props world={world} onSelect={props.onSelect} />
+            <AgentPath world={world} path={props.path} />
             <Entities
               world={world}
               state={state}
@@ -139,10 +139,9 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
               state={state}
               highlightIds={highlightIds}
               selectedEntityId={selectedEntityId}
+              actor={chip}
             />
             <CameraRig focus={anchor} />
-            <Effects occlusion={!reducedMotion} />
-            <FrameReport onFrame={report} />
           </Suspense>
         </SceneContext>
       </Canvas>

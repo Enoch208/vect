@@ -6,10 +6,10 @@ export const settle: SpringConfig = { stiffness: 170, damping: 20 };
 export const glide: SpringConfig = { stiffness: 60, damping: 16 };
 export const clunk: SpringConfig = { stiffness: 320, damping: 18 };
 
-const restDistance = 0.0015;
-const restVelocity = 0.004;
-const maxStep = 1 / 30;
-const subSteps = 3;
+const restDistance = 0.004;
+const restVelocity = 0.02;
+const longestFrame = 0.1;
+const finestStep = 1 / 120;
 
 export function stepSpring(
   spring: Spring,
@@ -17,7 +17,9 @@ export function stepSpring(
   delta: number,
   config: SpringConfig,
 ): boolean {
-  const step = Math.min(delta, maxStep) / subSteps;
+  const elapsed = Math.min(Math.max(delta, 0), longestFrame);
+  const subSteps = Math.max(1, Math.ceil(elapsed / finestStep));
+  const step = elapsed / subSteps;
   for (let index = 0; index < subSteps; index += 1) {
     const force = (target - spring.value) * config.stiffness - spring.velocity * config.damping;
     spring.velocity += force * step;

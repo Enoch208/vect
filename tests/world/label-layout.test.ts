@@ -12,9 +12,10 @@ import {
 function rect(label: PlacedLabel, zoom: number) {
   const [u, v] = projectToView(...label.anchor);
   const bottom = v * zoom + label.lift;
+  const middle = u * zoom + label.shift;
   return {
-    left: u * zoom - label.width / 2,
-    right: u * zoom + label.width / 2,
+    left: middle - label.width / 2,
+    right: middle + label.width / 2,
     bottom,
     top: bottom + label.height,
   };
@@ -42,6 +43,19 @@ describe("wrapLabel", () => {
 });
 
 describe("placeLabels", () => {
+  it("never moves a label further than three rows from its object", () => {
+    const pile = Array.from({ length: 9 }, (_, index): LabelSpec => ({
+      id: `n${String(index)}`,
+      anchor: [0, 1, 0],
+      lines: ["PORTAL SWITCH"],
+      badge: null,
+      below: false,
+      priority: 1,
+    }));
+    const row = labelSize(["PORTAL SWITCH"]).height + 5;
+    for (const label of placeLabels(pile, 22)) expect(label.lift).toBeLessThanOrEqual(row * 3);
+  });
+
   const zoom = 22;
   const spec = (id: string, index: number, priority: number): LabelSpec => ({
     id,
@@ -53,7 +67,7 @@ describe("placeLabels", () => {
   });
   const crowded = ["a", "b", "c", "d"].map((id, index) => spec(id, index, 1));
 
-  it("lifts labels until none overlap", () => {
+  it("moves labels aside or up until none overlap", () => {
     const placed = placeLabels(crowded, zoom).map((label) => rect(label, zoom));
     placed.forEach((a, index) => {
       for (const b of placed.slice(index + 1)) {
@@ -67,6 +81,7 @@ describe("placeLabels", () => {
   it("leaves a lone label where it is and reports its size", () => {
     const [only] = placeLabels(crowded.slice(0, 1), zoom);
     expect(only?.lift).toBe(0);
+    expect(only?.shift).toBe(0);
     expect(only?.width).toBeCloseTo(labelSize(["PORTAL SWITCH"]).width);
   });
 
@@ -74,7 +89,8 @@ describe("placeLabels", () => {
     const specs = [spec("low", 0, 1), spec("high", 0, 5)];
     const placed = placeLabels(specs, zoom);
     expect(placed.find((label) => label.id === "high")?.lift).toBe(0);
-    expect(placed.find((label) => label.id === "low")?.lift).toBeGreaterThan(0);
+    const low = placed.find((label) => label.id === "low");
+    expect(Math.abs(low?.shift ?? 0) + (low?.lift ?? 0)).toBeGreaterThan(0);
     expect(placeLabels(specs, zoom)).toEqual(placed);
   });
 });

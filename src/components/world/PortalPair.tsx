@@ -44,7 +44,9 @@ function Pad({ at, closed, passed, onPass }: PadProps): ReactElement {
   );
 }
 
-export function PortalPair({ corridor, gate, onPass }: GateProps): ReactElement {
+type PairProps = Pick<GateProps, "corridor" | "gate" | "onPass">;
+
+export function PortalPair({ corridor, gate, onPass }: PairProps): ReactElement {
   const shared = { closed: gate === "closed", passed: gate === "passed", onPass };
   return (
     <group>

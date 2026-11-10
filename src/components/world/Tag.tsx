@@ -16,6 +16,7 @@ export type TagProps = {
   tone?: TagTone;
   below?: boolean;
   lift?: number;
+  shift?: number;
 };
 
 const facing = new Euler(-cameraPitch, cameraYaw, 0, "YXZ");
@@ -52,7 +53,7 @@ function Glyphs(props: {
 }
 
 export function Tag(props: TagProps): ReactElement {
-  const { anchor, lines, badge = null, tone = "ink", below = false, lift = 0 } = props;
+  const { anchor, lines, badge = null, tone = "ink", below = false, lift = 0, shift = 0 } = props;
   const { kit } = useScene();
   const scaled = useRef<Group>(null);
   useFrame((three) => {
@@ -72,6 +73,7 @@ export function Tag(props: TagProps): ReactElement {
     actor: kit.paper,
   };
   const text = labelSize(lines);
+  const marks = badge === null ? [] : badge.split("+");
   const base = (below ? -1 : 1) * (lift + clearance + (filled ? chipPad[1] : 0));
   const middle = base + (below ? -text.height / 2 : text.height / 2);
   const badgeY = below ? base - text.height - labelType.badge / 2 : base + text.height + 11;
@@ -84,40 +86,42 @@ export function Tag(props: TagProps): ReactElement {
             <meshBasicMaterial color={kit.edge} toneMapped={false} depthTest={false} />
           </mesh>
         ) : null}
-        {filled && lines.length > 0 ? (
-          <mesh position={[0, middle, 0]} renderOrder={11}>
-            <planeGeometry args={[text.width + chipPad[0] * 2, text.height + chipPad[1] * 2]} />
-            <meshBasicMaterial color={fill} toneMapped={false} depthTest={false} />
-          </mesh>
-        ) : null}
-        {lines.length > 0 ? (
-          <Glyphs
-            text={plainLabel(lines.join("\n"))}
-            color={colors[tone]}
-            y={middle}
-            anchorY="middle"
-            halo={filled ? null : kit.paper}
-          />
-        ) : null}
-        {badge === null ? null : (
-          <group position={[0, badgeY, 0]}>
-            <mesh renderOrder={11}>
-              <circleGeometry args={[10, 32]} />
-              <meshBasicMaterial color={kit.paper} toneMapped={false} depthTest={false} />
+        <group position={[shift, 0, 0]}>
+          {filled && lines.length > 0 ? (
+            <mesh position={[0, middle, 0]} renderOrder={11}>
+              <planeGeometry args={[text.width + chipPad[0] * 2, text.height + chipPad[1] * 2]} />
+              <meshBasicMaterial color={fill} toneMapped={false} depthTest={false} />
             </mesh>
-            <mesh renderOrder={11}>
-              <ringGeometry args={[8.6, 10, 40]} />
-              <meshBasicMaterial color={kit.accent} toneMapped={false} depthTest={false} />
-            </mesh>
+          ) : null}
+          {lines.length > 0 ? (
             <Glyphs
-              text={plainLabel(badge)}
-              color={kit.accent}
-              y={0}
+              text={plainLabel(lines.join("\n"))}
+              color={colors[tone]}
+              y={middle}
               anchorY="middle"
-              halo={null}
+              halo={filled ? null : kit.paper}
             />
-          </group>
-        )}
+          ) : null}
+          {marks.map((mark, index) => (
+            <group key={mark} position={[(index - (marks.length - 1) / 2) * 23, badgeY, 0]}>
+              <mesh renderOrder={11}>
+                <circleGeometry args={[10, 32]} />
+                <meshBasicMaterial color={kit.paper} toneMapped={false} depthTest={false} />
+              </mesh>
+              <mesh renderOrder={11}>
+                <ringGeometry args={[8.6, 10, 40]} />
+                <meshBasicMaterial color={kit.accent} toneMapped={false} depthTest={false} />
+              </mesh>
+              <Glyphs
+                text={plainLabel(mark)}
+                color={kit.accent}
+                y={0}
+                anchorY="middle"
+                halo={null}
+              />
+            </group>
+          ))}
+        </group>
       </group>
     </group>
   );

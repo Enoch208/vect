@@ -14,7 +14,7 @@ import { findFreeSpot } from "./layout-spots.js";
 const laneSpacing = 2.2;
 const padReach = 0.55;
 export const padRadius = 1;
-export const arrivalRadius = 0.8;
+export const arrivalRadius = 0.75;
 export const approachDepth = 0.8;
 
 const opposite: Record<Side, Side> = { n: "s", s: "n", e: "w", w: "e" };
@@ -68,8 +68,14 @@ function isGated(world: WorldSpec, connection: Connection): boolean {
   return blocked || connection.traversableWhen.op !== "true";
 }
 
-function gatePoint(world: WorldSpec, connection: Connection, from: Point, to: Point): Point {
-  if (connection.doorId === null) return [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2];
+function gatePoint(
+  world: WorldSpec,
+  connection: Connection,
+  from: Point,
+  to: Point,
+  linked: boolean,
+): Point {
+  if (connection.doorId === null && !linked) return [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2];
   const door = world.entities.find((entity) => entity.id === connection.doorId);
   return door?.roomId === connection.fromRoomId ? from : to;
 }
@@ -152,9 +158,10 @@ export function planRooms(world: WorldSpec): RoomPlan {
       fromRoomId: from.id,
       toRoomId: to.id,
       axis: side === "n" || side === "s" ? "z" : "x",
-      gate: gatePoint(world, connection, start, end),
+      gate: gatePoint(world, connection, start, end, side === null),
       gateEntityId: connection.doorId,
       gated: isGated(world, connection),
+      conditional: connection.traversableWhen.op !== "true",
     };
   });
   return { rooms, corridors, pads };

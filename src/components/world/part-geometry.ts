@@ -66,6 +66,19 @@ function edgePoints(geometry: BufferGeometry): Array<[number, number, number]> {
   return points;
 }
 
+const clusters = new WeakMap<readonly Part[], BufferGeometry>();
+const upright: PartInstance = { parts: [], position: [0, 0, 0], turn: 0 };
+
+export function clusterGeometry(parts: readonly Part[]): BufferGeometry {
+  const cached = clusters.get(parts);
+  if (cached !== undefined) return cached;
+  const pieces = parts.map((part) => shapeOf(part).applyMatrix4(placement(upright, part)));
+  const merged = mergeGeometries(pieces);
+  for (const piece of pieces) piece.dispose();
+  clusters.set(parts, merged);
+  return merged;
+}
+
 export function buildParts(instances: readonly PartInstance[]): BuiltParts {
   const byTone = new Map<PartTone, BufferGeometry[]>();
   const edges: Array<[number, number, number]> = [];

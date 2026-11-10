@@ -50,9 +50,9 @@ export function Effects({ occlusion }: { occlusion: boolean }): ReactElement {
           ref={pass}
           halfRes
           quality="medium"
-          aoRadius={1.7}
+          aoRadius={2.1}
           distanceFalloff={1}
-          intensity={2.4}
+          intensity={3.6}
           color={kit.ink}
         />
       ) : (

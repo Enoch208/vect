@@ -19,6 +19,7 @@ export type NoteInput = {
   highlightIds: readonly string[];
   selectedEntityId: string | null;
   compact: boolean;
+  actor: { anchor: [number, number, number]; text: string } | null;
 };
 
 const reach: Record<EntityKind, number> = {
@@ -101,13 +102,16 @@ function entityNotes(input: NoteInput): Note[] {
     const named = !compact || here || flagged || chosen;
     const badge = used ? null : (pairing.entityTags.get(entity.id) ?? null);
     if (!named && badge === null) return [];
+    const floor = entity.kind === "goal";
     return [
       {
         id: `entity:${entity.id}`,
-        anchor: [placed.position[0], reach[entity.kind], placed.position[2]],
+        anchor: floor
+          ? [placed.position[0] + 0.85, 0.06, placed.position[2] + 0.85]
+          : [placed.position[0], reach[entity.kind], placed.position[2]],
         lines: named ? wrapLabel(entity.label) : [],
         badge,
-        below: false,
+        below: floor,
         priority: flagged ? 9 : here ? 4 : 2,
         tone: flagged ? "alert" : used ? "muted" : "ink",
       },
@@ -115,6 +119,23 @@ function entityNotes(input: NoteInput): Note[] {
   });
 }
 
+export const actorNoteId = "actor";
+
+function actorNotes({ actor }: NoteInput): Note[] {
+  if (actor === null) return [];
+  return [
+    {
+      id: actorNoteId,
+      anchor: actor.anchor,
+      lines: [` ${actor.text} `],
+      badge: null,
+      below: false,
+      priority: 10,
+      tone: "ink",
+    },
+  ];
+}
+
 export function sceneNotes(input: NoteInput): Note[] {
-  return [...roomNotes(input), ...gateNotes(input), ...entityNotes(input)];
+  return [...actorNotes(input), ...roomNotes(input), ...gateNotes(input), ...entityNotes(input)];
 }

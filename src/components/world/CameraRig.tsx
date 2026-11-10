@@ -6,6 +6,7 @@ import {
   clampToBounds,
   fitMargin,
   fitView,
+  followZoom,
   groundPoint,
   viewDirection,
 } from "./camera-math.js";
@@ -13,7 +14,6 @@ import type { Point } from "./layout-types.js";
 import { useScene } from "./scene-context.js";
 import { glide, snapSpring, stepSpring, type Spring } from "./spring.js";
 
-const followZoom = 21;
 const maxZoom = 54;
 const overviewMs = 1400;
 const zoomStep = 0.0016;

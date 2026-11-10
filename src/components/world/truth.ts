@@ -1,3 +1,4 @@
+import type { Expr } from "../../contract/expr.schema.js";
 import type { GameState } from "../../contract/game.schema.js";
 import type { Connection, WorldEntity, WorldSpec } from "../../contract/world.schema.js";
 import { isTraversable } from "../../domain/world-lookup.js";
@@ -24,15 +25,25 @@ export function switchIsOn(state: GameState, entity: WorldEntity): boolean {
   return entity.setsFlag !== null && state.activeFlags[entity.setsFlag] === true;
 }
 
+function wants(expr: Expr, entity: WorldEntity): boolean {
+  switch (expr.op) {
+    case "true":
+      return false;
+    case "hasItem":
+      return expr.itemId === entity.grantsItemId;
+    case "flag":
+      return expr.value && expr.flagId === entity.setsFlag;
+    case "all":
+    case "any":
+      return expr.of.some((child) => wants(child, entity));
+  }
+}
+
 export function keyOpens(world: WorldSpec, entity: WorldEntity): string[] {
-  const grants = entity.grantsItemId;
-  const flag = entity.setsFlag;
   return world.connections
-    .filter((connection) => {
-      const needs = JSON.stringify(connection.traversableWhen);
-      const byItem = grants !== null && needs.includes(`"itemId":"${grants}"`);
-      const byFlag = flag !== null && needs.includes(`"flagId":"${flag}"`);
-      return byItem || byFlag || entity.blocksConnectionId === connection.id;
-    })
+    .filter(
+      (connection) =>
+        entity.blocksConnectionId === connection.id || wants(connection.traversableWhen, entity),
+    )
     .map((connection) => connection.id);
 }

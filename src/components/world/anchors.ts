@@ -9,6 +9,7 @@ import {
   type Point,
   type SceneLayout,
 } from "./layout-types.js";
+import { walkRoute } from "./walk.js";
 
 const standOff = 0.75;
 const epsilon = 1e-6;
@@ -59,6 +60,30 @@ export function sceneFromGrid(
 
 export function actorAnchor(world: WorldSpec, layout: SceneLayout, state: GameState): Point {
   return sceneFromGrid(world, layout, state.position, state.currentRoomId);
+}
+
+export type PathLeg = { from: Point; to: Point };
+
+export function pathLegs(
+  world: WorldSpec,
+  layout: SceneLayout,
+  path: ReadonlyArray<GridPoint>,
+): PathLeg[] {
+  const stops = path.map((point) => ({
+    at: sceneFromGrid(world, layout, point),
+    roomId: roomFor(world, point, null)?.id ?? null,
+  }));
+  const open = new Set(layout.corridors.map((corridor) => corridor.connectionId));
+  return stops.slice(1).flatMap((stop, index): PathLeg[] => {
+    const before = stops[index];
+    if (before === undefined) return [];
+    const route =
+      before.roomId === null || stop.roomId === null
+        ? null
+        : walkRoute(layout, before.at, before.roomId, stop.at, stop.roomId, open);
+    if (route === null) return [{ from: before.at, to: stop.at }];
+    return route.legs.filter((leg) => !leg.hidden).map((leg) => ({ from: leg.from, to: leg.to }));
+  });
 }
 
 export function pathAnchors(

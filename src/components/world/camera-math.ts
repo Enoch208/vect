@@ -3,6 +3,7 @@ import type { Point, SceneBounds } from "./layout-types.js";
 export const cameraPitch = (35 * Math.PI) / 180;
 export const cameraYaw = (45 * Math.PI) / 180;
 export const fitMargin = 0.9;
+export const followZoom = 21;
 const pitch = cameraPitch;
 const yaw = cameraYaw;
 

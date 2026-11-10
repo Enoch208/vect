@@ -28,6 +28,7 @@ export type ThemeKit = {
   gateOpen: string;
   ink: string;
   edge: string;
+  hairline: string;
   paper: string;
   fog: { color: string; near: number; far: number };
   lights: LightRigSpec;
@@ -71,6 +72,7 @@ const kits: Record<Theme, Omit<ThemeKit, "propVariants">> = {
     wall: matte("#F5F5F3"),
     trim: matte("#D5DBE1", 0.8),
     fixture: matte("#C9D1D9", 0.7),
+    hairline: "#CBD1D7",
     lights: { ...sharedLights, fillColor: "#E6EEF8" },
   },
   temple: {
@@ -80,6 +82,7 @@ const kits: Record<Theme, Omit<ThemeKit, "propVariants">> = {
     wall: matte("#F6F3EC"),
     trim: matte("#DDD0B6", 0.85),
     fixture: matte("#D3C4A4", 0.8),
+    hairline: "#D9CDB4",
     lights: { ...sharedLights, keyColor: "#FFF6E6", fillColor: "#F5EEDF" },
   },
   castle: {
@@ -89,6 +92,7 @@ const kits: Record<Theme, Omit<ThemeKit, "propVariants">> = {
     wall: matte("#F0EFEC"),
     trim: matte("#C9C7C0", 0.9),
     fixture: matte("#BDBBB4", 0.85),
+    hairline: "#C6C5BF",
     lights: { ...sharedLights, keyIntensity: 1, fillColor: "#ECECEC" },
   },
 };

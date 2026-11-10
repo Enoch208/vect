@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { GameAction, GameState } from "../../src/contract/game.schema.js";
 import type { WorldSpec } from "../../src/contract/world.schema.js";
-import { actorAnchor, pathAnchors } from "../../src/components/world/anchors.js";
+import { actorAnchor, pathAnchors, pathLegs } from "../../src/components/world/anchors.js";
 import { layoutWorld } from "../../src/components/world/layout.js";
 import { gateStates, isUsed, keyOpens, switchIsOn } from "../../src/components/world/truth.js";
 import { createInitialState, stepGame } from "../../src/domain/step-game.js";
@@ -90,5 +90,17 @@ describe("actor anchor", () => {
       { x: 1, z: 0 },
     ]);
     expect(points).toEqual([layout.rooms[0]?.center, layout.rooms[1]?.center]);
+  });
+
+  it("draws a recorded path through the doorways, never through a wall", () => {
+    const legs = pathLegs(observatory, layout, [
+      { x: 0, z: 0 },
+      { x: 1, z: 0 },
+    ]);
+    expect(legs).toHaveLength(3);
+    expect(legs[0]?.from).toEqual(layout.rooms[0]?.center);
+    expect(legs[2]?.to).toEqual(layout.rooms[1]?.center);
+    expect(legs.every((leg) => leg.from[1] === 0 && leg.to[1] === 0)).toBe(true);
+    expect(pathLegs(observatory, layout, [{ x: 0, z: 0 }])).toEqual([]);
   });
 });

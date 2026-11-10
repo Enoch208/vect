@@ -32,6 +32,7 @@ export type CorridorLayout = {
   gate: Point;
   gateEntityId: string | null;
   gated: boolean;
+  conditional: boolean;
 };
 
 export type EntityLayout = {

@@ -63,7 +63,7 @@ function along(
   };
 }
 
-function roomBlocks(room: RoomLayout, gated: ReadonlySet<string>): Block[] {
+function roomBlocks(room: RoomLayout, framed: ReadonlySet<string>): Block[] {
   const half = room.size / 2;
   const plinth: Block = {
     part: "plinth",
@@ -84,7 +84,7 @@ function roomBlocks(room: RoomLayout, gated: ReadonlySet<string>): Block[] {
       along(room, side, from, to, height, "wall", dims.wallThickness),
     );
     const frames = openings
-      .filter((opening) => gated.has(opening.connectionId))
+      .filter((opening) => framed.has(`${room.id}:${opening.connectionId}`))
       .flatMap((opening) => {
         const post = dims.wallThickness + 0.12;
         const left = opening.offset - dims.doorWidth / 2;
@@ -133,11 +133,17 @@ function corridorBlocks(corridor: CorridorLayout): Block[] {
 }
 
 export function architectureBlocks(layout: SceneLayout): Block[] {
-  const gated = new Set(
-    layout.corridors.filter((corridor) => corridor.gated).map((corridor) => corridor.connectionId),
+  const framed = new Set(
+    layout.corridors
+      .filter((corridor) => corridor.kind === "corridor" && corridor.gateEntityId !== null)
+      .map((corridor) => {
+        const atStart =
+          corridor.gate[0] === corridor.from[0] && corridor.gate[1] === corridor.from[1];
+        return `${atStart ? corridor.fromRoomId : corridor.toRoomId}:${corridor.connectionId}`;
+      }),
   );
   return [
-    ...layout.rooms.flatMap((room) => roomBlocks(room, gated)),
+    ...layout.rooms.flatMap((room) => roomBlocks(room, framed)),
     ...layout.corridors.flatMap(corridorBlocks),
   ];
 }

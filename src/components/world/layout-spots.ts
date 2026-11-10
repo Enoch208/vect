@@ -1,6 +1,7 @@
 import type { Disc, Point, RoomLayout } from "./layout-types.js";
 
 const wallInset = 0.4;
+const breathing = 0.12;
 const ringStep = 0.3;
 const ringCount = 24;
 const spokes = 24;
@@ -50,7 +51,7 @@ export function findFreeSpot(
   let bestClearance = Number.NEGATIVE_INFINITY;
   for (const point of candidates(room, desired, radius)) {
     const free = clearance(point, radius, taken);
-    if (free >= 0) return point;
+    if (free >= breathing) return point;
     if (free > bestClearance) {
       best = point;
       bestClearance = free;

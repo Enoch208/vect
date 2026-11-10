@@ -10,6 +10,9 @@ import { Tag } from "./Tag.js";
 import { continues } from "./transition.js";
 import { stride, walkRoute, type Route } from "./walk.js";
 
+export const actorHeight = { player: 2.3, agent: 1.9 } as const;
+export const actorName = { player: "YOU", agent: "TEST AGENT" } as const;
+
 const pace: SpringConfig = { stiffness: 26, damping: 10.2 };
 const floorLift = 0.04;
 const leanPerSpeed = 0.022;
@@ -95,11 +98,7 @@ export function Avatar({ anchor, state, openConnectionIds, actor }: AvatarProps)
       </group>
       {createPortal(
         <group ref={chip} position={[anchor[0], floorLift, anchor[1]]}>
-          <Tag
-            anchor={[0, actor === "player" ? 2.3 : 1.9, 0]}
-            lines={[actor === "player" ? "YOU" : "TEST AGENT"]}
-            tone="actor"
-          />
+          <Tag anchor={[0, actorHeight[actor], 0]} lines={[actorName[actor]]} tone="actor" />
         </group>,
         overlay,
       )}
