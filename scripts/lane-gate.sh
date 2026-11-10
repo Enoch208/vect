@@ -12,24 +12,31 @@ case "$lane" in
 esac
 
 present=""
+lintable=""
 for path in $paths; do
   if [ -n "$(find "$path" -type f 2>/dev/null | head -n 1)" ]; then
     present="$present $path"
   fi
+  if [ -n "$(find "$path" -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.mjs' \) 2>/dev/null | head -n 1)" ]; then
+    lintable="$lintable $path"
+  fi
 done
 
 printf '== %s: typecheck\n' "$lane"
-npx tsc -p "tsconfig.$lane.json"
+pnpm exec tsc -p "tsconfig.$lane.json"
+
+if [ -n "$lintable" ]; then
+  printf '== %s: lint\n' "$lane"
+  pnpm exec eslint --no-warn-ignored $lintable
+  if [ -f eslint.local.config.js ]; then
+    pnpm exec eslint -c eslint.local.config.js --no-warn-ignored $lintable
+  fi
+fi
 
 if [ -n "$present" ]; then
-  printf '== %s: lint\n' "$lane"
-  npx eslint --no-warn-ignored $present
-  if [ -f eslint.local.config.js ]; then
-    npx eslint -c eslint.local.config.js --no-warn-ignored $present
-  fi
   printf '== %s: format\n' "$lane"
-  npx prettier --check --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude $present
+  pnpm exec prettier --check --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude $present
 fi
 
 printf '== %s: test\n' "$lane"
-npx vitest run --project "$lane" --passWithNoTests
+pnpm exec vitest run --project "$lane" --passWithNoTests
