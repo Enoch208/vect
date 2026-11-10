@@ -6,12 +6,33 @@ const ringStep = 0.3;
 const ringCount = 24;
 const spokes = 24;
 
-function clearance(point: Point, radius: number, taken: readonly Disc[]): number {
-  return taken.reduce(
+export type Lane = { from: Point; to: Point; r: number };
+
+function laneClearance(point: Point, radius: number, lane: Lane): number {
+  const dx = lane.to[0] - lane.from[0];
+  const dz = lane.to[1] - lane.from[1];
+  const lengthSquared = dx * dx + dz * dz;
+  const dot = (point[0] - lane.from[0]) * dx + (point[1] - lane.from[1]) * dz;
+  const share = lengthSquared === 0 ? 0 : Math.min(1, Math.max(0, dot / lengthSquared));
+  return (
+    Math.hypot(point[0] - lane.from[0] - share * dx, point[1] - lane.from[1] - share * dz) -
+    radius -
+    lane.r
+  );
+}
+
+function clearance(
+  point: Point,
+  radius: number,
+  taken: readonly Disc[],
+  lanes: readonly Lane[],
+): number {
+  const discs = taken.reduce(
     (least, disc) =>
       Math.min(least, Math.hypot(point[0] - disc.x, point[1] - disc.z) - disc.r - radius),
     Number.POSITIVE_INFINITY,
   );
+  return lanes.reduce((least, lane) => Math.min(least, laneClearance(point, radius, lane)), discs);
 }
 
 function clampInside(room: RoomLayout, point: Point, radius: number): Point {
@@ -46,11 +67,12 @@ export function findFreeSpot(
   desired: Point,
   radius: number,
   taken: readonly Disc[],
+  lanes: readonly Lane[] = [],
 ): Point {
   let best: Point = clampInside(room, desired, radius);
   let bestClearance = Number.NEGATIVE_INFINITY;
   for (const point of candidates(room, desired, radius)) {
-    const free = clearance(point, radius, taken);
+    const free = clearance(point, radius, taken, lanes);
     if (free >= breathing) return point;
     if (free > bestClearance) {
       best = point;

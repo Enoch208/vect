@@ -1,6 +1,7 @@
 import type { EntityKind } from "../../contract/codes.js";
 import type { GameState } from "../../contract/game.schema.js";
 import type { WorldEntity, WorldSpec } from "../../contract/world.schema.js";
+import { actorAnchor } from "./anchors.js";
 import { layoutWorld } from "./layout.js";
 import type { CorridorLayout, Point, SceneLayout } from "./layout-types.js";
 import { flip, samePoint, turn, unit } from "./map-geometry.js";
@@ -34,11 +35,15 @@ export type GateView = {
 
 export type GateFrame = { at: Point; out: Point; across: Point; aside: Point };
 
-export function planMap(world: WorldSpec, highlightKey: string): MapPlan {
+export function planMap(world: WorldSpec, highlightKey: string, state?: GameState): MapPlan {
   const layout = layoutWorld(world);
   const highlights = new Set(highlightKey.split(" ").filter((id) => id !== ""));
   const tags = assignTags(world, layout);
-  return { layout, tags, notes: planNotes(world, layout, tags, highlights), highlights };
+  const actor =
+    state === undefined
+      ? undefined
+      : { roomId: state.currentRoomId, at: actorAnchor(world, layout, state) };
+  return { layout, tags, notes: planNotes(world, layout, tags, highlights, actor), highlights };
 }
 
 export function buildModel(plan: MapPlan, world: WorldSpec, state: GameState): MapModel {

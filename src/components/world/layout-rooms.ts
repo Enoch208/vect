@@ -9,7 +9,7 @@ import {
   type RoomLayout,
   type Side,
 } from "./layout-types.js";
-import { findFreeSpot } from "./layout-spots.js";
+import { findFreeSpot, type Lane } from "./layout-spots.js";
 
 const laneSpacing = 2.2;
 const padReach = 0.55;
@@ -89,7 +89,14 @@ function padSpot(room: RoomLayout, toward: RoomLayout, pads: Disc[]): Point {
     room.center[0] + (dx / length) * reach,
     room.center[1] + (dz / length) * reach,
   ];
-  const spot = findFreeSpot(room, desired, padRadius, [...reservedDiscs(room), ...pads]);
+  const lanes = room.openings.flatMap((opening): Lane[] => {
+    const threshold = inwardPoint(room, opening.point, approachDepth);
+    return [
+      { from: room.center, to: threshold, r: arrivalRadius },
+      { from: threshold, to: opening.point, r: arrivalRadius },
+    ];
+  });
+  const spot = findFreeSpot(room, desired, padRadius, [...reservedDiscs(room), ...pads], lanes);
   pads.push({ x: spot[0], z: spot[1], r: padRadius });
   return spot;
 }

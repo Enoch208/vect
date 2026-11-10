@@ -12,7 +12,7 @@ const sheet = { display: "block", userSelect: "none" } as const;
 
 export function WorldMap({ world, state, path, highlightIds }: WorldMapProps): ReactElement {
   const highlightKey = highlightIds.join(" ");
-  const plan = useMemo(() => planMap(world, highlightKey), [world, highlightKey]);
+  const plan = useMemo(() => planMap(world, highlightKey, state), [world, highlightKey, state]);
   const model = buildModel(plan, world, state);
   const view = viewBoxOf(plan.layout.bounds);
   return (
