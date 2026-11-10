@@ -12,7 +12,10 @@ import { loaderTimeline } from "./loader-timeline.js";
 
 const played = { once: false };
 
-const clock = () => performance.now();
+const clock = {
+  now: () => performance.now(),
+  isoNow: () => new Date().toISOString(),
+};
 
 export function shouldPlayLoader(): boolean {
   return typeof window !== "undefined" && !played.once && !prefersReducedMotion();
