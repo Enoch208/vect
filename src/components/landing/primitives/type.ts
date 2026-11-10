@@ -6,7 +6,7 @@ export const dashedRuleVertical =
 
 export const fluidUnit = "[--spacing:min(10px,calc(100vw/39))] lg:[--spacing:calc(100vw/172.8)]";
 
-const displayBase = "font-display font-semibold uppercase leading-none tracking-[-0.035em]";
+const displayBase = "font-display font-bold uppercase leading-[0.92] tracking-[-0.045em]";
 
 export const display = {
   xl: `${displayBase} text-[length:calc(var(--spacing)*3.2)] lg:text-[length:calc(var(--spacing)*5.6)]`,

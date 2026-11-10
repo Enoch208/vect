@@ -14,7 +14,7 @@ export function Grain() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-50 opacity-[0.05]"
+      className="pointer-events-none fixed inset-0 z-50 opacity-[0.16] mix-blend-multiply"
       style={{ backgroundImage: grainImage }}
     />
   );

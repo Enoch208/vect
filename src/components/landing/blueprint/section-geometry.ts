@@ -5,6 +5,7 @@ import {
   domeStrokes,
   floor,
   roomStrokes,
+  slab,
   wall,
   wallStrokes,
   type Opening,
@@ -17,6 +18,7 @@ export type RoomFrame = { id: string; left: number; right: number; top: number; 
 export type SectionDrawing = {
   width: number;
   height: number;
+  y: number;
   strokes: Stroke[];
   labels: DrawingLabel[];
   rooms: RoomFrame[];
@@ -79,11 +81,12 @@ export function sectionDrawing(world: WorldSpec): SectionDrawing {
   const first = rooms[0];
   const last = rooms.at(-1);
   if (first === undefined || last === undefined) {
-    return { width: 0, height: 0, strokes: [], labels: [], rooms: [] };
+    return { width: 0, height: 0, y: 0, strokes: [], labels: [], rooms: [] };
   }
   const width = last.right + wall + margin;
   const strokes: Stroke[] = [
-    { id: "ground", d: linePath(40, floor, width - 40, floor), weight: "light", start: 0 },
+    { id: "ground", d: linePath(24, floor, width - 24, floor), weight: "heavy", start: 0 },
+    { id: "grade", d: linePath(24, floor + 6, width - 24, floor + 6), weight: "hair", start: 0 },
     ...stairStrokes(first.left - wall, floor, width),
   ];
   const labels: DrawingLabel[] = [];
@@ -133,5 +136,26 @@ export function sectionDrawing(world: WorldSpec): SectionDrawing {
     top,
     floor,
   }));
-  return { width, height: floor + 70, strokes, labels, rooms: frames };
+  const plateTop = plateOrigin(rooms, world.theme);
+  return {
+    width,
+    y: plateTop,
+    height: floor + 78 - plateTop,
+    strokes,
+    labels,
+    rooms: frames,
+  };
+}
+
+function plateOrigin(rooms: readonly Placed[], theme: WorldSpec["theme"]): number {
+  const first = rooms[0];
+  if (first === undefined) return 0;
+  const tallest = rooms.reduce((best, item) => (item.top < best.top ? item : best), first);
+  let top = tallest.top - slab - 28;
+  if (theme === "observatory") {
+    const inner = tallest.right - tallest.left;
+    const radius = inner * 0.3;
+    top = Math.min(top, tallest.top - slab - radius - 64);
+  }
+  return Math.max(0, top);
 }

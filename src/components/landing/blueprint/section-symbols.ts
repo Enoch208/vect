@@ -76,37 +76,38 @@ export function playerStrokes(x: number, floorY: number, width: number): Stroke[
   }));
 }
 
-export function stairStrokes(right: number, floor: number, width: number): Stroke[] {
-  const steps = 6;
-  const rise = 11;
-  const strokes: Stroke[] = [
+export function stairStrokes(right: number, floorY: number, width: number): Stroke[] {
+  const steps = 7;
+  const rise = 9;
+  const run = 14;
+  const flight = steps * run;
+  const parts = [`M${String(right - flight)} ${String(floorY)}`];
+  for (let step = 0; step < steps; step += 1) {
+    const x = right - flight + step * run;
+    const y = floorY - (steps - step) * rise;
+    parts.push(`V${String(y)}H${String(x + run)}`);
+  }
+  parts.push(`V${String(floorY)}`);
+  const railX = right - flight - 16;
+  const railTop = floorY - steps * rise - 18;
+  return [
     {
-      id: "stair-block",
-      d: rectPath(right - 112, floor - steps * rise, 112, steps * rise),
+      id: "stair-flight",
+      d: parts.join(""),
       weight: "light",
-      start: (right - 112) / width,
+      start: (right - flight) / width,
     },
     {
       id: "stair-rail",
-      d: linePath(right - 126, floor, right - 126, floor - steps * rise - 22),
+      d: linePath(railX, floorY, railX, railTop),
       weight: "light",
-      start: (right - 126) / width,
+      start: railX / width,
     },
     {
       id: "stair-cap",
-      d: linePath(right - 132, floor - steps * rise - 22, right - 40, floor - steps * rise - 22),
+      d: linePath(railX - 6, railTop, right - flight + 22, railTop),
       weight: "light",
-      start: (right - 132) / width,
+      start: (railX - 6) / width,
     },
   ];
-  for (let step = 1; step < steps; step += 1) {
-    const inset = step * 12;
-    strokes.push({
-      id: `stair-${String(step)}`,
-      d: linePath(right - 112 + inset, floor - step * rise, right, floor - step * rise),
-      weight: "hair",
-      start: (right - 112 + inset) / width,
-    });
-  }
-  return strokes;
 }

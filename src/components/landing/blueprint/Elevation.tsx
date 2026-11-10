@@ -3,10 +3,10 @@ import type { WorldSpec } from "../../../contract/world.schema.js";
 import type { Stroke, StrokeTone, Weight } from "./paths.js";
 import { sectionDrawing } from "./section-geometry.js";
 
-const strokeWidth: Record<Weight, number> = { heavy: 1.5, light: 1.25, hair: 0.7 };
+const strokeWidth: Record<Weight, number> = { heavy: 1.15, light: 0.8, hair: 0.5 };
 
 const toneClass: Record<StrokeTone, string> = {
-  ink: "text-ink/70",
+  ink: "text-ink",
   key: "text-caution",
   door: "text-accent",
   portal: "text-accent",
@@ -40,7 +40,7 @@ export function Elevation({
   underlay,
 }: ElevationProps) {
   const drawing = useMemo(() => sectionDrawing(world), [world]);
-  const box = view ?? { x: 0, y: 0, width: drawing.width, height: drawing.height };
+  const box = view ?? { x: 0, y: drawing.y, width: drawing.width, height: drawing.height };
   return (
     <svg
       role="img"
@@ -82,7 +82,7 @@ function StrokeGroup({ tone, strokes }: { tone: StrokeTone; strokes: readonly St
       stroke="currentColor"
       fill={tone === "player" ? "currentColor" : "none"}
       strokeLinejoin="miter"
-      strokeLinecap="round"
+      strokeLinecap="butt"
     >
       {drawn.map((stroke) => (
         <path
@@ -90,7 +90,7 @@ function StrokeGroup({ tone, strokes }: { tone: StrokeTone; strokes: readonly St
           d={stroke.d}
           data-draw=""
           data-start={stroke.start.toFixed(3)}
-          strokeWidth={tone === "player" ? 2.4 : strokeWidth[stroke.weight]}
+          strokeWidth={tone === "player" ? 1.65 : strokeWidth[stroke.weight]}
           vectorEffect="non-scaling-stroke"
         />
       ))}

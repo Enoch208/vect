@@ -33,12 +33,20 @@ function stroke(
 }
 
 function glazing(id: string, left: number, top: number, w: number, h: number, width: number) {
-  const bays = Math.max(2, Math.round(w / 34));
+  const bays = Math.max(3, Math.round(w / 26));
+  const inset = 3.5;
   const strokes = [
     stroke(`${id}-frame`, rectPath(left, top, w, h), "light", left, width),
     stroke(
+      `${id}-sash`,
+      rectPath(left + inset, top + inset, w - inset * 2, h - inset * 2),
+      "hair",
+      left,
+      width,
+    ),
+    stroke(
       `${id}-transom`,
-      linePath(left, top + h * 0.38, left + w, top + h * 0.38),
+      linePath(left, top + h * 0.34, left + w, top + h * 0.34),
       "hair",
       left,
       width,

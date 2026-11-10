@@ -49,9 +49,9 @@ export function Hero({ world, drawingVisible, onOpenStudio, onOpenExample }: Her
         </div>
         <div
           {...drawingTarget}
-          className={`[--hero-drawing-max:88%] lg:[--hero-drawing-max:72%] ${drawingVisible ? "visible" : "invisible"}`}
+          className={`[--hero-drawing-max:94%] lg:[--hero-drawing-max:92%] ${drawingVisible ? "visible" : "invisible"}`}
           style={{
-            width: `min(var(--hero-drawing-max), calc((100dvh - 330px) * ${aspect.toFixed(4)}))`,
+            width: `min(var(--hero-drawing-max), calc((100dvh - 196px) * ${aspect.toFixed(4)}))`,
           }}
         >
           <Elevation world={world} />

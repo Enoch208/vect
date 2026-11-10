@@ -32,12 +32,12 @@ export function Statement({ world, onOpenExample }: StatementProps) {
       aria-labelledby="statement-title"
       className="grid grid-cols-1 border-b border-rule lg:grid-cols-2"
     >
-      <div className="relative flex items-center justify-center overflow-hidden border-rule max-lg:border-b lg:min-h-[calc(var(--spacing)*76.8)] lg:border-r">
+      <div className="relative min-h-[78vw] overflow-hidden border-rule max-lg:border-b lg:min-h-[calc(var(--spacing)*76.8)] lg:border-r">
         <img
           data-settle=""
           src="/landing/observatory-three-quarter.png"
           alt={`${world.title}, the example world as a model you can walk`}
-          className="h-full max-h-[calc(var(--spacing)*76.8)] w-full object-contain"
+          className="absolute inset-0 h-full w-full origin-center scale-[1.16] object-cover object-[38%_34%]"
         />
       </div>
       <div className="flex flex-col">
