@@ -7,6 +7,7 @@ import { LiveBoundary } from "../primitives/LiveBoundary.js";
 import { display } from "../primitives/type.js";
 import { Elevation } from "../blueprint/Elevation.js";
 import { caseFigures, useCaseCopy } from "./use-case-figures.js";
+import { UseCaseArtwork } from "./UseCaseArtwork.js";
 
 type UseCasesProps = { world: WorldSpec; twin: WorldSpec };
 
@@ -16,7 +17,7 @@ function Figures({ world, twin, shown }: UseCasesProps & { shown: number }) {
     <div
       key={useCaseCopy[index]?.title ?? String(index)}
       aria-hidden={index !== shown || shown === 0 || shown === 7}
-      className={`absolute right-[5%] bottom-[6%] left-[5%] flex items-center justify-center border border-rule bg-paper/95 p-[calc(var(--spacing)*3)] transition-opacity duration-500 motion-reduce:transition-none ${index === shown && shown !== 0 && shown !== 7 ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      className={`absolute right-[5%] bottom-[6%] left-[5%] flex items-center justify-center border border-rule bg-paper/95 p-[calc(var(--spacing)*3)] transition-[opacity,translate] duration-400 motion-reduce:translate-y-0 motion-reduce:transition-none ${index === shown && shown !== 0 && shown !== 7 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}
     >
       <div className="w-full max-w-[calc(var(--spacing)*60)]">{figure}</div>
     </div>
@@ -24,20 +25,14 @@ function Figures({ world, twin, shown }: UseCasesProps & { shown: number }) {
 }
 
 function Rows({ world, twin }: UseCasesProps) {
-  const [open, setOpen] = useState<number | null>(0);
-  const shown = open ?? 0;
+  const [shown, setShown] = useState(0);
+  function selectRow(next: number | null): void {
+    if (next !== null) setShown(next);
+  }
   return (
     <>
       <div className="relative flex min-h-[115vw] items-center justify-center overflow-hidden border-rule p-[calc(var(--spacing)*6)] max-lg:border-b lg:min-h-[calc(var(--spacing)*100)] lg:border-r">
-        <img
-          src="/landing/observatory-poster.webp"
-          alt="Original observatory concept artwork with a vermilion sun"
-          loading="lazy"
-          width={1086}
-          height={1448}
-          className="absolute inset-0 h-full w-full object-cover transition-[object-position] duration-700 motion-reduce:transition-none"
-          style={{ objectPosition: `${String(45 + shown * 2)}% center` }}
-        />
+        <UseCaseArtwork shown={shown} />
         <span className="absolute top-3 left-3 bg-paper/90 px-2 py-1 font-mono text-[10px] uppercase text-muted">
           Concept study
         </span>
@@ -60,7 +55,7 @@ function Rows({ world, twin }: UseCasesProps) {
             Made for people who build worlds
           </h2>
         </div>
-        <Accordion items={useCaseCopy} defaultOpen={0} onOpenChange={setOpen} />
+        <Accordion items={useCaseCopy} defaultOpen={0} onOpenChange={selectRow} />
       </div>
     </>
   );
