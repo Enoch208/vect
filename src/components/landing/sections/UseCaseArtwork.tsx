@@ -1,27 +1,10 @@
 import { useRef } from "react";
 import { gsap } from "gsap";
+import { aiArtwork } from "../landing-assets.js";
+import { AiImage } from "../primitives/AiImage.js";
 import { useScene } from "../use-scene.js";
 
-const artwork = [
-  {
-    src: "/landing/observatory-poster.webp",
-    alt: "Observatory concept artwork with a vermilion sun",
-    width: 1086,
-    height: 1448,
-  },
-  {
-    src: "/landing/observatory-study.webp",
-    alt: "Perspective concept study of an observatory and its connecting rooms",
-    width: 1448,
-    height: 1086,
-  },
-  {
-    src: "/landing/portal-pavilion.webp",
-    alt: "Portal pavilion concept study with a domed tower and entrance stairs",
-    width: 1254,
-    height: 1254,
-  },
-] as const;
+const artwork = [aiArtwork.poster, aiArtwork.study, aiArtwork.pavilion] as const;
 
 const scenes = [0, 1, 2, 1, 2, 0, 1, 2] as const;
 
@@ -57,15 +40,12 @@ export function UseCaseArtwork({ shown }: { shown: number }) {
             aria-hidden={!active}
             className={`absolute inset-0 bg-paper transition-[opacity,scale] duration-400 ease-[cubic-bezier(.25,.1,.25,1)] motion-reduce:scale-100 motion-reduce:transition-none ${active ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"}`}
           >
-            <img
-              data-case-zoom=""
-              src={picture.src}
-              alt={picture.alt}
-              loading="lazy"
-              decoding="async"
-              width={picture.width}
-              height={picture.height}
-              className="absolute inset-0 h-full w-full object-cover"
+            <AiImage
+              art={picture}
+              caption="Concept study"
+              dataAttribute="data-case-zoom"
+              imageClassName="absolute inset-0 h-full w-full object-cover"
+              labelClassName="absolute top-3 left-3 bg-paper/90 px-2 py-1 text-ink"
             />
           </div>
         );

@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { WorldSpec } from "../../../contract/world.schema.js";
 import { Button } from "../primitives/Buttons.js";
+import { aiArtwork } from "../landing-assets.js";
+import { AiImage } from "../primitives/AiImage.js";
 import { PromptField } from "../primitives/PromptField.js";
 import { dashedRule, dashedRuleVertical, display, mono } from "../primitives/type.js";
 
@@ -53,19 +55,13 @@ export function Cta({ world, onOpenStudio, onPrompt }: CtaProps) {
         </h2>
         <Button onClick={onOpenStudio}>Open the studio</Button>
         <PromptField onPrompt={onPrompt} className="w-full max-w-[calc(var(--spacing)*52)]" />
-        <figure className="w-full max-w-[calc(var(--spacing)*66)]">
-          <img
-            src="/landing/portal-pavilion.webp"
-            alt={`Portal pavilion concept inspired by ${world.title}`}
-            width={1254}
-            height={1254}
-            loading="lazy"
-            className="block w-full"
-          />
-          <figcaption className={`${mono.xs} pb-3 text-center text-muted`}>
-            Portal pavilion · Concept study
-          </figcaption>
-        </figure>
+        <AiImage
+          art={aiArtwork.pavilion}
+          caption={`Portal pavilion · Concept study for ${world.title}`}
+          className="w-full max-w-[calc(var(--spacing)*66)]"
+          imageClassName="block w-full"
+          labelClassName="justify-center pb-3 text-center text-ink"
+        />
       </div>
     </section>
   );

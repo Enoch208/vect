@@ -34,7 +34,6 @@ export function Hero({ world, drawingVisible, onOpenStudio, onOpenExample }: Her
       aria-labelledby="hero-title"
       className="flex flex-col border-b border-rule lg:min-h-[calc(100dvh-16px-56px)]"
     >
-      <link rel="preload" as="image" href="/landing/observatory-engraving.webp" />
       <div className="relative flex min-h-[110vw] flex-1 items-center justify-center border-b border-rule lg:min-h-0">
         <Ruler />
         <PointerLines />
@@ -70,7 +69,7 @@ export function Hero({ world, drawingVisible, onOpenStudio, onOpenExample }: Her
         <span
           className={`${mono.xs} absolute bottom-[calc(var(--spacing)*3.6)] right-[calc(var(--spacing)*3.6)] text-muted max-lg:hidden`}
         >
-          Scroll to reveal the drawing ↓
+          Scroll to reveal the construction lines ↓
         </span>
       </div>
       <div className="grid grid-cols-1 gap-px bg-rule lg:grid-cols-[58%_27%_15%]">

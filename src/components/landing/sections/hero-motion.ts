@@ -21,21 +21,6 @@ function animateElevation(element: HTMLElement, desktop: boolean): void {
       invalidateOnRefresh: true,
     },
   });
-  timeline.fromTo(
-    element.querySelectorAll("[data-elevation-ink], [data-elevation-labels]"),
-    { opacity: 0 },
-    { opacity: 1, duration: 0.65, ease: "none" },
-    0.1,
-  );
-  timeline.to(
-    element.querySelectorAll("[data-elevation-depth]"),
-    {
-      opacity: 0,
-      duration: 0.7,
-      ease: "power1.inOut",
-    },
-    0,
-  );
   timeline.to(
     element.querySelectorAll("[data-elevation-guides]"),
     {

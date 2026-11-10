@@ -33,11 +33,8 @@ function Rows({ world, twin }: UseCasesProps) {
     <>
       <div className="relative flex min-h-[115vw] items-center justify-center overflow-hidden border-rule p-[calc(var(--spacing)*6)] max-lg:border-b lg:min-h-[calc(var(--spacing)*100)] lg:border-r">
         <UseCaseArtwork shown={shown} />
-        <span className="absolute top-3 left-3 bg-paper/90 px-2 py-1 font-mono text-[10px] uppercase text-muted">
-          Concept study
-        </span>
-        <BracketLabel className="absolute top-[calc(var(--spacing)*6)] left-[calc(var(--spacing)*2.4)] bg-paper/90 px-2 py-1">
-          {`Play · ${useCaseCopy[shown]?.title ?? ""}`}
+        <BracketLabel className="absolute top-[calc(var(--spacing)*8)] left-3 bg-paper/90 px-2 py-1">
+          {`Use case · ${useCaseCopy[shown]?.title ?? ""}`}
         </BracketLabel>
         <LiveBoundary
           fallback={

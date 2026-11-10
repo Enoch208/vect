@@ -95,7 +95,7 @@ export function Loader({ world, onReveal, onDone }: LoaderProps) {
       ref={root}
       role="status"
       aria-label={`Checking the example world ${world.id}`}
-      className="fixed inset-0 z-[35] [&_[data-material]]:opacity-0"
+      className="fixed inset-0 z-[35]"
     >
       <div data-loader-backdrop="" className="absolute inset-0 bg-paper" />
       <div className="absolute inset-x-0 top-[12%] bottom-[22%] flex items-end justify-center">

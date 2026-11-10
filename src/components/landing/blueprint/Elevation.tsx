@@ -59,19 +59,6 @@ export function Elevation({
           <StrokeGroup key={tone} tone={tone} strokes={drawing.strokes} />
         ))}
       </g>
-      {architectural && world.id === "observatory-01" && (
-        <image
-          data-elevation-depth=""
-          data-material=""
-          href="/landing/observatory-engraving.webp"
-          x={0}
-          y={drawing.y}
-          width={drawing.width}
-          height={drawing.height}
-          preserveAspectRatio="none"
-          className="grayscale"
-        />
-      )}
       {showLabels && (
         <g
           data-elevation-labels={architectural ? "" : undefined}

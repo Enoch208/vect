@@ -17,7 +17,6 @@ function startOf(element: Element): number {
 
 function drawingTimeline(root: HTMLElement): gsap.core.Timeline {
   const draw = gsap.timeline({ paused: true });
-  gsap.set(root.querySelectorAll("[data-material]"), { opacity: 0 });
   root.querySelectorAll("[data-loader-drawing] [data-draw]").forEach((path) => {
     draw.fromTo(
       path,
@@ -40,11 +39,6 @@ function exit(root: HTMLElement, hooks: LoaderHooks): gsap.core.Timeline {
     clearProps: "strokeDasharray,strokeDashoffset",
   });
   const leave = gsap.timeline({ onComplete: hooks.onDone });
-  leave.to(
-    root.querySelectorAll("[data-material]"),
-    { opacity: 1, duration: 1.2, ease: "power2.inOut" },
-    0.1,
-  );
   leave.to(
     root.querySelectorAll("[data-loader-chrome]"),
     {
