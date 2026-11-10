@@ -15,8 +15,8 @@ function Figures({ world, twin, shown }: UseCasesProps & { shown: number }) {
   return figures.map((figure, index) => (
     <div
       key={useCaseCopy[index]?.title ?? String(index)}
-      aria-hidden={index !== shown}
-      className={`absolute inset-0 flex items-center justify-center p-[calc(var(--spacing)*8)] transition-opacity duration-500 motion-reduce:transition-none ${index === shown ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      aria-hidden={index !== shown || shown === 0 || shown === 7}
+      className={`absolute right-[5%] bottom-[6%] left-[5%] flex items-center justify-center border border-rule bg-paper/95 p-[calc(var(--spacing)*3)] transition-opacity duration-500 motion-reduce:transition-none ${index === shown && shown !== 0 && shown !== 7 ? "opacity-100" : "pointer-events-none opacity-0"}`}
     >
       <div className="w-full max-w-[calc(var(--spacing)*60)]">{figure}</div>
     </div>
@@ -28,8 +28,20 @@ function Rows({ world, twin }: UseCasesProps) {
   const shown = open ?? 0;
   return (
     <>
-      <div className="relative flex min-h-[75vw] items-center justify-center overflow-hidden border-rule p-[calc(var(--spacing)*6)] max-lg:order-last max-lg:border-t lg:min-h-0 lg:border-r">
-        <BracketLabel className="absolute top-[calc(var(--spacing)*2.4)] left-[calc(var(--spacing)*2.4)]">
+      <div className="relative flex min-h-[115vw] items-center justify-center overflow-hidden border-rule p-[calc(var(--spacing)*6)] max-lg:border-b lg:min-h-[calc(var(--spacing)*100)] lg:border-r">
+        <img
+          src="/landing/observatory-poster.webp"
+          alt="Original observatory concept artwork with a vermilion sun"
+          loading="lazy"
+          width={1086}
+          height={1448}
+          className="absolute inset-0 h-full w-full object-cover transition-[object-position] duration-700 motion-reduce:transition-none"
+          style={{ objectPosition: `${String(45 + shown * 2)}% center` }}
+        />
+        <span className="absolute top-3 left-3 bg-paper/90 px-2 py-1 font-mono text-[10px] uppercase text-muted">
+          Concept study
+        </span>
+        <BracketLabel className="absolute top-[calc(var(--spacing)*6)] left-[calc(var(--spacing)*2.4)] bg-paper/90 px-2 py-1">
           {`Play · ${useCaseCopy[shown]?.title ?? ""}`}
         </BracketLabel>
         <LiveBoundary

@@ -39,7 +39,7 @@ export function Problems() {
           it.
         </p>
       </div>
-      <ol className="grid grid-cols-1 gap-px bg-rule sm:grid-cols-2 lg:grid-cols-4">
+      <ol className="grid grid-cols-2 gap-px bg-rule lg:grid-cols-4">
         {problems.map((problem, index) => (
           <li
             key={problem.title}
@@ -51,10 +51,12 @@ export function Problems() {
             <div aria-hidden className={dashedRule} />
             <ProblemDiagram index={index} />
             <div className="flex flex-1 flex-col justify-between gap-6 p-[12px] lg:p-3">
-              <h3 data-reveal="" className={`${display.card} max-w-[11ch]`}>
+              <h3 data-reveal="" className={`${display.card} max-w-[11ch] max-lg:text-[18px]`}>
                 {problem.title}
               </h3>
-              <p className={`${body.m} max-w-[34ch] text-ink-72`}>{problem.body}</p>
+              <p className={`${body.m} max-w-[34ch] text-ink-72 max-lg:text-[13px]`}>
+                {problem.body}
+              </p>
             </div>
           </li>
         ))}

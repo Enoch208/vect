@@ -6,6 +6,7 @@ import { MonoLabel } from "../primitives/Label.js";
 import { Crosshair } from "../primitives/Ruler.js";
 import { body, display } from "../primitives/type.js";
 import { useReducedMotion, useScene } from "../use-scene.js";
+import { ProcessFigure, ProcessDetail } from "./ProcessFigure.js";
 import { stepsFor, type Step } from "./step-content.js";
 
 function StepBar({ step, active }: { step: Step; active: boolean }) {
@@ -59,14 +60,17 @@ function Pinned({ steps }: { steps: readonly Step[] }) {
               className="absolute inset-x-0 flex h-full items-center justify-center px-[calc(var(--spacing)*8)]"
               style={{ top: `${String(position * 100)}%` }}
             >
-              <div className="w-full">{step.drawing}</div>
+              <ProcessFigure name={step.name} drawing={step.drawing} />
             </div>
           ))}
         </div>
-        <span aria-hidden className="absolute top-1/2 right-0 left-3 h-px bg-accent" />
+        <span
+          aria-hidden
+          className="absolute bottom-[calc(var(--spacing)*3)] right-0 left-3 h-px bg-accent"
+        />
       </div>
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-1/2 z-10 -translate-y-1/2">
+        <div className="absolute inset-x-0 bottom-0 z-10">
           <div className="relative">
             {steps.map((step, position) => (
               <div key={step.name} className={position === 0 ? "" : "absolute inset-0"}>
@@ -83,10 +87,10 @@ function Pinned({ steps }: { steps: readonly Step[] }) {
             <div
               key={step.name}
               aria-hidden={position !== index}
-              className="absolute inset-x-0 flex h-full items-end justify-center px-[calc(var(--spacing)*8)] pb-[calc(var(--spacing)*10)]"
+              className="absolute inset-x-0 flex h-full items-center justify-center px-[calc(var(--spacing)*8)] pb-[calc(var(--spacing)*10)]"
               style={{ top: `${String(position * 100)}%` }}
             >
-              {step.detail}
+              <ProcessDetail name={step.name}>{step.detail}</ProcessDetail>
             </div>
           ))}
         </div>
@@ -101,9 +105,9 @@ function Stacked({ steps, className = "" }: { steps: readonly Step[]; className?
       {steps.map((step) => (
         <li key={step.name} className="border-t border-rule">
           <StepBar step={step} active />
-          <div className="grid gap-6 p-[12px] lg:grid-cols-2 lg:p-3">
-            <div>{step.drawing}</div>
-            <div className="flex items-end">{step.detail}</div>
+          <div className="grid grid-cols-1 gap-6 p-[12px] lg:grid-cols-2 lg:p-3">
+            <ProcessFigure name={step.name} drawing={step.drawing} />
+            <ProcessDetail name={step.name}>{step.detail}</ProcessDetail>
           </div>
         </li>
       ))}

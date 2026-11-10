@@ -12,13 +12,16 @@ Everything Vect uses that it did not write, with its source and terms. Versions 
 
 ## 3D models, textures, images and audio
 
-All playable scene geometry, materials and technical drawings are generated in code. The landing uses two original generated illustrations, separate from the live game renderer.
+All playable scene geometry, materials and technical drawings are generated in code. The landing uses original generated illustrations, separate from the live game renderer.
 
-| Asset                                                        | Source                                                                  | Terms                                                 | Used in                             |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------- |
-| `observatory-engraving.webp`                                 | OpenAI image generation, based on Vect's own elevation drawing          | Generated for this project; OpenAI output terms apply | Landing opening illustration        |
-| `observatory-study.webp`                                     | OpenAI image generation, based on the original observatory illustration | Generated for this project; OpenAI output terms apply | Landing architectural concept study |
-| `observatory-three-quarter.png`, `observatory-elevation.png` | Vect's own Three.js renderer                                            | Original project renders                              | Example world imagery               |
+| Asset                                                                                 | Source                                                                  | Terms                                                 | Used in                               |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------- |
+| `observatory-engraving.webp`                                                          | OpenAI image generation, based on Vect's own elevation drawing          | Generated for this project; OpenAI output terms apply | Landing opening illustration          |
+| `observatory-study.webp`                                                              | OpenAI image generation, based on the original observatory illustration | Generated for this project; OpenAI output terms apply | Landing architectural concept study   |
+| `observatory-three-quarter.png`, `observatory-elevation.png`                          | Vect's own Three.js renderer                                            | Original project renders                              | Example world imagery                 |
+| `observatory-poster.webp`                                                             | OpenAI image generation, based on Vect's original observatory study     | Generated for this project; OpenAI output terms apply | Use-cases concept artwork             |
+| `portal-pavilion.webp`                                                                | OpenAI image generation, original portal pavilion concept               | Generated for this project; OpenAI output terms apply | Closing concept illustration          |
+| `studio-capture.webp`, `play-capture.webp`, `test-capture.webp`, `proof-capture.webp` | Screenshots of Vect running locally                                     | Original project captures                             | Product cards and process walkthrough |
 
 ## Runtime libraries
 

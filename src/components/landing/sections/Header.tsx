@@ -26,7 +26,7 @@ export function Header({ onOpenStudio }: HeaderProps) {
     <header
       id="top"
       data-intro="drop"
-      className="relative z-30 grid h-[48px] grid-cols-2 border-b border-rule lg:h-[56px] lg:grid-cols-[50%_1fr_12%]"
+      className="sticky top-[8px] z-30 grid bg-paper lg:relative lg:top-auto h-[48px] grid-cols-2 border-b border-rule lg:h-[56px] lg:grid-cols-[50%_1fr_12%]"
     >
       <div className="flex items-center border-r border-rule px-[12px] lg:px-3">
         <Wordmark />

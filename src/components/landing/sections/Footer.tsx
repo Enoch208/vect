@@ -21,7 +21,7 @@ const cell =
 
 function Column({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className={`${cell} border-b lg:border-r`}>
+    <div className={`${cell} border-b border-r`}>
       <MonoLabel>{label}</MonoLabel>
       <ul className="flex flex-col gap-[calc(var(--spacing)*1.3)]">{children}</ul>
     </div>
@@ -50,8 +50,8 @@ export function Footer({ world, onOpenStudio, onOpenExample }: FooterProps) {
   useScene(root, drawWordmark);
   return (
     <footer ref={root} className="bg-paper">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[25%_repeat(3,calc(50%/3))_25%]">
-        <div className={`${cell} border-b sm:col-span-2 lg:col-span-1 lg:border-r`}>
+      <div className="grid grid-cols-2 lg:grid-cols-[25%_repeat(3,calc(50%/3))_25%]">
+        <div className={`${cell} border-b col-span-2 lg:col-span-1 lg:border-r`}>
           <p className={`${display.s} max-w-[14ch]`}>
             The AI game studio that plays what it builds
           </p>
@@ -96,8 +96,11 @@ export function Footer({ world, onOpenStudio, onOpenExample }: FooterProps) {
               </li>
             ))}
         </Column>
-        <div className="flex items-center justify-center border-b border-rule p-[calc(var(--spacing)*6)] max-lg:hidden lg:row-span-2">
-          <VectMark weight={1.1} className="size-[calc(var(--spacing)*22)] text-ink" />
+        <div className="flex items-center justify-center border-b border-rule p-3 lg:p-[calc(var(--spacing)*6)] max-lg:col-span-2 max-lg:order-last lg:row-span-2">
+          <VectMark
+            weight={1.1}
+            className="size-[calc(var(--spacing)*14)] lg:size-[calc(var(--spacing)*22)] text-ink"
+          />
         </div>
         <div className="flex flex-col justify-between border-b border-rule lg:border-r">
           <div className={cell}>
@@ -109,14 +112,15 @@ export function Footer({ world, onOpenStudio, onOpenExample }: FooterProps) {
             className={`${mono.label} group flex h-[calc(var(--spacing)*4.7)] items-stretch border-t border-rule text-muted transition-colors hover:text-ink`}
           >
             <span className="flex flex-1 items-center px-[12px] normal-case lg:px-[calc(var(--spacing)*1.3)]">
-              github.com/Enoch208/vect
+              <span className="lg:hidden">View repository</span>
+              <span className="hidden lg:inline">github.com/Enoch208/vect</span>
             </span>
             <span className="flex w-[calc(var(--spacing)*4.7)] items-center justify-center border-l border-rule">
               <HugeiconsIcon icon={ArrowRight02Icon} aria-hidden size={14} strokeWidth={1.5} />
             </span>
           </a>
         </div>
-        <div className={`${cell} border-b lg:border-r`}>
+        <div className={`${cell} border-b border-r`}>
           <MonoLabel>Engine</MonoLabel>
           <p className={`${mono.label} text-ink normal-case`}>{engineVersion}</p>
           <p className={`${mono.label} text-ink normal-case`}>{verifierVersion}</p>
@@ -131,7 +135,7 @@ export function Footer({ world, onOpenStudio, onOpenExample }: FooterProps) {
             <p className={`${mono.label} text-ink normal-case`}>{revision}</p>
           </div>
         </div>
-        <div className={`${cell} border-b lg:border-r`}>
+        <div className={`${cell} border-b border-r max-lg:col-span-2`}>
           <MonoLabel>Built with</MonoLabel>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-[calc(var(--spacing)*1.3)]">
             {stack.map((name) => (
@@ -147,7 +151,7 @@ export function Footer({ world, onOpenStudio, onOpenExample }: FooterProps) {
       </div>
       <div
         data-wordmark=""
-        className="relative px-[calc(var(--spacing)*8)] py-[calc(var(--spacing)*6)]"
+        className="relative px-[calc(var(--spacing)*2.4)] py-[calc(var(--spacing)*6)] lg:px-[calc(var(--spacing)*8)]"
       >
         <Ruler />
         <Wordmark />

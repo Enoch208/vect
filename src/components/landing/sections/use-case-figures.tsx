@@ -77,7 +77,7 @@ export function caseFigures(world: WorldSpec, twin: WorldSpec): ReactNode[] {
         { key: "Status", value: report.status },
         { key: "Digest", value: report.reportDigest.slice(0, 12) },
       ]}
-      className="mx-auto origin-center scale-150"
+      className="mx-auto w-full text-[11px]"
     />,
     locked === undefined ? (
       <Plan world={world} dimensions={false} />

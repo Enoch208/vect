@@ -7,6 +7,7 @@ import { findingCallouts } from "../blueprint/plan-callouts.js";
 import { TextButton } from "../primitives/Buttons.js";
 import { BracketLabel } from "../primitives/Label.js";
 import { LiveBoundary } from "../primitives/LiveBoundary.js";
+import { ProductFigure } from "./ProductFigure.js";
 import { body, display } from "../primitives/type.js";
 
 const gridPaper =
@@ -22,7 +23,7 @@ type CardProps = {
 
 function ProductCard({ index, title, text, action, figure }: CardProps) {
   return (
-    <article className="grid grid-cols-1 border-b border-rule lg:min-h-[calc(var(--spacing)*87)] lg:grid-cols-[25%_42.5%_32.5%]">
+    <article className="grid grid-cols-1 border-b border-rule lg:min-h-[calc(var(--spacing)*64)] lg:grid-cols-[25%_42.5%_32.5%]">
       <div className="flex flex-col border-rule lg:border-r">
         <div className="hidden flex-1 lg:block" />
         <div className="flex flex-col gap-[calc(var(--spacing)*5)] border-y border-rule p-[12px] lg:min-h-[calc(var(--spacing)*17.3)] lg:justify-between lg:p-3">
@@ -34,11 +35,9 @@ function ProductCard({ index, title, text, action, figure }: CardProps) {
         <div className="hidden flex-1 lg:block" />
       </div>
       <div
-        className={`flex items-center justify-center p-[calc(var(--spacing)*6)] max-lg:min-h-[70vw] ${gridPaper}`}
+        className={`flex items-center justify-center p-[calc(var(--spacing)*4)] max-lg:min-h-[80vw] ${gridPaper}`}
       >
-        <div className="w-full border border-rule bg-paper p-[calc(var(--spacing)*2)]">
-          {figure}
-        </div>
+        <ProductFigure kind={index === 1 ? "studio" : "proof"}>{figure}</ProductFigure>
       </div>
       <div className="flex flex-col border-rule lg:border-l">
         <div className="hidden flex-1 lg:block" />

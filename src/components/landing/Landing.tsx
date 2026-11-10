@@ -19,6 +19,7 @@ import { UseCases } from "./sections/UseCases.js";
 import { Walkthrough } from "./sections/Walkthrough.js";
 import { useIntro } from "./use-intro.js";
 import { useReveal } from "./use-reveal.js";
+import { useScrollLayout } from "./use-scroll-layout.js";
 import { useSmoothScroll } from "./use-smooth-scroll.js";
 
 export type LandingProps = {
@@ -41,11 +42,12 @@ export function Landing(props: LandingProps) {
   }, []);
   useSmoothScroll(phase === "loading");
   useReveal(root);
+  useScrollLayout(root);
   useIntro(root, phase !== "loading");
   return (
     <div
       ref={root}
-      className={`${fluidUnit} relative min-h-dvh overflow-x-clip bg-paper px-[8px] text-ink`}
+      className={`${fluidUnit} [--color-paper:#f5f4ec] [--color-rule-soft:#dfdfd5] relative min-h-dvh overflow-x-clip bg-paper px-[8px] text-ink`}
     >
       <Frame />
       <Grain />

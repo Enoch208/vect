@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { WorldSpec } from "../../../contract/world.schema.js";
-import { Elevation } from "../blueprint/Elevation.js";
-import { sectionDrawing } from "../blueprint/section-geometry.js";
 import { Button } from "../primitives/Buttons.js";
 import { PromptField } from "../primitives/PromptField.js";
 import { dashedRule, dashedRuleVertical, display, mono } from "../primitives/type.js";
@@ -31,27 +29,8 @@ function useScrollReadout() {
   return readout;
 }
 
-function domeView(world: WorldSpec) {
-  const drawing = sectionDrawing(world);
-  const tallest = drawing.rooms.reduce(
-    (best, room) => (room.top < best.top ? room : best),
-    drawing.rooms[0] ?? { id: "", left: 0, right: drawing.width, top: 0, floor: drawing.height },
-  );
-  const width = tallest.right - tallest.left;
-  return {
-    view: {
-      x: tallest.left - width * 1.6,
-      y: tallest.top - width * 0.75,
-      width: width * 4.2,
-      height: tallest.floor - tallest.top + width * 0.75 + 70,
-    },
-    disc: { cx: tallest.right + width * 0.05, cy: tallest.top - width * 0.42, r: width * 0.2 },
-  };
-}
-
 export function Cta({ world, onOpenStudio, onPrompt }: CtaProps) {
   const readout = useScrollReadout();
-  const { view, disc } = useMemo(() => domeView(world), [world]);
   return (
     <section aria-labelledby="cta-title" className="relative overflow-hidden border-b border-rule">
       <span
@@ -66,24 +45,27 @@ export function Cta({ world, onOpenStudio, onPrompt }: CtaProps) {
         <span ref={readout} aria-hidden className={`${mono.xs} text-ink`}>
           [0.000]
         </span>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2">
-          <Button onClick={onOpenStudio}>Open the studio</Button>
-        </div>
       </div>
       <div aria-hidden className={dashedRule} />
-      <div className="relative mx-auto flex flex-col items-center gap-[calc(var(--spacing)*4)] px-[12px] pt-[calc(var(--spacing)*3)] pb-[calc(var(--spacing)*8)] lg:w-1/2">
-        <div className="w-full">
-          <Elevation
-            world={world}
-            view={view}
-            showLabels={false}
-            underlay={<circle cx={disc.cx} cy={disc.cy} r={disc.r} className="fill-accent" />}
-          />
-        </div>
-        <h2 id="cta-title" data-reveal="" className={`${display.l} max-w-[16ch] text-center`}>
+      <div className="relative mx-auto flex flex-col items-center gap-[calc(var(--spacing)*3)] px-[12px] pt-[calc(var(--spacing)*6)] lg:w-[62%]">
+        <h2 id="cta-title" data-reveal="" className={`${display.l} max-w-[18ch] text-center`}>
           See what Vect builds from your idea
         </h2>
+        <Button onClick={onOpenStudio}>Open the studio</Button>
         <PromptField onPrompt={onPrompt} className="w-full max-w-[calc(var(--spacing)*52)]" />
+        <figure className="w-full max-w-[calc(var(--spacing)*66)]">
+          <img
+            src="/landing/portal-pavilion.webp"
+            alt={`Portal pavilion concept inspired by ${world.title}`}
+            width={1254}
+            height={1254}
+            loading="lazy"
+            className="block w-full"
+          />
+          <figcaption className={`${mono.xs} pb-3 text-center text-muted`}>
+            Portal pavilion · Concept study
+          </figcaption>
+        </figure>
       </div>
     </section>
   );
