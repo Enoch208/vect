@@ -9,7 +9,10 @@ import { FaultPlan } from "./sections/FaultPlan.js";
 import { Header } from "./sections/Header.js";
 import { Hero } from "./sections/Hero.js";
 import { Loader, shouldPlayLoader } from "./sections/Loader.js";
+import { Problems } from "./sections/Problems.js";
+import { Product } from "./sections/Product.js";
 import { Statement } from "./sections/Statement.js";
+import { Steps } from "./sections/Steps.js";
 import { Walkthrough } from "./sections/Walkthrough.js";
 import { useIntro } from "./use-intro.js";
 import { useReveal } from "./use-reveal.js";
@@ -54,8 +57,16 @@ export function Landing(props: LandingProps) {
           />
           <FaultPlan world={observatoryKeyBehindDoor} />
           <Statement world={observatory} onOpenExample={props.onOpenExample} />
+          <Problems />
           <EveryRoom world={observatory} />
           <Walkthrough world={observatory} twin={observatoryKeyBehindDoor} />
+          <Product
+            world={observatory}
+            twin={observatoryKeyBehindDoor}
+            onOpenStudio={props.onOpenStudio}
+            onOpenExample={props.onOpenExample}
+          />
+          <Steps world={observatory} twin={observatoryKeyBehindDoor} />
         </main>
       </div>
     </div>

@@ -71,6 +71,24 @@ describe("landing shell", () => {
     expect(text).toContain("The way to Control Room is locked");
     expect(text).toContain("Entered Portal Chamber. The goal is complete");
     expect(text).toContain("Picked up Access Key");
+    for (const problem of [
+      "AI draws worlds, not games",
+      "Nobody tests the logic",
+      "Edits break things silently",
+      "'It works' is a claim",
+    ])
+      expect(text).toContain(problem);
+    expect(text).toContain("Test every world before anyone plays it");
+    for (const feature of [
+      "Live generation",
+      "Same rules for player and agent",
+      "Independent replay",
+      "Bounded repair",
+    ])
+      expect(text).toContain(feature);
+    expect(text).toContain("Proof view");
+    expect(text).toContain("Built like a QA team");
+    for (const step of ["Generate", "Play", "Test", "Repair"]) expect(text).toContain(step);
     expect(html).not.toMatch(/opacity:\s*0|visibility:\s*hidden|translate\(0(px)?,\s*100%\)/);
   });
 
