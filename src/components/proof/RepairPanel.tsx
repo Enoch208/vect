@@ -4,6 +4,7 @@ import type { RepairOutcome } from "../../contract/codes.js";
 import type { VerificationReport } from "../../contract/report.schema.js";
 import { startTestRun } from "../../agents/test-runner.js";
 import { createApiClient } from "../../store/api-client.js";
+import { useProjectStore } from "../../store/project-store.js";
 import {
   runRepairFlow,
   type RepairFlowDeps,
@@ -172,7 +173,12 @@ export function RepairPanel({
       phase={phase}
       steps={steps}
       result={result}
-      onCommit={onCommitted}
+      onCommit={(repaired) => {
+        if (result?.outcome === "VERIFIED_REPAIR" && result.candidateReport !== null) {
+          useProjectStore.getState().recordReport(result.candidateReport);
+        }
+        onCommitted(repaired);
+      }}
       onRetry={() => {
         setPhase(null);
         setSteps(0);
