@@ -12,7 +12,7 @@ function Wordmark() {
   return (
     <a
       href="#top"
-      className={`flex items-center gap-[calc(var(--spacing)*1)] font-display text-[length:calc(var(--spacing)*2)] font-bold tracking-[-0.04em] uppercase ${focus}`}
+      className={`flex items-center gap-[calc(var(--spacing)*1)] font-display text-[length:calc(var(--spacing)*2.6)] font-bold tracking-[-0.04em] uppercase ${focus}`}
     >
       <VectMark className="size-[1.1em]" />
       Vect
@@ -26,32 +26,41 @@ export function Header({ onOpenStudio }: HeaderProps) {
     <header
       id="top"
       data-intro="drop"
-      className="relative z-30 grid h-[48px] grid-cols-2 border-b border-rule lg:h-[56px] lg:grid-cols-[calc(100%/4)_1fr_auto]"
+      className="relative z-30 grid h-[48px] grid-cols-2 border-b border-rule lg:h-[56px] lg:grid-cols-[50%_1fr_12%]"
     >
       <div className="flex items-center border-r border-rule px-[12px] lg:px-3">
         <Wordmark />
       </div>
-      <nav
-        aria-label="Sections"
-        className="hidden items-center gap-[calc(var(--spacing)*3.4)] px-[12px] lg:px-3 lg:flex"
-      >
+      <nav aria-label="Sections" className="hidden grid-cols-4 lg:grid">
         {navLinks.map((link) => (
           <a
             key={link.label}
             href={link.href}
-            className={`${mono.label} text-muted transition-colors hover:text-accent ${focus}`}
+            className={`${mono.label} flex items-start border-r border-rule px-[10px] pt-[10px] text-muted transition-colors hover:bg-ink/5 hover:text-accent ${focus}`}
           >
             {link.label}
           </a>
         ))}
       </nav>
-      <div className="hidden items-center pr-[6px] lg:flex">
-        <Button onClick={onOpenStudio}>Open the studio</Button>
+      <div className="hidden items-stretch lg:flex">
+        <button
+          type="button"
+          onClick={onOpenStudio}
+          className={`${mono.label} flex w-full items-start justify-between px-[10px] pt-[10px] text-accent transition-colors hover:bg-accent hover:text-paper ${focus}`}
+        >
+          Open studio
+          <span aria-hidden className="self-end pb-[8px]">
+            ↗
+          </span>
+        </button>
       </div>
       <button
         type="button"
         aria-expanded={menuOpen}
         aria-controls="landing-menu"
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setMenuOpen(false);
+        }}
         onClick={() => {
           setMenuOpen((open) => !open);
         }}

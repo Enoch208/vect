@@ -27,7 +27,13 @@ function token(name: string): string {
 }
 
 function buildScene(element: HTMLElement): void {
-  if (!window.matchMedia("(min-width: 1024px)").matches) return;
+  const media = gsap.matchMedia();
+  media.add("(min-width: 1024px)", () => {
+    animateRooms(element);
+  });
+}
+
+function animateRooms(element: HTMLElement): void {
   const timeline = gsap.timeline({
     scrollTrigger: { trigger: element, start: "top top", end: "+=150%", pin: true, scrub: 0.6 },
   });

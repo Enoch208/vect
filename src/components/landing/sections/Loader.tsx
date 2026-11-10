@@ -95,7 +95,7 @@ export function Loader({ world, onReveal, onDone }: LoaderProps) {
       ref={root}
       role="status"
       aria-label={`Checking the example world ${world.id}`}
-      className="fixed inset-0 z-[35]"
+      className="fixed inset-0 z-[35] [&_[data-material]]:opacity-0"
     >
       <div data-loader-backdrop="" className="absolute inset-0 bg-paper" />
       <div className="absolute inset-x-0 top-[12%] bottom-[22%] flex items-end justify-center">
@@ -104,7 +104,7 @@ export function Loader({ world, onReveal, onDone }: LoaderProps) {
           aria-hidden
           style={{ width: `min(84vw, calc(66vh * ${aspect.toFixed(4)}))` }}
         >
-          <Elevation world={world} />
+          <Elevation world={world} architectural showLabels={false} />
         </div>
       </div>
       <div data-loader-chrome="">

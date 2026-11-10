@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from "react";
 import type { WorldSpec } from "../../../contract/world.schema.js";
 import type { Stroke, StrokeTone, Weight } from "./paths.js";
+import { ElevationGuides } from "./ElevationGuides.js";
 import { sectionDrawing } from "./section-geometry.js";
 
 const strokeWidth: Record<Weight, number> = { heavy: 1.15, light: 0.8, hair: 0.5 };
@@ -30,6 +31,7 @@ type ElevationProps = {
   showLabels?: boolean;
   view?: ViewBox;
   underlay?: ReactNode;
+  architectural?: boolean;
 };
 
 export function Elevation({
@@ -38,6 +40,7 @@ export function Elevation({
   showLabels = true,
   view,
   underlay,
+  architectural = false,
 }: ElevationProps) {
   const drawing = useMemo(() => sectionDrawing(world), [world]);
   const box = view ?? { x: 0, y: drawing.y, width: drawing.width, height: drawing.height };
@@ -49,12 +52,31 @@ export function Elevation({
       fill="none"
       className={`block h-auto w-full ${className}`}
     >
+      {architectural && <ElevationGuides drawing={drawing} />}
       {underlay}
-      {tones.map((tone) => (
-        <StrokeGroup key={tone} tone={tone} strokes={drawing.strokes} />
-      ))}
+      <g data-elevation-ink={architectural ? "" : undefined}>
+        {tones.map((tone) => (
+          <StrokeGroup key={tone} tone={tone} strokes={drawing.strokes} />
+        ))}
+      </g>
+      {architectural && world.id === "observatory-01" && (
+        <image
+          data-elevation-depth=""
+          data-material=""
+          href="/landing/observatory-engraving.webp"
+          x={0}
+          y={drawing.y}
+          width={drawing.width}
+          height={drawing.height}
+          preserveAspectRatio="none"
+          className="grayscale"
+        />
+      )}
       {showLabels && (
-        <g className="fill-muted font-mono text-[11px] tracking-[0.04em] uppercase">
+        <g
+          data-elevation-labels={architectural ? "" : undefined}
+          className="fill-muted font-mono text-[11px] tracking-[0.04em] uppercase"
+        >
           {drawing.labels.map((label) => (
             <text
               key={label.id}

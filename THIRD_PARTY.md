@@ -12,7 +12,13 @@ Everything Vect uses that it did not write, with its source and terms. Versions 
 
 ## 3D models, textures, images and audio
 
-None. All scene geometry, materials and drawings are generated in code or drawn for Vect. Any external asset added later is listed here, with its source URL, author, licence and where it is used, in the same change that adds it.
+All playable scene geometry, materials and technical drawings are generated in code. The landing uses two original generated illustrations, separate from the live game renderer.
+
+| Asset                                                        | Source                                                                  | Terms                                                 | Used in                             |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------- |
+| `observatory-engraving.webp`                                 | OpenAI image generation, based on Vect's own elevation drawing          | Generated for this project; OpenAI output terms apply | Landing opening illustration        |
+| `observatory-study.webp`                                     | OpenAI image generation, based on the original observatory illustration | Generated for this project; OpenAI output terms apply | Landing architectural concept study |
+| `observatory-three-quarter.png`, `observatory-elevation.png` | Vect's own Three.js renderer                                            | Original project renders                              | Example world imagery               |
 
 ## Runtime libraries
 

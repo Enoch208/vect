@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { WorldSpec } from "../../../contract/world.schema.js";
 import { MonoLabel } from "../primitives/Label.js";
@@ -24,15 +25,17 @@ function Pinned({ steps }: { steps: readonly Step[] }) {
   const [index, setIndex] = useState(0);
   const build = useCallback(
     (element: HTMLElement) => {
-      if (!window.matchMedia("(min-width: 1024px)").matches) return;
-      ScrollTrigger.create({
-        trigger: element,
-        start: "top top",
-        end: `+=${String(steps.length * 70)}%`,
-        pin: true,
-        onUpdate: (self) => {
-          setIndex(Math.min(steps.length - 1, Math.floor(self.progress * steps.length)));
-        },
+      const media = gsap.matchMedia();
+      media.add("(min-width: 1024px)", () => {
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top top",
+          end: `+=${String(steps.length * 70)}%`,
+          pin: true,
+          onUpdate: (self) => {
+            setIndex(Math.min(steps.length - 1, Math.floor(self.progress * steps.length)));
+          },
+        });
       });
     },
     [steps.length],

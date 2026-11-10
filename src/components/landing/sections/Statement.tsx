@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { gsap } from "gsap";
 import type { WorldSpec } from "../../../contract/world.schema.js";
 import { Button } from "../primitives/Buttons.js";
-import { display } from "../primitives/type.js";
+import { display, mono } from "../primitives/type.js";
 import { useScene } from "../use-scene.js";
 import { BuiltWith } from "./BuiltWith.js";
 
@@ -35,10 +35,16 @@ export function Statement({ world, onOpenExample }: StatementProps) {
       <div className="relative min-h-[78vw] overflow-hidden border-rule max-lg:border-b lg:min-h-[calc(var(--spacing)*76.8)] lg:border-r">
         <img
           data-settle=""
-          src="/landing/observatory-three-quarter.png"
-          alt={`${world.title}, the example world as a model you can walk`}
-          className="absolute inset-0 h-full w-full origin-center scale-[1.16] object-cover object-[38%_34%]"
+          src="/landing/observatory-study.webp"
+          loading="lazy"
+          width={1448}
+          height={1086}
+          alt={`Architectural concept study for ${world.title}`}
+          className="absolute inset-0 h-full w-full origin-center object-cover object-center"
         />
+        <span className={`${mono.xs} absolute bottom-3 left-3 bg-paper/90 px-2 py-1`}>
+          The Last Observatory · Concept study
+        </span>
       </div>
       <div className="flex flex-col">
         <div className="flex flex-col gap-[calc(var(--spacing)*3.2)] p-[12px] pt-[calc(var(--spacing)*4)] lg:p-3 lg:pt-[calc(var(--spacing)*6)] lg:pl-[calc(var(--spacing)*15.2)]">

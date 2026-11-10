@@ -1,3 +1,4 @@
+import { ProblemDiagram } from "../blueprint/ProblemDiagram.js";
 import { BracketLabel, MonoLabel } from "../primitives/Label.js";
 import { body, dashedRule, display } from "../primitives/type.js";
 
@@ -42,12 +43,13 @@ export function Problems() {
         {problems.map((problem, index) => (
           <li
             key={problem.title}
-            className="flex min-h-[calc(var(--spacing)*30)] flex-col bg-paper lg:min-h-[calc(var(--spacing)*44)]"
+            className="group flex min-h-[calc(var(--spacing)*30)] flex-col bg-paper lg:min-h-[calc(var(--spacing)*44)]"
           >
             <div className="flex h-[calc(var(--spacing)*5)] items-center px-[12px] lg:px-3">
               <BracketLabel>{String(index + 1).padStart(2, "0")}</BracketLabel>
             </div>
             <div aria-hidden className={dashedRule} />
+            <ProblemDiagram index={index} />
             <div className="flex flex-1 flex-col justify-between gap-6 p-[12px] lg:p-3">
               <h3 data-reveal="" className={`${display.card} max-w-[11ch]`}>
                 {problem.title}

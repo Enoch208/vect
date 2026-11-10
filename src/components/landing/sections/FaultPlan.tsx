@@ -6,6 +6,7 @@ import { roomLabel } from "../../../verification/describe.js";
 import { Plan } from "../blueprint/Plan.js";
 import { findingCallouts, type PlanCallout } from "../blueprint/plan-callouts.js";
 import { planGeometry } from "../blueprint/plan-geometry.js";
+import { TextButton } from "../primitives/Buttons.js";
 import { CaptionBox } from "../primitives/CaptionBox.js";
 import { Callout } from "../primitives/Callout.js";
 import { BracketLabel } from "../primitives/Label.js";
@@ -120,6 +121,7 @@ function Body({ world, live }: { world: WorldSpec; live: Live | null }) {
         aria-valuetext={caption === null ? undefined : `${caption.label}: ${caption.text}`}
         onKeyDown={step}
         onPointerDown={(event) => {
+          if (event.target instanceof Element && event.target.closest("button") !== null) return;
           dragging.current = true;
           event.currentTarget.setPointerCapture(event.pointerId);
           scrub(event);
@@ -149,12 +151,24 @@ function Body({ world, live }: { world: WorldSpec; live: Live | null }) {
       </div>
       <div className="absolute bottom-[calc(var(--spacing)*3.6)] left-[calc(var(--spacing)*3.6)] z-10">
         <CaptionBox
-          label={caption?.label ?? "Agent trace"}
-          hint={live === null ? undefined : "Click and drag to trace the agent"}
+          label={explained ? (live?.finding?.code ?? "Finding") : (caption?.label ?? "Agent trace")}
+          hint={live === null || explained ? undefined : "Click and drag to trace the agent"}
         >
-          {caption?.text ??
-            "This plan is drawn from the world file; the live trace could not be computed here."}
+          {explained
+            ? live?.finding?.explanation
+            : (caption?.text ??
+              "This plan is drawn from the world file; the live trace could not be computed here.")}
         </CaptionBox>
+        {explained && (
+          <TextButton
+            className="mt-3"
+            onClick={() => {
+              setExplained(false);
+            }}
+          >
+            Back to agent trace
+          </TextButton>
+        )}
       </div>
       {live?.finding != null && (
         <div className="absolute right-[calc(var(--spacing)*3.6)] bottom-[calc(var(--spacing)*3.6)] z-10 flex flex-col items-end max-lg:hidden">
