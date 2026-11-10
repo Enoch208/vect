@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from "react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
-import { drawEase, prefersReducedMotion, registerMotion, type MotionOptions } from "./motion.js";
+import { prefersReducedMotion, registerMotion, type MotionOptions } from "./motion.js";
 
 export const revealAttribute = "data-reveal";
 
@@ -15,9 +15,9 @@ function revealLines(element: Element): void {
       if (played) return;
       gsap.from(split.lines, {
         yPercent: 100,
-        duration: 0.8,
-        ease: drawEase,
-        stagger: 0.06,
+        duration: 0.9,
+        ease: "expo.out",
+        stagger: 0.05,
         scrollTrigger: {
           trigger: element,
           start: "top 88%",

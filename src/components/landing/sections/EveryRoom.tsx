@@ -40,8 +40,8 @@ function buildScene(element: HTMLElement): void {
     const from = arrivals[index % arrivals.length] ?? arrivals[0];
     timeline.from(
       card,
-      { ...from, opacity: 0, duration: 0.45, ease: "power2.out" },
-      0.18 + index * 0.08,
+      { ...from, opacity: 0, duration: 0.8, ease: "expo.out" },
+      0.12 + index * 0.06,
     );
   });
   timeline.from(

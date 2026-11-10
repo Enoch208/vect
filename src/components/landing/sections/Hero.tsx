@@ -8,6 +8,7 @@ import { Ruler } from "../primitives/Ruler.js";
 import { StatusChip } from "../primitives/StatusChip.js";
 import { body, display, mono } from "../primitives/type.js";
 import { heroDrawingAttribute } from "./Loader.js";
+import { PointerLines } from "./PointerLines.js";
 
 const promises = ["Playable worlds", "Real tests", "Proven fixes"] as const;
 
@@ -30,6 +31,7 @@ export function Hero({ world, drawingVisible, onOpenStudio, onOpenExample }: Her
     >
       <div className="relative flex min-h-[110vw] flex-1 items-center justify-center border-b border-rule lg:min-h-0">
         <Ruler />
+        <PointerLines />
         <div
           data-intro="fade"
           className={`${corner} top-[calc(var(--spacing)*3.6)] left-[calc(var(--spacing)*3.6)]`}

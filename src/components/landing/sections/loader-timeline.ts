@@ -1,7 +1,6 @@
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
 import type { LoaderPhase } from "../loader-steps.js";
-import { drawEase } from "../motion.js";
 
 export type LoaderHooks = {
   onStep: (index: number, value: string) => void;
@@ -56,14 +55,14 @@ function exit(root: HTMLElement, hooks: LoaderHooks): gsap.core.Timeline {
         scale: to.width / from.width,
         transformOrigin: "0 0",
         duration: 1.1,
-        ease: drawEase,
+        ease: "expo.out",
       },
       0.1,
     );
   }
   leave.to(
     root.querySelector("[data-loader-backdrop]"),
-    { opacity: 0, duration: 0.9, ease: drawEase },
+    { opacity: 0, duration: 0.9, ease: "expo.out" },
     0.3,
   );
   return leave;
@@ -84,7 +83,7 @@ export function loaderTimeline(
     mask: "lines",
   });
   const timeline = gsap.timeline({ delay: 0.35 });
-  timeline.from(statement.lines, { yPercent: 100, duration: 0.8, ease: drawEase, stagger: 0.06 });
+  timeline.from(statement.lines, { yPercent: 100, duration: 0.9, ease: "expo.out", stagger: 0.05 });
   timeline.from(
     root.querySelectorAll("[data-spec-line]"),
     { opacity: 0, duration: 0.01, stagger: 0.07 },

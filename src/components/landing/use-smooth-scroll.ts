@@ -17,7 +17,7 @@ const staticScroll: SmoothScroll = { stop: () => undefined, setLocked: () => und
 export function startSmoothScroll({ reducedMotion }: MotionOptions): SmoothScroll {
   if (reducedMotion) return staticScroll;
   registerMotion();
-  const lenis = new Lenis({ anchors: true });
+  const lenis = new Lenis({ anchors: true, duration: 1.2 });
   lenis.on("scroll", () => {
     ScrollTrigger.update();
   });

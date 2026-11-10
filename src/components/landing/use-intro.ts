@@ -1,7 +1,7 @@
 import { useLayoutEffect, type RefObject } from "react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
-import { drawEase, prefersReducedMotion, registerMotion } from "./motion.js";
+import { prefersReducedMotion, registerMotion } from "./motion.js";
 
 export const introAttribute = "data-intro";
 
@@ -11,15 +11,15 @@ function playIntro(root: Element): void {
     mask: "lines",
   });
   const timeline = gsap.timeline({ delay: 0.15 });
-  timeline.from(lines.lines, { yPercent: 100, duration: 0.8, ease: drawEase, stagger: 0.06 });
+  timeline.from(lines.lines, { yPercent: 100, duration: 0.9, ease: "expo.out", stagger: 0.05 });
   timeline.from(
     root.querySelectorAll(`[${introAttribute}="fade"]`),
-    { opacity: 0, y: 8, duration: 0.6, ease: drawEase, stagger: 0.05 },
-    0.2,
+    { opacity: 0, y: 16, duration: 0.8, ease: "expo.out", stagger: 0.05 },
+    0.15,
   );
   timeline.from(
     root.querySelectorAll(`[${introAttribute}="drop"]`),
-    { yPercent: -100, duration: 0.8, ease: drawEase },
+    { yPercent: -100, duration: 0.9, ease: "expo.out" },
     0,
   );
 }
