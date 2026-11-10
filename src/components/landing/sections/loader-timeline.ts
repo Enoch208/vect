@@ -36,6 +36,9 @@ function exit(root: HTMLElement, hooks: LoaderHooks): gsap.core.Timeline {
   const drawing = root.querySelector("[data-loader-drawing]");
   const target = hooks.heroTarget();
   hooks.onReveal();
+  gsap.set(root.querySelectorAll("[data-loader-drawing] [data-draw]"), {
+    clearProps: "strokeDasharray,strokeDashoffset",
+  });
   const leave = gsap.timeline({ onComplete: hooks.onDone });
   leave.to(root.querySelectorAll("[data-loader-chrome]"), {
     opacity: 0,
