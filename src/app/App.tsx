@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useReducer, useState } from "react";
 import type { GenerateRequest } from "../contract/api.schema.js";
 import { GenerationPanel } from "../components/studio/GenerationPanel.js";
-import { RevisionPreview } from "../components/studio/RevisionPreview.js";
+import { StudioLayout } from "../components/studio/StudioLayout.js";
 import { StatusBadge } from "../components/studio/StatusBadge.js";
 import { observatory } from "../fixtures/observatory.js";
 import { createApiClient } from "../store/api-client.js";
@@ -21,12 +21,12 @@ const api = createApiClient(fetch);
 export function App() {
   const [inStudio, setInStudio] = useState(() => window.location.pathname.startsWith("/studio"));
   const [prompt, setPrompt] = useState("");
+  const [initialExample] = useState(() => window.location.pathname === "/studio/example");
   const [screen, dispatch] = useReducer(screenReducer, "empty");
   const active = useProjectStore(
     (project) => project.versions.find((version) => version.id === project.activeId) ?? null,
   );
-  const reports = useProjectStore((project) => project.reports);
-  const persistence = useProjectPersistence();
+  const persistence = useProjectPersistence(initialExample);
 
   function commit(version: WorldVersion) {
     useProjectStore.getState().addVersion(version);
@@ -157,13 +157,7 @@ export function App() {
           failure={generation.failure}
         />
       ) : (
-        <RevisionPreview
-          version={active}
-          reports={reports}
-          onNewWorld={() => {
-            newWorld();
-          }}
-        />
+        <StudioLayout key={active.id} version={active} screen={screen} onScreen={dispatch} />
       )}
     </div>
   );

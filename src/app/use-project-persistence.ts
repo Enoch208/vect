@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { browserProjectStorage, loadProject, saveProject } from "../store/persistence.js";
 import { usePlayStore } from "../store/play-store.js";
 import { useProjectStore } from "../store/project-store.js";
+import { observatory } from "../fixtures/observatory.js";
+import { makeVersion } from "./versions.js";
 
-export function useProjectPersistence() {
+export function useProjectPersistence(openExample: boolean) {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,8 +36,14 @@ export function useProjectPersistence() {
         const active = useProjectStore.getState().active();
         if (active) usePlayStore.getState().start(active.world);
       }
+      if (openExample) {
+        const example = makeVersion(observatory, "example", "sample_fixture", null);
+        useProjectStore.getState().addVersion(example);
+        usePlayStore.getState().start(example.world);
+        window.history.replaceState(null, "", "/studio");
+      }
       unsubscribe = useProjectStore.subscribe(scheduleSave);
-      if (current.versions.length > 0) scheduleSave();
+      if (useProjectStore.getState().versions.length > 0) scheduleSave();
     });
 
     return () => {
@@ -43,7 +51,7 @@ export function useProjectPersistence() {
       unsubscribe?.();
       if (timer !== null) clearTimeout(timer);
     };
-  }, []);
+  }, [openExample]);
 
   return {
     notice,
