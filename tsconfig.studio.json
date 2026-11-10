@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/contract",
+    "src/main.tsx",
+    "src/app",
+    "src/components/studio",
+    "src/components/game",
+    "src/components/test",
+    "src/components/proof",
+    "src/store",
+    "src/styles",
+    "tests/studio"
+  ]
+}

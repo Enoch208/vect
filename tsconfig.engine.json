@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/contract",
+    "src/domain",
+    "src/verification",
+    "src/agents",
+    "src/fixtures",
+    "tests/engine"
+  ]
+}

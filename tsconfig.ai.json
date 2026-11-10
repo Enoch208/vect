@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/contract",
+    "src/generation",
+    "src/server",
+    "api",
+    "scripts/run-benchmark.ts",
+    "tests/ai"
+  ]
+}

@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-shell: #090f1c;
+  --color-panel: #111a2b;
+  --color-elevated: #182337;
+  --color-ink: #f4f7fc;
+  --color-ink-muted: #a6b4c7;
+  --color-positive: #26d7a1;
+  --color-negative: #f47176;
+  --color-caution: #f7bc69;
+  --color-accent: #7a9bff;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  background: var(--color-shell);
+}
