@@ -1,5 +1,10 @@
 import { alwaysTrue, type Expr } from "../contract/expr.schema.js";
-import type { Connection, WorldEntity } from "../contract/world.schema.js";
+import {
+  worldSpecSchema,
+  type Connection,
+  type WorldEntity,
+  type WorldSpec,
+} from "../contract/world.schema.js";
 
 type EntityInput = Pick<WorldEntity, "id" | "kind" | "label" | "roomId"> & Partial<WorldEntity>;
 
@@ -24,6 +29,18 @@ export function connection(
   doorId: string | null = null,
 ): Connection {
   return { id, fromRoomId, toRoomId, doorId, traversableWhen };
+}
+
+export function derive(base: WorldSpec, changes: Partial<WorldSpec>): WorldSpec {
+  return worldSpecSchema.parse({ ...base, ...changes });
+}
+
+export function editEntity(world: WorldSpec, id: string, change: Partial<WorldEntity>) {
+  return world.entities.map((item) => (item.id === id ? { ...item, ...change } : item));
+}
+
+export function editConnection(world: WorldSpec, id: string, change: Partial<Connection>) {
+  return world.connections.map((item) => (item.id === id ? { ...item, ...change } : item));
 }
 
 export const hasItem = (itemId: string): Expr => ({ op: "hasItem", itemId });
