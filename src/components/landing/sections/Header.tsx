@@ -25,6 +25,7 @@ export function Header({ onOpenStudio }: HeaderProps) {
   return (
     <header
       id="top"
+      data-intro="drop"
       className="relative z-30 grid h-[48px] grid-cols-2 border-b border-rule lg:h-[56px] lg:grid-cols-[calc(100%/4)_1fr_auto]"
     >
       <div className="flex items-center border-r border-rule px-[12px] lg:px-3">
@@ -32,7 +33,7 @@ export function Header({ onOpenStudio }: HeaderProps) {
       </div>
       <nav
         aria-label="Sections"
-        className="hidden items-center gap-[calc(var(--spacing)*3.4)] px-3 lg:flex"
+        className="hidden items-center gap-[calc(var(--spacing)*3.4)] px-[12px] lg:px-3 lg:flex"
       >
         {navLinks.map((link) => (
           <a
@@ -76,13 +77,13 @@ export function Header({ onOpenStudio }: HeaderProps) {
                 onClick={() => {
                   setMenuOpen(false);
                 }}
-                className={`block px-3 py-3 ${mono.label} text-ink ${focus}`}
+                className={`block px-[12px] lg:px-3 py-3 ${mono.label} text-ink ${focus}`}
               >
                 {link.label}
               </a>
             </li>
           ))}
-          <li className="border-t border-rule p-3">
+          <li className="border-t border-rule p-[12px] lg:p-3">
             <Button onClick={onOpenStudio}>Open the studio</Button>
           </li>
         </ul>
