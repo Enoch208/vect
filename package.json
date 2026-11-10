@@ -25,7 +25,8 @@
     "shot": "tsx scripts/shot.ts",
     "gate:landing": "sh scripts/lane-gate.sh landing",
     "gate:proof": "sh scripts/lane-gate.sh proof",
-    "verify-report": "tsx scripts/verify-report.ts"
+    "verify-report": "tsx scripts/verify-report.ts",
+    "deploy": "sh scripts/deploy.sh"
   },
   "dependencies": {
     "@fontsource-variable/geist": "5.3.0",
