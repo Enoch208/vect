@@ -3,6 +3,8 @@ import { renderToString } from "react-dom/server";
 import { SpecSheet } from "../../src/components/landing/primitives/SpecSheet.js";
 import { Sequence } from "../../src/components/landing/primitives/Sequence.js";
 import { Accordion, nextOpenRow } from "../../src/components/landing/primitives/Accordion.js";
+import { canSubmitPrompt } from "../../src/components/landing/primitives/PromptField.js";
+import { worldLimits } from "../../src/contract/limits.js";
 
 function textOf(html: string): string {
   return html
@@ -76,5 +78,15 @@ describe("landing primitives", () => {
     );
     expect(count(html, 'aria-expanded="true"')).toBe(0);
     expect(textOf(html)).toContain("Second body.");
+  });
+});
+
+describe("prompt field", () => {
+  it("submits only prompts the API accepts", () => {
+    const { min, max } = worldLimits.promptLength;
+    expect(canSubmitPrompt("x".repeat(min - 1))).toBe(false);
+    expect(canSubmitPrompt(`   ${"x".repeat(min)}   `)).toBe(true);
+    expect(canSubmitPrompt("x".repeat(max))).toBe(true);
+    expect(canSubmitPrompt("x".repeat(max + 1))).toBe(false);
   });
 });
