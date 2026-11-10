@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from "node:fs";
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -54,9 +55,19 @@ const deterministic = [
   },
 ];
 
+const localExclude = new URL(".git/info/exclude", import.meta.url);
+const localIgnores = existsSync(localExclude)
+  ? readFileSync(localExclude, "utf8")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !line.startsWith("#") && !line.startsWith("!"))
+      .map((line) => (line.endsWith("/") ? `${line}**` : line))
+  : [];
+
 export default tseslint.config(
   {
     ignores: [
+      ...localIgnores,
       "dist/**",
       "node_modules/**",
       "coverage/**",
