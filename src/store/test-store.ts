@@ -23,14 +23,14 @@ export type TestRunner = (world: WorldSpec, seed: number) => TestRunHandle;
 
 export type TestStore = {
   run: TestRun | null;
-  current(): PacedStep | null;
-  start(version: WorldVersion, runner?: TestRunner): void;
-  cancel(): void;
-  bindTo(version: WorldVersion | null): void;
-  statusFor(version: WorldVersion): TestStatus | null;
+  current: () => PacedStep | null;
+  start: (version: WorldVersion, runner?: TestRunner) => void;
+  cancel: () => void;
+  bindTo: (version: WorldVersion | null) => void;
+  statusFor: (version: WorldVersion) => TestStatus | null;
   inspected: string[];
-  inspect(entityIds: string[]): void;
-  highlightIds(): string[];
+  inspect: (entityIds: string[]) => void;
+  highlightIds: () => string[];
 };
 
 export type TestStoreDeps = {
