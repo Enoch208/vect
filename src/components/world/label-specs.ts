@@ -123,17 +123,16 @@ export const actorNoteId = "actor";
 
 function actorNotes({ actor }: NoteInput): Note[] {
   if (actor === null) return [];
+  const reserved = { badge: null, below: false, priority: 10, tone: "ink" } as const;
+  const [x, , z] = actor.anchor;
   return [
-    {
-      id: actorNoteId,
-      anchor: actor.anchor,
-      lines: [` ${actor.text} `],
-      badge: null,
-      below: false,
-      priority: 10,
-      tone: "ink",
-    },
+    { ...reserved, id: actorNoteId, anchor: actor.anchor, lines: [` ${actor.text} `] },
+    { ...reserved, id: `${actorNoteId}:figure`, anchor: [x, 0, z], lines: ["    ", "", ""] },
   ];
+}
+
+export function isActorNote(id: string): boolean {
+  return id.startsWith(actorNoteId);
 }
 
 export function sceneNotes(input: NoteInput): Note[] {

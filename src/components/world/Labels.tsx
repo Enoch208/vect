@@ -4,7 +4,7 @@ import type { GameState } from "../../contract/game.schema.js";
 import type { WorldSpec } from "../../contract/world.schema.js";
 import { fitMargin, fitLayout, followZoom } from "./camera-math.js";
 import { placeLabels } from "./label-layout.js";
-import { actorNoteId, sceneNotes } from "./label-specs.js";
+import { isActorNote, sceneNotes } from "./label-specs.js";
 import { PresentationContext } from "./presentation.js";
 import { useScene } from "./scene-context.js";
 import { Tag } from "./Tag.js";
@@ -54,7 +54,7 @@ export function Labels(props: LabelsProps): ReactElement {
   return createPortal(
     <group>
       {notes
-        .filter((note) => presentation.labels && note.id !== actorNoteId)
+        .filter((note) => presentation.labels && !isActorNote(note.id))
         .map((note) => (
           <Tag
             key={note.id}
