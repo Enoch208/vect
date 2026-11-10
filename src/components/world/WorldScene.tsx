@@ -20,6 +20,7 @@ import { Staging, type FrameStats } from "./Staging.js";
 import { themeKit } from "./themes.js";
 import type { WorldSceneProps } from "./types.js";
 import { gateStates } from "./truth.js";
+import { useStableHandlers } from "./use-stable-handlers.js";
 import { useWorldControls } from "./use-world-controls.js";
 
 function Ground(): ReactElement {
@@ -83,6 +84,7 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
     if (stats.fpsMin !== null) node.dataset["fpsMin"] = String(stats.fpsMin);
     if (stats.fpsP5 !== null) node.dataset["fpsP5"] = String(stats.fpsP5);
   }, []);
+  const { onMoveTo, onInteract, onSelect } = useStableHandlers(props);
   useWorldControls(props, layout);
   return (
     <div
@@ -109,7 +111,7 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
           ],
         }}
         onPointerMissed={() => {
-          if (interactive) props.onSelect(null);
+          if (interactive) onSelect(null);
         }}
       >
         <fog attach="fog" args={[scene.kit.fog.color, scene.kit.fog.near, scene.kit.fog.far]} />
@@ -118,23 +120,23 @@ export function WorldScene(props: WorldSceneProps): ReactElement {
             <Staging onFrame={report} />
             <Ground />
             <Architecture />
-            <Floors currentRoomId={state.currentRoomId} onMoveTo={props.onMoveTo} />
+            <Floors currentRoomId={state.currentRoomId} onMoveTo={onMoveTo} />
             <Gates
               world={world}
               gates={gates}
               currentRoomId={state.currentRoomId}
               highlightIds={highlightIds}
-              onMoveTo={props.onMoveTo}
+              onMoveTo={onMoveTo}
             />
-            <Props world={world} onSelect={props.onSelect} />
+            <Props world={world} onSelect={onSelect} />
             <AgentPath world={world} path={props.path} />
             <Entities
               world={world}
               state={state}
               highlightIds={highlightIds}
               selectedEntityId={selectedEntityId}
-              onInteract={props.onInteract}
-              onSelect={props.onSelect}
+              onInteract={onInteract}
+              onSelect={onSelect}
             />
             <Avatar
               anchor={anchor}

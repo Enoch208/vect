@@ -27,22 +27,28 @@ function blockerTurn(layout: SceneLayout, entity: WorldEntity): number {
 
 function PairRings({ world, state }: Pick<EntitiesProps, "world" | "state">): ReactElement | null {
   const { layout, kit, pairing } = useScene();
-  const geometry = useMemo(() => {
-    const rings = layout.entities.flatMap((placed) => {
+  const ringed = layout.entities
+    .filter((placed) => {
       const kind = world.entities.find((entity) => entity.id === placed.id)?.kind;
       const gone = kind === "key" && isUsed(state, placed.id);
-      if (!pairing.entityTags.has(placed.id) || gone || placed.footprint === 0) return [];
-      return [
+      return pairing.entityTags.has(placed.id) && !gone && placed.footprint > 0;
+    })
+    .map((placed) => placed.id)
+    .join("|");
+  const geometry = useMemo(() => {
+    const ids = new Set(ringed.split("|"));
+    const rings = layout.entities
+      .filter((placed) => ids.has(placed.id))
+      .map((placed) =>
         new RingGeometry(placed.footprint, placed.footprint + 0.08, 48)
           .rotateX(-Math.PI / 2)
           .translate(placed.position[0], 0.07, placed.position[2]),
-      ];
-    });
+      );
     if (rings.length === 0) return null;
     const merged = mergeGeometries(rings);
     for (const ring of rings) ring.dispose();
     return merged;
-  }, [layout, world, state, pairing]);
+  }, [layout, ringed]);
   useEffect(
     () => () => {
       geometry?.dispose();

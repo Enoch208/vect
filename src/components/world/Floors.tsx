@@ -1,5 +1,5 @@
 import type { ThreeEvent } from "@react-three/fiber";
-import { useEffect, useMemo, useState, type ReactElement } from "react";
+import { memo, useEffect, useMemo, useState, type ReactElement } from "react";
 import { BoxGeometry } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { dims } from "./blocks.js";
@@ -29,7 +29,7 @@ function roomUnder(layout: SceneLayout, x: number, z: number): RoomLayout | null
 
 type FloorsProps = { currentRoomId: string; onMoveTo: (roomId: string) => void };
 
-export function Floors({ currentRoomId, onMoveTo }: FloorsProps): ReactElement {
+export const Floors = memo(function Floors({ currentRoomId, onMoveTo }: FloorsProps): ReactElement {
   const { layout, kit, interactive } = useScene();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const geometry = useMemo(() => {
@@ -91,4 +91,4 @@ export function Floors({ currentRoomId, onMoveTo }: FloorsProps): ReactElement {
       ) : null}
     </group>
   );
-}
+});

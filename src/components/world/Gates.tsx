@@ -38,9 +38,8 @@ export function Gates(props: GatesProps): ReactElement {
           gate,
           style: style ?? "bars",
           highlighted: isHighlighted(corridor),
-          onPass: () => {
-            onMoveTo(farSide(corridor));
-          },
+          farRoomId: farSide(corridor),
+          onMoveTo,
         };
         if (corridor.kind === "portal") {
           return <PortalPair key={corridor.connectionId} {...shared} />;

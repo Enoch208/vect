@@ -1,5 +1,5 @@
 import { Line } from "@react-three/drei";
-import { useEffect, useMemo, type ReactElement } from "react";
+import { memo, useEffect, useMemo, type ReactElement } from "react";
 import { BoxGeometry, type BufferGeometry } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
@@ -40,7 +40,7 @@ function Shell({ geometry, spec }: { geometry: BufferGeometry | null; spec: Mate
   );
 }
 
-export function Architecture(): ReactElement {
+export const Architecture = memo(function Architecture(): ReactElement {
   const { layout, kit } = useScene();
   const blocks = useMemo(() => {
     const structure = architectureBlocks(layout);
@@ -61,4 +61,4 @@ export function Architecture(): ReactElement {
       <Line points={edges} segments color={kit.edge} lineWidth={1.1} />
     </group>
   );
-}
+});

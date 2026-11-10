@@ -1,7 +1,7 @@
 import monoWoff from "@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff?url";
 import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef, type ReactElement } from "react";
+import { memo, useRef, type ReactElement } from "react";
 import { Euler, type Group } from "three";
 import { badgeGeometry } from "./badge-geometry.js";
 import { cameraPitch, cameraYaw } from "./camera-math.js";
@@ -25,7 +25,20 @@ const clearance = 7;
 const chipPad: [number, number] = [7, 4];
 const row = labelType.size * labelType.lineHeight;
 
-export function Tag(props: TagProps): ReactElement {
+function sameTag(a: TagProps, b: TagProps): boolean {
+  return (
+    a.badge === b.badge &&
+    a.tone === b.tone &&
+    a.below === b.below &&
+    a.lift === b.lift &&
+    a.shift === b.shift &&
+    a.anchor.every((value, index) => value === b.anchor[index]) &&
+    a.lines.length === b.lines.length &&
+    a.lines.every((line, index) => line === b.lines[index])
+  );
+}
+
+export const Tag = memo(function Tag(props: TagProps): ReactElement {
   const { anchor, lines, badge = null, tone = "ink", below = false, lift = 0, shift = 0 } = props;
   const { kit } = useScene();
   const scaled = useRef<Group>(null);
@@ -100,4 +113,4 @@ export function Tag(props: TagProps): ReactElement {
       </group>
     </group>
   );
-}
+}, sameTag);

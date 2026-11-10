@@ -1,4 +1,4 @@
-import { useMemo, type ReactElement } from "react";
+import { memo, useMemo, type ReactElement } from "react";
 import type { WorldSpec } from "../../contract/world.schema.js";
 import type { PartInstance } from "./parts.js";
 import { PartsMesh } from "./PartsMesh.js";
@@ -17,7 +17,7 @@ export function isScenery(world: WorldSpec, entityId: string): boolean {
   return entity.kind === "prop" || ((entity.kind === "door" || entity.kind === "portal") && !gate);
 }
 
-export function Props({ world, onSelect }: PropsProps): ReactElement {
+export const Props = memo(function Props({ world, onSelect }: PropsProps): ReactElement {
   const { layout, interactive } = useScene();
   const placed = useMemo(
     () => layout.entities.filter((item) => isScenery(world, item.id)),
@@ -54,4 +54,4 @@ export function Props({ world, onSelect }: PropsProps): ReactElement {
       }}
     />
   );
-}
+});

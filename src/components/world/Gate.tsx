@@ -1,4 +1,4 @@
-import { useRef, type ReactElement } from "react";
+import { memo, useRef, type ReactElement } from "react";
 import type { Group } from "three";
 import { dims } from "./blocks.js";
 import { Cluster } from "./Cluster.js";
@@ -23,7 +23,8 @@ export type GateProps = {
   gate: GateState;
   style: GateStyle;
   highlighted: boolean;
-  onPass: () => void;
+  farRoomId: string;
+  onMoveTo: (roomId: string) => void;
 };
 
 function outward(corridor: CorridorLayout): [number, number] {
@@ -109,8 +110,8 @@ function Halo({ highlighted }: { highlighted: boolean }): ReactElement {
   );
 }
 
-export function Gate(props: GateProps): ReactElement {
-  const { corridor, gate, style, highlighted, onPass } = props;
+export const Gate = memo(function Gate(props: GateProps): ReactElement {
+  const { corridor, gate, style, highlighted, farRoomId, onMoveTo } = props;
   const { interactive } = useScene();
   const [ox, oz] = outward(corridor);
   return (
@@ -120,7 +121,7 @@ export function Gate(props: GateProps): ReactElement {
       onClick={(event) => {
         if (!interactive || event.delta > 6) return;
         event.stopPropagation();
-        onPass();
+        onMoveTo(farRoomId);
       }}
       onPointerOver={(event) => {
         if (interactive) setCursor(event, "pointer");
@@ -134,4 +135,4 @@ export function Gate(props: GateProps): ReactElement {
       <Halo highlighted={highlighted} />
     </group>
   );
-}
+});

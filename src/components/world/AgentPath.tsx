@@ -1,5 +1,5 @@
 import { Line } from "@react-three/drei";
-import { useEffect, useMemo, type ReactElement } from "react";
+import { memo, useEffect, useMemo, type ReactElement } from "react";
 import { CircleGeometry } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import type { WorldSpec } from "../../contract/world.schema.js";
@@ -12,7 +12,10 @@ const dotRadius = 0.17;
 
 type AgentPathProps = { world: WorldSpec; path: ReadonlyArray<{ x: number; z: number }> };
 
-export function AgentPath({ world, path }: AgentPathProps): ReactElement | null {
+export const AgentPath = memo(function AgentPath({
+  world,
+  path,
+}: AgentPathProps): ReactElement | null {
   const { layout, kit } = useScene();
   const points = useMemo(
     () =>
@@ -42,4 +45,4 @@ export function AgentPath({ world, path }: AgentPathProps): ReactElement | null 
       </mesh>
     </group>
   );
-}
+});

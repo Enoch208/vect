@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { memo, type ReactElement } from "react";
 import type { WorldEntity } from "../../contract/world.schema.js";
 import { isInteractive } from "../../domain/world-lookup.js";
 import { shapes } from "./entity-shapes.js";
@@ -28,7 +28,7 @@ function Ring({ radius, color }: { radius: number; color: string }): ReactElemen
   );
 }
 
-export function EntityMesh(props: EntityMeshProps): ReactElement {
+export const EntityMesh = memo(function EntityMesh(props: EntityMeshProps): ReactElement {
   const { entity, placed, index, turn, used, on, highlighted, selected } = props;
   const { onInteract, onSelect } = props;
   const { kit, interactive } = useScene();
@@ -60,4 +60,4 @@ export function EntityMesh(props: EntityMeshProps): ReactElement {
       ) : null}
     </group>
   );
-}
+});

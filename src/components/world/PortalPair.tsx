@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { memo, type ReactElement } from "react";
 import { setCursor } from "./Floors.js";
 import type { GateProps } from "./Gate.js";
 import type { Point } from "./layout-types.js";
@@ -44,9 +44,13 @@ function Pad({ at, closed, passed, onPass }: PadProps): ReactElement {
   );
 }
 
-type PairProps = Pick<GateProps, "corridor" | "gate" | "onPass">;
+type PairProps = Pick<GateProps, "corridor" | "gate" | "farRoomId" | "onMoveTo">;
 
-export function PortalPair({ corridor, gate, onPass }: PairProps): ReactElement {
+export const PortalPair = memo(function PortalPair(props: PairProps): ReactElement {
+  const { corridor, gate, farRoomId, onMoveTo } = props;
+  const onPass = () => {
+    onMoveTo(farRoomId);
+  };
   const shared = { closed: gate === "closed", passed: gate === "passed", onPass };
   return (
     <group>
@@ -54,4 +58,4 @@ export function PortalPair({ corridor, gate, onPass }: PairProps): ReactElement 
       <Pad at={corridor.to} {...shared} />
     </group>
   );
-}
+});
