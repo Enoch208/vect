@@ -36,15 +36,15 @@ const assertionIds = [
   "invariants-hold",
 ];
 
-function localReport(
+export function placeholderReport(
   world: WorldSpec,
   seed: number,
-  clock: TestClock,
+  isoNow: () => string,
   status: Extract<TestStatus, "CANCELLED" | "ERROR">,
   failureReason: string,
 ): VerificationReport {
   const revisionHash = worldRevisionHash(world);
-  const createdAt = clock.isoNow();
+  const createdAt = isoNow();
   return buildReport({
     reportId: sha256Hex(revisionHash + String(seed) + createdAt).slice(0, 16),
     createdAt,
@@ -91,7 +91,7 @@ export function connectTestRun(
     settle(report);
   };
   const fail = (reason: string) => {
-    finish(localReport(world, seed, clock, "ERROR", reason));
+    finish(placeholderReport(world, seed, clock.isoNow, "ERROR", reason));
   };
   port.listen(
     (raw) => {
@@ -131,7 +131,13 @@ export function connectTestRun(
     done,
     cancel() {
       finish(
-        localReport(world, seed, clock, "CANCELLED", "The test was cancelled before it finished."),
+        placeholderReport(
+          world,
+          seed,
+          clock.isoNow,
+          "CANCELLED",
+          "The test was cancelled before it finished.",
+        ),
       );
     },
   };
