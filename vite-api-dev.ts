@@ -75,6 +75,7 @@ export function apiDevServer(): Plugin {
           return;
         }
         route(server, req, res).catch((error: unknown) => {
+          if (req.destroyed || res.destroyed) return;
           if (error instanceof Error) server.ssrFixStacktrace(error);
           next(error);
         });
