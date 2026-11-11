@@ -67,6 +67,7 @@ export function readSetup(search: string): Setup {
             ? "overview"
             : "follow",
       labels: params.get("clean") !== "1",
+      fullQuality: params.get("quality") === "full",
     },
   };
 }

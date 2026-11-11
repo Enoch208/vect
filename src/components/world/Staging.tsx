@@ -1,6 +1,6 @@
 import { AdaptiveDpr, PerformanceMonitor, type PerformanceMonitorApi } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import { useContext, useEffect, useRef, useState, type ReactElement } from "react";
 import { Effects } from "./Effects.js";
 import {
   createFrameSamples,
@@ -9,6 +9,7 @@ import {
   type FrameSummary,
 } from "./frame-stats.js";
 import { Lighting } from "./Lighting.js";
+import { PresentationContext } from "./presentation.js";
 import { qualityAt, qualityLadder } from "./quality.js";
 import { useScene } from "./scene-context.js";
 
@@ -26,6 +27,7 @@ const monitorSeconds = (monitorWindowMs * monitorIterations) / 1000;
 
 export function Staging({ onFrame }: { onFrame: (stats: FrameStats) => void }): ReactElement {
   const { reducedMotion } = useScene();
+  const { fullQuality = false } = useContext(PresentationContext);
   const [level, setLevel] = useState(0);
   const quality = qualityAt(level);
   const set = useThree((three) => three.set);
@@ -89,7 +91,7 @@ export function Staging({ onFrame }: { onFrame: (stats: FrameStats) => void }): 
         onIncline={observe}
         onDecline={(api) => {
           observe(api);
-          if (activeSeconds.current < monitorSeconds) return;
+          if (fullQuality || activeSeconds.current < monitorSeconds) return;
           setLevel((previous) => Math.min(previous + 1, qualityLadder.length - 1));
         }}
       />
