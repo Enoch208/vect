@@ -39,6 +39,8 @@ function runFor(world: WorldSpec, budget: { maxStates?: number } = {}): TestRun 
   });
   return {
     revisionHash: worldRevisionHash(world),
+    world,
+    seed: world.seed,
     steps,
     shown: steps.length,
     report,

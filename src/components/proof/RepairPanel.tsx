@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { RepairAttempt } from "../../contract/api.schema.js";
 import type { RepairOutcome } from "../../contract/codes.js";
 import type { VerificationReport } from "../../contract/report.schema.js";
-import { startTestRun } from "../../agents/test-runner.js";
 import { createApiClient } from "../../store/api-client.js";
 import {
   commitRepair,
@@ -11,7 +10,7 @@ import {
   type RepairFlowResult,
   type RepairPhase,
 } from "../../store/repair-flow.js";
-import type { TestRunner } from "../../store/test-store.js";
+import { useRepairRunStore, type TestRunner } from "../../store/test-store.js";
 import type { WorldVersion } from "../../store/types.js";
 import { reportStatusFor } from "../../verification/report.js";
 import { StatusChip } from "../test/StatusChip.js";
@@ -142,12 +141,14 @@ export function RepairPanelView({
 
 const defaultApi = createApiClient(fetch);
 
+const watchedRun: TestRunner = (world, seed) => useRepairRunStore.getState().track(world, seed);
+
 export function RepairPanel({
   version,
   report,
   onCommitted,
   api = defaultApi,
-  runner = startTestRun,
+  runner = watchedRun,
 }: {
   version: WorldVersion;
   report: VerificationReport;
@@ -179,6 +180,7 @@ export function RepairPanel({
     });
     return () => {
       live = false;
+      useRepairRunStore.getState().cancel();
     };
   }, [api, runner, version, report, round]);
   return (

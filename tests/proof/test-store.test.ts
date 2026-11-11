@@ -104,6 +104,7 @@ function storeWith(options: { reducedMotion?: boolean } = {}) {
     every: ticker.every,
     reducedMotion: () => options.reducedMotion ?? false,
     onReport: (report) => recorded.push(report),
+    isoNow: clock.isoNow,
   });
   return { store, ticker, recorded };
 }
