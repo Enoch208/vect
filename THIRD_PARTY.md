@@ -23,6 +23,19 @@ All playable scene geometry, materials and technical drawings are generated in c
 | `observatory-three-quarter.png`, `observatory-elevation.png`                          | Vect's own Three.js renderer                                                            | Original project renders                              | Landing steps (three-quarter view); example world imagery                         |
 | `studio-capture.webp`, `play-capture.webp`, `test-capture.webp`, `proof-capture.webp` | Screenshots of Vect running locally                                                     | Original project captures                             | Landing product cards and steps                                                   |
 
+## Design
+
+The landing page's layout and animation style follow a commercial website template purchased by the team. All of its text, images, logos and drawings were replaced with Vect's own content, made by the team with the help of AI tools. All 3D geometry, materials and technical drawings in the app are generated in code, and the screenshots and renders are of Vect itself.
+
+## Demo video
+
+| Part                    | Source                                | Terms                                                   |
+| ----------------------- | ------------------------------------- | ------------------------------------------------------- |
+| Narration               | ElevenLabs text-to-speech             | Generated for this project under the ElevenLabs terms   |
+| Music and sound effects | ElevenLabs music and sound generation | Generated for this project under the ElevenLabs terms   |
+| Footage                 | A recording of Vect running           | Original                                                |
+| Editing                 | Remotion                              | Remotion licence (free for individuals and small teams) |
+
 ## Runtime libraries
 
 | Package                                      | Version       | Licence                                                            | Source                                         |
@@ -51,7 +64,8 @@ TypeScript (Apache-2.0), Vite, @vitejs/plugin-react, Tailwind CSS and @tailwindc
 
 ## Services
 
-| Service    | Use                                                                         | What is sent                                                                                                         |
-| ---------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| OpenAI API | Generating worlds, proposing edits and proposing repairs (server side only) | The user's prompt or instruction and a compact description of the current world. No accounts, keys or personal data. |
-| Vercel     | Hosting the site and the API functions                                      | Standard request logs                                                                                                |
+| Service    | Use                                                                              | What is sent                                                                                                         |
+| ---------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| OpenAI API | Generating worlds, proposing edits and proposing repairs (server side only)      | The user's prompt or instruction and a compact description of the current world. No accounts, keys or personal data. |
+| Vercel     | Hosting the site and the API functions                                           | Standard request logs                                                                                                |
+| ElevenLabs | Narration, music and sound effects for the demo video only (not used by the app) | The video script and music prompts                                                                                   |
