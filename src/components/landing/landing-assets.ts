@@ -23,6 +23,12 @@ export const aiArtwork = {
   },
 } as const satisfies Record<string, AiArt>;
 
+export const heroEngraving = {
+  src: "/landing/observatory-engraving.webp",
+  subject: "the example world's level drawing, shaded as a concrete observatory",
+  worldId: "observatory-01",
+} as const;
+
 export const appAssets = [
   "/landing/observatory-elevation.png",
   "/landing/observatory-three-quarter.png",

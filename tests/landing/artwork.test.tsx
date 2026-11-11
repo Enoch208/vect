@@ -15,7 +15,7 @@ vi.mock("lenis", () => ({
 const { Landing } = await import("../../src/components/landing/index.js");
 const { Hero } = await import("../../src/components/landing/sections/Hero.js");
 const { Loader } = await import("../../src/components/landing/sections/Loader.js");
-const { aiArtwork, aiLabel, appAssets } =
+const { aiArtwork, aiLabel, appAssets, heroEngraving } =
   await import("../../src/components/landing/landing-assets.js");
 
 const noop = () => undefined;
@@ -39,7 +39,7 @@ function imageTags(html: string, src: string): string[] {
 
 describe("landing artwork", () => {
   it("every image on the page is a registered asset", () => {
-    const known = new Set<string>([...aiSources, ...appAssets]);
+    const known = new Set<string>([...aiSources, ...appAssets, heroEngraving.src]);
     const unknown = assetsIn(landingHtml()).filter((src) => !known.has(src));
     expect(unknown).toEqual([]);
   });
@@ -58,14 +58,30 @@ describe("landing artwork", () => {
     expect(labels).toBe(rendered);
   });
 
-  it("the loader and the hero never render an AI image", () => {
+  it("the loader never renders an AI image", () => {
+    const loader = renderToString(<Loader world={observatory} onReveal={noop} onDone={noop} />);
+    for (const src of [...aiSources, heroEngraving.src]) expect(loader).not.toContain(src);
+    expect(loader).not.toContain(aiLabel);
+  });
+
+  it("the hero's shaded drawing is labelled as an AI illustration where it appears", () => {
     const hero = renderToString(
       <Hero world={observatory} drawingVisible onOpenStudio={noop} onOpenExample={noop} />,
     );
-    const loader = renderToString(<Loader world={observatory} onReveal={noop} onDone={noop} />);
-    for (const html of [hero, loader]) {
-      for (const src of aiSources) expect(html).not.toContain(src);
-      expect(html).not.toContain(aiLabel);
-    }
+    expect(hero).toContain(`href="${heroEngraving.src}"`);
+    expect(hero).toContain(
+      `aria-label="${aiLabel} of ${heroEngraving.subject.replace("'", "&#x27;")}"`,
+    );
+    expect(hero).toMatch(new RegExp(`data-ai-label="shading"[^>]*>${aiLabel}</span>`));
+    for (const src of aiSources) expect(hero).not.toContain(src);
+  });
+
+  it("only the example world is shaded", () => {
+    const other = { ...observatory, id: "another-world" };
+    const hero = renderToString(
+      <Hero world={other} drawingVisible onOpenStudio={noop} onOpenExample={noop} />,
+    );
+    expect(hero).not.toContain(heroEngraving.src);
+    expect(hero).not.toContain(aiLabel);
   });
 });

@@ -25,8 +25,11 @@ export function drawingAspect(world: WorldSpec): number {
 
 export type ViewBox = { x: number; y: number; width: number; height: number };
 
+export type ElevationShading = { src: string; alt: string };
+
 type ElevationProps = {
   world: WorldSpec;
+  shading?: ElevationShading;
   className?: string;
   showLabels?: boolean;
   view?: ViewBox;
@@ -41,6 +44,7 @@ export function Elevation({
   view,
   underlay,
   architectural = false,
+  shading,
 }: ElevationProps) {
   const drawing = useMemo(() => sectionDrawing(world), [world]);
   const box = view ?? { x: 0, y: drawing.y, width: drawing.width, height: drawing.height };
@@ -54,6 +58,19 @@ export function Elevation({
     >
       {architectural && <ElevationGuides drawing={drawing} />}
       {underlay}
+      {shading !== undefined && (
+        <image
+          data-elevation-depth=""
+          href={shading.src}
+          aria-label={shading.alt}
+          x={0}
+          y={drawing.y}
+          width={drawing.width}
+          height={drawing.height}
+          preserveAspectRatio="none"
+          className="grayscale"
+        />
+      )}
       <g data-elevation-ink={architectural ? "" : undefined}>
         {tones.map((tone) => (
           <StrokeGroup key={tone} tone={tone} strokes={drawing.strokes} />
