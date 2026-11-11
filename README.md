@@ -50,6 +50,8 @@ On [usevect.xyz](https://usevect.xyz):
 
 Or start with **Open studio** and describe your own world, for example: _"A sunken temple of five chambers around a flooded court. A pressure plate lowers a stone barrier, and a bronze key opens the relic sanctum."_
 
+![A temple world generated live from that prompt](docs/media/temple.jpg)
+
 | The agent fails, with the reason                                      | The repair, verified before it can be committed                  | The proof, before and after                                                |
 | --------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | ![Agent test failing with CIRCULAR_DEPENDENCY](docs/media/failed.jpg) | ![Repair panel with a verified candidate](docs/media/repair.jpg) | ![Proof view with the failed and verified revisions](docs/media/proof.jpg) |
