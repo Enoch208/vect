@@ -3,7 +3,14 @@ import type { GameState } from "../../contract/game.schema.js";
 import type { WorldSpec } from "../../contract/world.schema.js";
 import { entityById, isInteractive } from "../../domain/world-lookup.js";
 import { dims } from "./blocks.js";
-import { wrapLabel, type LabelSpec } from "./label-layout.js";
+import { projectToView } from "./camera-math.js";
+import {
+  clampLines,
+  labelType,
+  wrapLabel,
+  type Footprint,
+  type LabelSpec,
+} from "./label-layout.js";
 import type { SceneLayout } from "./layout-types.js";
 import type { Pairing } from "./pairing.js";
 import { gateStates, isUsed, type GateState } from "./truth.js";
@@ -19,6 +26,7 @@ export type NoteInput = {
   highlightIds: readonly string[];
   selectedEntityId: string | null;
   compact: boolean;
+  zoom: number;
   actor: { anchor: [number, number, number]; text: string } | null;
 };
 
@@ -42,16 +50,62 @@ const stateTone: Record<GateState, NoteTone> = {
   passed: "positive",
 };
 
-function roomNotes({ layout, state }: NoteInput): Note[] {
-  return layout.rooms.map((room, index) => ({
-    id: `room:${room.id}`,
-    anchor: [room.center[0] + room.size / 2, -dims.plinthHeight, room.center[1] + room.size / 2],
-    lines: wrapLabel(`[${String(index + 1).padStart(2, "0")}] ${room.label}`, 26),
-    badge: null,
-    below: true,
-    priority: 6,
-    tone: room.id === state.currentRoomId ? "ink" : "muted",
-  }));
+const briefChars = 16;
+const briefRows = 2;
+const captionSpan = 7.4;
+const captionRows = 3;
+
+function captionChars(zoom: number): number {
+  const fits = Math.floor((captionSpan * zoom) / (labelType.size * labelType.advance));
+  return Math.min(26, Math.max(10, fits));
+}
+
+export function roomFootprints(layout: SceneLayout): Footprint[] {
+  const grow = 0.1;
+  return layout.rooms.map((room) => {
+    const half = room.size / 2 + grow;
+    const [u, v] = projectToView(room.center[0], -dims.plinthHeight / 2, room.center[1]);
+    const [right] = projectToView(room.center[0] + half, 0, room.center[1] - half);
+    const [, bottom] = projectToView(
+      room.center[0] + half,
+      -dims.plinthHeight,
+      room.center[1] + half,
+    );
+    return { u, v, halfWidth: right - u, halfHeight: v - bottom };
+  });
+}
+
+function roomNotes({ layout, state, zoom }: NoteInput): Note[] {
+  return layout.rooms.map((room, index) => {
+    const half = room.size / 2;
+    const floor = -dims.plinthHeight;
+    const [x, z] = room.center;
+    const name = `[${String(index + 1).padStart(2, "0")}] ${room.label}`;
+    return {
+      id: `room:${room.id}`,
+      anchor: [x + half, floor, z + half],
+      alternates: [
+        [x - half, floor, z + half],
+        [x + half, floor, z - half],
+      ],
+      avoidsRooms: true,
+      lines: clampLines(wrapLabel(name, captionChars(zoom)), captionRows),
+      badge: null,
+      below: true,
+      priority: 3,
+      tone: room.id === state.currentRoomId ? "ink" : "muted",
+    };
+  });
+}
+
+function entityLines(label: string, brief: boolean): string[] {
+  return brief ? clampLines(wrapLabel(label, briefChars), briefRows) : wrapLabel(label);
+}
+
+function gateLines(name: string, word: string, brief: boolean): string[] {
+  if (brief) return [word];
+  const lines = wrapLabel(name);
+  return name.toUpperCase().includes(word) ? lines : [...lines, word];
 }
 
 function gateNotes(input: NoteInput): Note[] {
@@ -71,7 +125,7 @@ function gateNotes(input: NoteInput): Note[] {
     const note = (id: string, x: number, y: number, z: number): Note => ({
       id,
       anchor: [x, y, z],
-      lines: [...wrapLabel(name), stateWord[gate]],
+      lines: gateLines(name, stateWord[gate], compact && !flagged),
       badge: tags.length === 0 ? null : tags.join("+"),
       below: false,
       priority: flagged ? 9 : 5,
@@ -109,7 +163,7 @@ function entityNotes(input: NoteInput): Note[] {
         anchor: floor
           ? [placed.position[0] + 0.85, 0.06, placed.position[2] + 0.85]
           : [placed.position[0], reach[entity.kind], placed.position[2]],
-        lines: named ? wrapLabel(entity.label) : [],
+        lines: named ? entityLines(entity.label, compact && !flagged) : [],
         badge,
         below: floor,
         priority: flagged ? 9 : here ? 4 : 2,

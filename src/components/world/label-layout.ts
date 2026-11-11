@@ -10,14 +10,20 @@ export const labelType = {
 } as const;
 export const maxLabelChars = 22;
 
+export type Anchor = [number, number, number];
+
 export type LabelSpec = {
   id: string;
-  anchor: [number, number, number];
+  anchor: Anchor;
   lines: string[];
   badge: string | null;
   below: boolean;
   priority: number;
+  alternates?: Anchor[];
+  avoidsRooms?: boolean;
 };
+
+export type Footprint = { u: number; v: number; halfWidth: number; halfHeight: number };
 
 export type Placed<T extends LabelSpec> = T & {
   lift: number;
@@ -67,8 +73,16 @@ export function labelSize(
   };
 }
 
-function boxOf(label: LabelSpec, zoom: number, shift: number, lift: number): Box {
-  const [u, v] = projectToView(...label.anchor);
+export function clampLines(lines: readonly string[], most: number): string[] {
+  if (lines.length <= most) return [...lines];
+  const kept = lines.slice(0, most);
+  const last = kept[most - 1] ?? "";
+  kept[most - 1] = `${last.slice(0, Math.max(1, last.length - 2))}..`;
+  return kept;
+}
+
+function boxOf(label: LabelSpec, anchor: Anchor, zoom: number, shift: number, lift: number): Box {
+  const [u, v] = projectToView(...anchor);
   const { width, height } = labelSize(label.lines, label.badge);
   const x = u * zoom + shift;
   const y = v * zoom + (label.below ? -lift : lift);
@@ -84,7 +98,28 @@ function overlap(a: Box, b: Box): number {
   return wide > 0 && tall > 0 ? wide * tall : 0;
 }
 
-function candidates(label: LabelSpec): Array<[number, number]> {
+const samples = [0.12, 0.5, 0.88];
+
+function covered(box: Box, rooms: readonly Footprint[], zoom: number): number {
+  const area = (box.right - box.left) * (box.top - box.bottom);
+  let inside = 0;
+  for (const across of samples) {
+    for (const up of samples) {
+      const x = box.left + (box.right - box.left) * across;
+      const y = box.bottom + (box.top - box.bottom) * up;
+      const hit = rooms.some(
+        (room) =>
+          Math.abs(x - room.u * zoom) / (room.halfWidth * zoom) +
+            Math.abs(y - room.v * zoom) / (room.halfHeight * zoom) <=
+          1,
+      );
+      if (hit) inside += 1;
+    }
+  }
+  return (area * inside) / (samples.length * samples.length);
+}
+
+function offsets(label: LabelSpec): Array<[number, number]> {
   const { width } = labelSize(label.lines, label.badge);
   const beside = width / 2 + labelType.gap;
   const clear = width + labelType.gap;
@@ -110,27 +145,41 @@ function candidates(label: LabelSpec): Array<[number, number]> {
   ];
 }
 
-export function placeLabels<T extends LabelSpec>(labels: readonly T[], zoom: number): Placed<T>[] {
+type Spot = { anchor: Anchor; shift: number; lift: number };
+
+function spotsFor(label: LabelSpec): Spot[] {
+  const spread = offsets(label);
+  return [label.anchor, ...(label.alternates ?? [])].flatMap((anchor) =>
+    spread.map(([shift, lift]) => ({ anchor, shift, lift })),
+  );
+}
+
+export function placeLabels<T extends LabelSpec>(
+  labels: readonly T[],
+  zoom: number,
+  rooms: readonly Footprint[] = [],
+): Placed<T>[] {
   const order = [...labels].sort((a, b) => b.priority - a.priority || a.id.localeCompare(b.id));
   const taken: Box[] = [];
-  const spots = new Map<string, [number, number]>();
+  const chosen = new Map<string, Spot>();
   for (const label of order) {
-    let best: [number, number] = [0, 0];
+    let best: Spot = { anchor: label.anchor, shift: 0, lift: 0 };
     let least = Number.POSITIVE_INFINITY;
-    for (const [shift, lift] of candidates(label)) {
-      const box = boxOf(label, zoom, shift, lift);
+    for (const spot of spotsFor(label)) {
+      const box = boxOf(label, spot.anchor, zoom, spot.shift, spot.lift);
       const clash = taken.reduce((total, other) => total + overlap(box, other), 0);
-      if (clash < least) {
-        best = [shift, lift];
-        least = clash;
+      const cost = clash + (label.avoidsRooms === true ? covered(box, rooms, zoom) : 0);
+      if (cost < least) {
+        best = spot;
+        least = cost;
       }
-      if (clash === 0) break;
+      if (cost === 0) break;
     }
-    taken.push(boxOf(label, zoom, best[0], best[1]));
-    spots.set(label.id, best);
+    taken.push(boxOf(label, best.anchor, zoom, best.shift, best.lift));
+    chosen.set(label.id, best);
   }
   return labels.map((label) => {
-    const [shift, lift] = spots.get(label.id) ?? [0, 0];
-    return { ...label, ...labelSize(label.lines, label.badge), shift, lift };
+    const spot = chosen.get(label.id) ?? { anchor: label.anchor, shift: 0, lift: 0 };
+    return { ...label, ...labelSize(label.lines, label.badge), ...spot };
   });
 }

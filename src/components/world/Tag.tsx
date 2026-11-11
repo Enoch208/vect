@@ -49,6 +49,7 @@ export const Tag = memo(function Tag(props: TagProps): ReactElement {
     }
   });
   const filled = tone === "alert" || tone === "actor";
+  const layer = tone === "actor" ? 10 : 0;
   const fill = tone === "alert" ? kit.accent : kit.ink;
   const colors: Record<TagTone, string> = {
     ink: kit.ink,
@@ -69,14 +70,14 @@ export const Tag = memo(function Tag(props: TagProps): ReactElement {
     <group position={anchor} rotation={facing}>
       <group ref={scaled} scale={0.05}>
         {lift > 0 ? (
-          <mesh position={[0, (side * (lift + clearance)) / 2, 0]} renderOrder={11}>
+          <mesh position={[0, (side * (lift + clearance)) / 2, 0]} renderOrder={11 + layer}>
             <planeGeometry args={[1, lift + clearance]} />
             <meshBasicMaterial color={kit.edge} toneMapped={false} depthTest={false} />
           </mesh>
         ) : null}
         <group position={[shift, 0, 0]}>
           {filled ? (
-            <mesh position={[0, middle, 0]} renderOrder={11}>
+            <mesh position={[0, middle, 0]} renderOrder={11 + layer}>
               <planeGeometry args={[size.width + chipPad[0] * 2, size.height + chipPad[1] * 2]} />
               <meshBasicMaterial color={fill} toneMapped={false} depthTest={false} />
             </mesh>
@@ -84,7 +85,7 @@ export const Tag = memo(function Tag(props: TagProps): ReactElement {
           {marks.map((mark, index) => (
             <mesh
               key={mark}
-              renderOrder={11}
+              renderOrder={11 + layer}
               position={[(index - (marks.length - 1) / 2) * labelType.markPitch, top - row / 2, 0]}
               geometry={badgeGeometry(filled ? fill : kit.paper, filled ? kit.paper : kit.accent)}
             >
@@ -104,7 +105,7 @@ export const Tag = memo(function Tag(props: TagProps): ReactElement {
             position={[0, middle, 0]}
             outlineWidth={filled ? 0 : 2.4}
             outlineColor={kit.paper}
-            renderOrder={12}
+            renderOrder={12 + layer}
           >
             <meshBasicMaterial toneMapped={false} depthTest={false} depthWrite={false} />
             {plainLabel(rows.join("\n"))}
