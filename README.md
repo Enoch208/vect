@@ -6,7 +6,7 @@
 
 Describe a world in plain English. Vect builds it as a playable 3D puzzle, sends in a test agent that plays by the same rules you do, and proves whether it can be finished. When an edit breaks it, Vect finds the exact reason, proposes a small repair that keeps your goal, and verifies the fix with a fresh run.
 
-**[Try it live at usevect.xyz](https://usevect.xyz)** · no login, no key
+**[Try it live at usevect.xyz](https://usevect.xyz)** · no login, no key · **[Watch the demo video (2:49)](https://youtu.be/SIZ-iVNcuj0)**
 
 Built for the Victoria VR AI Builder Hackathon 2026.
 
