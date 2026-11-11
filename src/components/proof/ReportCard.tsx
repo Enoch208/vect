@@ -36,7 +36,7 @@ export function ReportCard({
   const finding = trusted?.findings[0] ?? null;
   const excerpt = trusted?.trace.slice(-excerptLength) ?? [];
   return (
-    <article aria-label={title} className="flex flex-col gap-3">
+    <article aria-label={`${title} report`} className="flex flex-col gap-3">
       <header className="flex items-center justify-between gap-3">
         <h3 className="studio-label">{title}</h3>
         <StatusChip status={status} />

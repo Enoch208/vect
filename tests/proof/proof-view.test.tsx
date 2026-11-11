@@ -92,6 +92,14 @@ describe("ProofViewLayout", () => {
     );
   });
 
+  it("exposes stable hooks for the columns", () => {
+    const html = render();
+    expect(html).toMatch(/data-testid="proof-columns"[^>]*><div[^>]*aria-label="Before"/);
+    expect(html).toMatch(/<div[^>]*aria-label="After"/);
+    expect(html.match(/aria-label="Before"/g)).toHaveLength(1);
+    expect(html.match(/aria-label="After"/g)).toHaveLength(1);
+  });
+
   it("never claims a fix when the repaired report does not verify", () => {
     const tampered = { ...afterReport, initialSeed: 3 };
     const html = render(tampered);

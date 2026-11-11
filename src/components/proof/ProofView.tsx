@@ -45,8 +45,11 @@ export function ProofViewLayout({
           )}
         </div>
       </header>
-      <div className="grid divide-rule border border-rule md:grid-cols-2 md:divide-x">
-        <div className="p-4">
+      <div
+        data-testid="proof-columns"
+        className="grid divide-rule border border-rule md:grid-cols-2 md:divide-x"
+      >
+        <div aria-label="Before" className="p-4">
           <ReportCard
             title="Before"
             version={before}
@@ -56,7 +59,7 @@ export function ProofViewLayout({
             }}
           />
         </div>
-        <div className="space-y-4 p-4">
+        <div aria-label="After" className="space-y-4 p-4">
           {after.patch !== null && <PatchLines patch={after.patch} before={before.world} />}
           <ReportCard
             title="After"
