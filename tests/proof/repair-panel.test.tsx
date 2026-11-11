@@ -36,9 +36,16 @@ function textOf(html: string): string {
     .replace(/\s+/g, " ");
 }
 
-function render(result: RepairFlowResult | null): string {
+function render(result: RepairFlowResult | null, committed = false): string {
   return renderToString(
-    <RepairPanelView phase="replay" steps={5} result={result} onCommit={noop} onRetry={noop} />,
+    <RepairPanelView
+      phase="replay"
+      steps={5}
+      result={result}
+      onCommit={noop}
+      onRetry={noop}
+      committed={committed}
+    />,
   );
 }
 
@@ -78,9 +85,9 @@ describe("RepairPanelView", () => {
     expect(text).not.toContain("Commit repaired version");
   });
 
-  it("a verified candidate offers the commit with its Verified status", () => {
+  it("a verified candidate offers the commit with its Verified status, once", () => {
     const candidateReport = verifyWorld(observatory, { seed: 1, ...clock });
-    const html = render({
+    const result: RepairFlowResult = {
       attempts,
       candidate: {
         id: "repaired-x",
@@ -98,8 +105,11 @@ describe("RepairPanelView", () => {
       outcome: "VERIFIED_REPAIR",
       reason: null,
       failure: null,
-    });
+    };
+    const html = render(result);
     expect(html).toContain('data-status="VERIFIED"');
     expect(textOf(html)).toContain("Commit repaired version");
+    const after = render(result, true);
+    expect(after).toMatch(/<button[^>]*disabled=""[^>]*>Committed<\/button>/);
   });
 });

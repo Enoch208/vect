@@ -8,6 +8,7 @@ import { worldRevisionHash } from "../domain/canonical.js";
 import { intentViolations } from "../verification/intent.js";
 import { reportStatusFor } from "../verification/report.js";
 import type { ApiResult, ClientFailure } from "./api-client.js";
+import { useProjectStore } from "./project-store.js";
 import type { TestRunner } from "./test-store.js";
 import type { WorldVersion } from "./types.js";
 
@@ -154,4 +155,24 @@ export async function runRepairFlow(deps: RepairFlowDeps): Promise<RepairFlowRes
     reason: null,
     failure: null,
   };
+}
+
+export function commitRepair(
+  result: RepairFlowResult,
+  onCommitted: (version: WorldVersion) => void,
+): WorldVersion | null {
+  const { candidate, candidateReport } = result;
+  if (result.outcome !== "VERIFIED_REPAIR" || candidate === null || candidateReport === null) {
+    return null;
+  }
+  if (reportStatusFor(candidate.world, candidateReport) !== "VERIFIED") return null;
+  const project = useProjectStore.getState();
+  project.recordReport(candidateReport);
+  const existing =
+    project.versions.find((item) => item.id === candidate.id) ??
+    project.versions.find((item) => item.revisionHash === candidate.revisionHash);
+  if (existing !== undefined) project.select(existing.id);
+  const committed = existing ?? candidate;
+  onCommitted(committed);
+  return committed;
 }

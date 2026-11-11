@@ -4,8 +4,8 @@ import type { RepairOutcome } from "../../contract/codes.js";
 import type { VerificationReport } from "../../contract/report.schema.js";
 import { startTestRun } from "../../agents/test-runner.js";
 import { createApiClient } from "../../store/api-client.js";
-import { useProjectStore } from "../../store/project-store.js";
 import {
+  commitRepair,
   runRepairFlow,
   type RepairFlowDeps,
   type RepairFlowResult,
@@ -36,6 +36,7 @@ export type RepairPanelViewProps = {
   result: RepairFlowResult | null;
   onCommit: (repaired: WorldVersion) => void;
   onRetry: () => void;
+  committed?: boolean;
 };
 
 function Attempt({ attempt }: { attempt: RepairAttempt }) {
@@ -58,6 +59,7 @@ function Outcome({
   result,
   onCommit,
   onRetry,
+  committed = false,
 }: Omit<RepairPanelViewProps, "phase" | "steps"> & { result: RepairFlowResult }) {
   const { candidate, candidateReport } = result;
   if (result.outcome === "VERIFIED_REPAIR" && candidate !== null && candidateReport !== null) {
@@ -68,11 +70,12 @@ function Outcome({
         <button
           type="button"
           className="studio-button studio-button-primary"
+          disabled={committed}
           onClick={() => {
             onCommit(candidate);
           }}
         >
-          Commit repaired version
+          {committed ? "Committed" : "Commit repaired version"}
         </button>
       </div>
     );
@@ -103,7 +106,14 @@ function Outcome({
   );
 }
 
-export function RepairPanelView({ phase, steps, result, onCommit, onRetry }: RepairPanelViewProps) {
+export function RepairPanelView({
+  phase,
+  steps,
+  result,
+  onCommit,
+  onRetry,
+  committed = false,
+}: RepairPanelViewProps) {
   const reached = phase === null ? -1 : phases.findIndex((item) => item.id === phase);
   return (
     <section aria-label="Repair" className="flex flex-col gap-4">
@@ -123,7 +133,9 @@ export function RepairPanelView({ phase, steps, result, onCommit, onRetry }: Rep
           ))}
         </ul>
       )}
-      {result !== null && <Outcome result={result} onCommit={onCommit} onRetry={onRetry} />}
+      {result !== null && (
+        <Outcome result={result} onCommit={onCommit} onRetry={onRetry} committed={committed} />
+      )}
     </section>
   );
 }
@@ -147,6 +159,7 @@ export function RepairPanel({
   const [phase, setPhase] = useState<RepairPhase | null>(null);
   const [steps, setSteps] = useState(0);
   const [result, setResult] = useState<RepairFlowResult | null>(null);
+  const [committed, setCommitted] = useState(false);
   useEffect(() => {
     let live = true;
     void runRepairFlow({
@@ -173,13 +186,13 @@ export function RepairPanel({
       phase={phase}
       steps={steps}
       result={result}
-      onCommit={(repaired) => {
-        if (result?.outcome === "VERIFIED_REPAIR" && result.candidateReport !== null) {
-          useProjectStore.getState().recordReport(result.candidateReport);
-        }
-        onCommitted(repaired);
+      committed={committed}
+      onCommit={() => {
+        if (result === null || committed) return;
+        if (commitRepair(result, onCommitted) !== null) setCommitted(true);
       }}
       onRetry={() => {
+        setCommitted(false);
         setPhase(null);
         setSteps(0);
         setResult(null);
