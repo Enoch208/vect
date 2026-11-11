@@ -30,6 +30,7 @@ Built for the Victoria VR AI Builder Hackathon 2026.
 - [Tech stack](#tech-stack)
 - [Limitations](#limitations)
 - [Credits](#credits)
+- [License](#license)
 
 ## Why Vect
 
@@ -211,3 +212,7 @@ TypeScript 5.9 · React 19 · three.js 0.187 with React Three Fiber 9 and Drei 1
 ## Credits
 
 Libraries, fonts, AI-generated images and services are listed with their sources and terms in [THIRD_PARTY.md](THIRD_PARTY.md). Scene geometry and technical drawings are generated in code. The screenshots in this README are frames from a recording of the running app.
+
+## License
+
+The source code is released under the [MIT License](LICENSE). Third-party libraries, fonts and assets keep their own terms, listed in [THIRD_PARTY.md](THIRD_PARTY.md).
