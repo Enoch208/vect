@@ -1,0 +1,24 @@
+[Unit]
+Description=Vect API (world generation, edits and repairs)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vect
+Group=vect
+WorkingDirectory=/srv/vect/current
+EnvironmentFile=/etc/vect/vect.env
+EnvironmentFile=-/etc/vect/build.env
+ExecStart=/usr/bin/node --import tsx scripts/serve.ts
+Restart=always
+RestartSec=3
+MemoryHigh=400M
+MemoryMax=600M
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
