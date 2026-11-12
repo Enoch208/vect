@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Plugin, ViteDevServer } from "vite";
+import { plainError, sendWeb, toWebRequest } from "./node-bridge.js";
 
 type Handler = (request: Request) => Response | Promise<Response>;
 
@@ -14,54 +15,21 @@ function handlerFile(pathname: string): string | null {
   return file.startsWith(apiRoot) && existsSync(file) ? file : null;
 }
 
-async function readBody(req: IncomingMessage): Promise<Uint8Array<ArrayBuffer> | null> {
-  if (req.method === "GET" || req.method === "HEAD") return null;
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(Buffer.from(chunk as Uint8Array));
-  return chunks.length > 0 ? new Uint8Array(Buffer.concat(chunks)) : null;
-}
-
-function headersOf(req: IncomingMessage): Headers {
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(req.headers)) {
-    if (typeof value === "string") headers.set(key, value);
-    if (Array.isArray(value)) headers.set(key, value.join(", "));
-  }
-  return headers;
-}
-
-async function send(res: ServerResponse, response: Response): Promise<void> {
-  res.statusCode = response.status;
-  response.headers.forEach((value, key) => {
-    res.setHeader(key, value);
-  });
-  res.end(Buffer.from(await response.arrayBuffer()));
-}
-
-function plainError(status: number, message: string): Response {
-  return Response.json({ error: { code: "DEV_ROUTER", message } }, { status });
-}
-
 async function route(server: ViteDevServer, req: IncomingMessage, res: ServerResponse) {
   const url = new URL(req.url ?? "/", "http://127.0.0.1");
   const file = handlerFile(url.pathname);
   if (file === null) {
-    await send(res, plainError(404, `No handler for ${url.pathname}`));
+    await sendWeb(res, plainError(404, "DEV_ROUTER", `No handler for ${url.pathname}`));
     return;
   }
   const module = (await server.ssrLoadModule(file)) as Record<string, unknown>;
   const handler = module[req.method ?? "GET"];
   if (typeof handler !== "function") {
-    await send(res, plainError(405, `${req.method ?? "GET"} is not handled by ${url.pathname}`));
+    const message = `${req.method ?? "GET"} is not handled by ${url.pathname}`;
+    await sendWeb(res, plainError(405, "DEV_ROUTER", message));
     return;
   }
-  const body = await readBody(req);
-  const request = new Request(url, {
-    method: req.method ?? "GET",
-    headers: headersOf(req),
-    body,
-  });
-  await send(res, await (handler as Handler)(request));
+  await sendWeb(res, await (handler as Handler)(await toWebRequest(req, url)));
 }
 
 export function apiDevServer(): Plugin {
